@@ -18,7 +18,6 @@ public class Garnet {
     private long window;
     private int windowWidth, windowHeight;
 
-
     GameContainer gameContainer;
 
     public Garnet(GameContainer gameContainer, int windowWidth, int windowHeight) {
