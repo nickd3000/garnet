@@ -7,15 +7,15 @@ public class Sprite2D implements BatchElement {
     public static int FLAG_COLOR = 1;
     public static int FLAG_ANGLE = 2;
 
-    int FLAGS=0;
+    private int FLAGS=0;
 
-    float scale = 1;
-    float textureScale = 1.0f/255f; // TODO: get texture size
+    private float scale = 1;
+    private float textureScale = 1.0f/255f; // TODO: get texture size
     private float x,y,w,h,tx,ty,tw,th,angle,_w,_h;
     private float r,g,b;
 
-    public static Sprite2D build(int x, int y, int w, int h, int tx, int ty) {
-        Sprite2D spr = new Sprite2D(x,y,w,h,tx,ty);
+    public static Sprite2D build(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
+        Sprite2D spr = new Sprite2D(x,y,w,h,tx,ty,tw,th);
         return spr;
     }
 
@@ -37,15 +37,15 @@ public class Sprite2D implements BatchElement {
         FLAGS |= flag;
     }
 
-    public Sprite2D(int x, int y, int w, int h, int tx, int ty) {
+    public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
         this.x=x*scale;
         this.y=y*scale;
         this.w=w*scale;
         this.h=h*scale;
         this.tx=tx*textureScale;
         this.ty=ty*textureScale;
-        this.tw=w*textureScale;
-        this.th=h*textureScale;
+        this.tw=tw*textureScale;
+        this.th=th*textureScale;
         this._w = this.w/2;
         this._h = this.h/2;
     }
@@ -89,7 +89,7 @@ public class Sprite2D implements BatchElement {
         glEnd();
     }
 
-    public void renderRotated() {
+    private void renderRotated() {
         glPushMatrix();
 
         //glLoadIdentity();
@@ -110,14 +110,6 @@ public class Sprite2D implements BatchElement {
             glTexCoord2f(tx, ty+th);
             glVertex2f(-_w, _h);
 
-//            glTexCoord2f(tx, ty);
-//            glVertex2f(x, y);
-//            glTexCoord2f(tx+tw, ty);
-//            glVertex2f(x+w, y);
-//            glTexCoord2f(tx+tw, ty+th);
-//            glVertex2f(x+w, y+h);
-//            glTexCoord2f(tx, ty+th);
-//            glVertex2f(x, y+h);
         }
         glEnd();
         glPopMatrix();

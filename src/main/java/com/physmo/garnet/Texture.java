@@ -24,6 +24,7 @@ package com.physmo.garnet;
  * SOFTWARE.
  */
 
+
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;

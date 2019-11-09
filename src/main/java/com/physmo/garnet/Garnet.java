@@ -12,13 +12,13 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+// NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class Garnet {
-
     // The window handle
     private long window;
     private int windowWidth, windowHeight;
 
-    GameContainer gameContainer;
+    private GameContainer gameContainer;
 
     public Garnet(GameContainer gameContainer, int windowWidth, int windowHeight) {
         this.gameContainer = gameContainer;
@@ -65,6 +65,7 @@ public class Garnet {
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
             // Center the window
+            assert vidmode != null;
             glfwSetWindowPos(
                     window,
                     (vidmode.width() - pWidth.get(0)) / 2,
