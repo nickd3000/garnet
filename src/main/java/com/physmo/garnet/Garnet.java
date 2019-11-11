@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -14,8 +16,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class Garnet {
-    // The window handle
-    private long window;
+
+    private long windowHandle;
     private int windowWidth, windowHeight;
 
     private GameContainer gameContainer;
@@ -43,14 +45,21 @@ public class Garnet {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(windowWidth, windowHeight, "Garnet Framework", NULL, NULL);
-        if (window == NULL)
+        windowHandle = glfwCreateWindow(windowWidth, windowHeight, "Garnet Framework", NULL, NULL);
+        if (windowHandle == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+        glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+
+
+            for (KeyboardCallback kbc : keyboardCallbacks) {
+
+                kbc.invoke(key, scancode, action, mods);
+            }
+
         });
 
         // Get the thread stack and push a new frame
@@ -59,7 +68,7 @@ public class Garnet {
             IntBuffer pHeight = stack.mallocInt(1); // int*
 
             // Get the window size passed to glfwCreateWindow
-            glfwGetWindowSize(window, pWidth, pHeight);
+            glfwGetWindowSize(windowHandle, pWidth, pHeight);
 
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -67,20 +76,20 @@ public class Garnet {
             // Center the window
             assert vidmode != null;
             glfwSetWindowPos(
-                    window,
+                    windowHandle,
                     (vidmode.width() - pWidth.get(0)) / 2,
                     (vidmode.height() - pHeight.get(0)) / 2
             );
         } // the stack frame is popped automatically
 
         // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
+        glfwMakeContextCurrent(windowHandle);
 
         // Enable v-sync
         glfwSwapInterval(1);
 
         // Make the window visible
-        glfwShowWindow(window);
+        glfwShowWindow(windowHandle);
 
         GL.createCapabilities();
 
@@ -88,33 +97,26 @@ public class Garnet {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
-        gameContainer.init();
+        gameContainer.init(this);
     }
 
     public void run() {
-// This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
         GL.createCapabilities();
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
-        while (!glfwWindowShouldClose(window)) {
+        while (!glfwWindowShouldClose(windowHandle)) {
 
 
             // Set the clear color
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             gameContainer.tick();
-            //drawQuad();
+
             gameContainer.draw();
 
-            glfwSwapBuffers(window); // swap the color buffers
+            glfwSwapBuffers(windowHandle); // swap the color buffers
 
 
             // Poll for window events. The key callback above will only be
@@ -123,8 +125,12 @@ public class Garnet {
         }
     }
 
-//    public setKeyCallback() {
-//
-//    }
+
+    List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
+
+    public void addKeyboardCallback(KeyboardCallback keyboardCallback) {
+        System.out.println("addKeyboardCallback");
+        keyboardCallbacks.add(keyboardCallback);
+    }
 
 }

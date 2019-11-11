@@ -1,7 +1,7 @@
 package com.physmo.garnet;
 
 public interface GameContainer {
-    void init();
+    void init(Garnet garnet);
     void tick();
     void draw();
 }

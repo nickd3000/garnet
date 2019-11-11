@@ -21,6 +21,7 @@ public class Sprite2D implements BatchElement {
 
     // Angle is 0-360
     public Sprite2D addAngle(float angle) {
+        setFlag(FLAG_ANGLE);
         this.angle = angle;
         return this;
     }
@@ -70,7 +71,10 @@ public class Sprite2D implements BatchElement {
             glColor3f(r,g,b);
         }
 
-        if (angle!=0) {
+        // todo: reset to white if no colour flag?
+
+        // todo: use angle flag.
+        if ((FLAGS&FLAG_ANGLE)!=0) {
             renderRotated();
             return;
         }
