@@ -25,13 +25,20 @@ public class SpriteBatch {
         elements.add(batchElement);
     }
 
+    public int size() {
+        return elements.size();
+    }
+
     public void render() {
+        texture.bind();
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        float textureScale = 1.0f/texture.getWidth();
+
         for (BatchElement be : elements) {
-            be.render();
+            be.render(textureScale);
         }
     }
 

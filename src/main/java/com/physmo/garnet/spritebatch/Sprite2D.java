@@ -10,7 +10,7 @@ public class Sprite2D implements BatchElement {
     private int FLAGS=0;
 
     private float scale = 1;
-    private float textureScale = 1.0f/255f; // TODO: get texture size
+    private float textureScale = 1; //1.0f/255f; // TODO: get texture size
     private float x,y,w,h,tx,ty,tw,th,angle,_w,_h;
     private float r,g,b;
 
@@ -66,7 +66,7 @@ public class Sprite2D implements BatchElement {
     }
 
     @Override
-    public void render() {
+    public void render(float textureScale) {
         if ((FLAGS&FLAG_COLOR)!=0) {
             glColor3f(r,g,b);
         }
@@ -75,25 +75,30 @@ public class Sprite2D implements BatchElement {
 
         // todo: use angle flag.
         if ((FLAGS&FLAG_ANGLE)!=0) {
-            renderRotated();
+            renderRotated(textureScale);
             return;
         }
 
+        float txs=tx*textureScale;
+        float tys=ty*textureScale;
+        float tws=tw*textureScale;
+        float ths=th*textureScale;
+
         glBegin(GL_QUADS);
         {
-            glTexCoord2f(tx, ty);
+            glTexCoord2f(txs, tys);
             glVertex2f(x, y);
-            glTexCoord2f(tx+tw, ty);
+            glTexCoord2f(txs+tws, tys);
             glVertex2f(x+w, y);
-            glTexCoord2f(tx+tw, ty+th);
+            glTexCoord2f(txs+tws, tys+ths);
             glVertex2f(x+w, y+h);
-            glTexCoord2f(tx, ty+th);
+            glTexCoord2f(txs, tys+ths);
             glVertex2f(x, y+h);
         }
         glEnd();
     }
 
-    private void renderRotated() {
+    private void renderRotated(float textureScale) {
         glPushMatrix();
 
         //glLoadIdentity();
