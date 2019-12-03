@@ -52,67 +52,6 @@ public class Texture {
         id = glGenTextures();
     }
 
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
-
-    public void setParameter(int name, int value) {
-        glTexParameteri(GL_TEXTURE_2D, name, value);
-    }
-
-    /**
-     * Uploads image data with specified width and height.
-     *
-     * @param width     Width of the image
-     * @param height    Height of the image
-     * @param pixelData Pixel data of the image
-     */
-    public void uploadData(int width, int height, ByteBuffer pixelData) {
-        uploadData(GL_RGBA8, width, height, GL_RGBA, pixelData);
-    }
-
-    /**
-     * Uploads image data with specified internal format, width, height and
-     * image format.
-     *
-     * @param internalFormat Internal format of the image data
-     * @param width          Width of the image
-     * @param height         Height of the image
-     * @param format         Format of the image data
-     * @param data           Pixel data of the image
-     */
-    public void uploadData(int internalFormat, int width, int height, int format, ByteBuffer data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    }
-
-
-    public void delete() {
-        glDeleteTextures(id);
-    }
-
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        if (width > 0) {
-            this.width = width;
-        }
-    }
-
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        if (height > 0) {
-            this.height = height;
-        }
-    }
-
     /**
      * Creates a texture with specified width, height and data.
      *
@@ -169,6 +108,63 @@ public class Texture {
         }
 
         return createTexture(width, height, image);
+    }
+
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    public void setParameter(int name, int value) {
+        glTexParameteri(GL_TEXTURE_2D, name, value);
+    }
+
+    /**
+     * Uploads image data with specified width and height.
+     *
+     * @param width     Width of the image
+     * @param height    Height of the image
+     * @param pixelData Pixel data of the image
+     */
+    public void uploadData(int width, int height, ByteBuffer pixelData) {
+        uploadData(GL_RGBA8, width, height, GL_RGBA, pixelData);
+    }
+
+    /**
+     * Uploads image data with specified internal format, width, height and
+     * image format.
+     *
+     * @param internalFormat Internal format of the image data
+     * @param width          Width of the image
+     * @param height         Height of the image
+     * @param format         Format of the image data
+     * @param data           Pixel data of the image
+     */
+    public void uploadData(int internalFormat, int width, int height, int format, ByteBuffer data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    }
+
+    public void delete() {
+        glDeleteTextures(id);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        if (width > 0) {
+            this.width = width;
+        }
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        if (height > 0) {
+            this.height = height;
+        }
     }
 
 }

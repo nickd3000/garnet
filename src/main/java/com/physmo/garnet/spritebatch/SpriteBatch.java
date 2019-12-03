@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 
 public class SpriteBatch {
     List<BatchElement> elements;
@@ -35,7 +34,7 @@ public class SpriteBatch {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        float textureScale = 1.0f/texture.getWidth();
+        float textureScale = 1.0f / texture.getWidth();
 
         for (BatchElement be : elements) {
             be.render(textureScale);

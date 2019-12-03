@@ -17,17 +17,17 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class Garnet {
 
+    List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     private long windowHandle;
     private int windowWidth, windowHeight;
-
     private GameContainer gameContainer;
+
 
     public Garnet(GameContainer gameContainer, int windowWidth, int windowHeight) {
         this.gameContainer = gameContainer;
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
     }
-
 
     public void init() {
         // Setup an error callback. The default implementation
@@ -124,9 +124,6 @@ public class Garnet {
             glfwPollEvents();
         }
     }
-
-
-    List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
 
     public void addKeyboardCallback(KeyboardCallback keyboardCallback) {
         System.out.println("addKeyboardCallback");
