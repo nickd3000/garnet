@@ -99,7 +99,7 @@ public class Texture {
             if (image == null) {
                 System.out.println("image was null");
                 throw new RuntimeException("Failed to load a texture file!"
-                        + System.lineSeparator() + stbi_failure_reason());
+                        + System.lineSeparator() + stbi_failure_reason() + " " + path);
             }
 
             // Get width and height of image.
