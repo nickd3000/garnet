@@ -9,8 +9,36 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -18,10 +46,11 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Garnet {
 
     List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
+    GameClock gameClock = new GameClock();
+    int runningLogicDelta = 0;
     private long windowHandle;
     private int windowWidth, windowHeight;
     private GameContainer gameContainer;
-
 
     public Garnet(GameContainer gameContainer, int windowWidth, int windowHeight) {
         this.gameContainer = gameContainer;
@@ -54,12 +83,10 @@ public class Garnet {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
-
             for (KeyboardCallback kbc : keyboardCallbacks) {
 
                 kbc.invoke(key, scancode, action, mods);
             }
-
         });
 
         // Get the thread stack and push a new frame
@@ -103,26 +130,70 @@ public class Garnet {
     public void run() {
         GL.createCapabilities();
 
+        long currentTime = System.nanoTime();
+        long oldTime = currentTime;
+
+
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(windowHandle)) {
 
+            currentTime = System.nanoTime();
+            long delta = currentTime - oldTime;
 
-            // Set the clear color
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-            gameContainer.tick();
+            updateLogicAndRender((int) delta);
 
-            gameContainer.draw();
+            oldTime = currentTime;
 
-            glfwSwapBuffers(windowHandle); // swap the color buffers
+            //gameContainer.tick(delta);
+
+            //gameContainer.draw();
+
+            //glfwSwapBuffers(windowHandle); // swap the color buffers
 
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
-            glfwPollEvents();
+            //glfwPollEvents();
         }
+    }
+
+    public void updateLogicAndRender(int delta) {
+
+        long nanoSecondsPerSecond = 1_000_000_000;
+        int logicUpdatesPerSecond = 200;
+        double secondsPerLogicUpdate = 1.0 / (double) logicUpdatesPerSecond;
+
+        long logicTime = nanoSecondsPerSecond / logicUpdatesPerSecond;
+
+        runningLogicDelta += delta;
+
+        // --------------- LOGIC
+        while (runningLogicDelta > logicTime) {
+            runningLogicDelta -= logicTime;
+            gameContainer.tick(secondsPerLogicUpdate);
+            gameClock.logLogicTick();
+        }
+
+        // --------------- RENDER
+        // Set the clear color
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+        gameContainer.draw();
+        gameClock.logFrame();
+
+        glfwSwapBuffers(windowHandle); // swap the color buffers
+
+
+        // Poll for window events. The key callback above will only be
+        // invoked during this call.
+        glfwPollEvents();
     }
 
     public void addKeyboardCallback(KeyboardCallback keyboardCallback) {

@@ -30,9 +30,24 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_RGBA8;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
-import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 
 //import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 
@@ -50,32 +65,6 @@ public class Texture {
 
     public Texture() {
         id = glGenTextures();
-    }
-
-    /**
-     * Creates a texture with specified width, height and data.
-     *
-     * @param width  Width of the texture
-     * @param height Height of the texture
-     * @param data   Picture Data in RGBA format
-     * @return Texture from the specified data
-     */
-    public static Texture createTexture(int width, int height, ByteBuffer data) {
-
-        Texture texture = new Texture();
-        texture.setWidth(width);
-        texture.setHeight(height);
-
-        texture.bind();
-
-        texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        texture.uploadData(GL_RGBA8, width, height, GL_RGBA, data);
-
-        return texture;
     }
 
     /**
@@ -110,23 +99,38 @@ public class Texture {
         return createTexture(width, height, image);
     }
 
+    /**
+     * Creates a texture with specified width, height and data.
+     *
+     * @param width  Width of the texture
+     * @param height Height of the texture
+     * @param data   Picture Data in RGBA format
+     * @return Texture from the specified data
+     */
+    public static Texture createTexture(int width, int height, ByteBuffer data) {
+
+        Texture texture = new Texture();
+        texture.setWidth(width);
+        texture.setHeight(height);
+
+        texture.bind();
+
+        texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        texture.uploadData(GL_RGBA8, width, height, GL_RGBA, data);
+
+        return texture;
+    }
+
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, id);
     }
 
     public void setParameter(int name, int value) {
         glTexParameteri(GL_TEXTURE_2D, name, value);
-    }
-
-    /**
-     * Uploads image data with specified width and height.
-     *
-     * @param width     Width of the image
-     * @param height    Height of the image
-     * @param pixelData Pixel data of the image
-     */
-    public void uploadData(int width, int height, ByteBuffer pixelData) {
-        uploadData(GL_RGBA8, width, height, GL_RGBA, pixelData);
     }
 
     /**
@@ -143,6 +147,29 @@ public class Texture {
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     }
 
+    public void setWidth(int width) {
+        if (width > 0) {
+            this.width = width;
+        }
+    }
+
+    public void setHeight(int height) {
+        if (height > 0) {
+            this.height = height;
+        }
+    }
+
+    /**
+     * Uploads image data with specified width and height.
+     *
+     * @param width     Width of the image
+     * @param height    Height of the image
+     * @param pixelData Pixel data of the image
+     */
+    public void uploadData(int width, int height, ByteBuffer pixelData) {
+        uploadData(GL_RGBA8, width, height, GL_RGBA, pixelData);
+    }
+
     public void delete() {
         glDeleteTextures(id);
     }
@@ -151,20 +178,8 @@ public class Texture {
         return width;
     }
 
-    public void setWidth(int width) {
-        if (width > 0) {
-            this.width = width;
-        }
-    }
-
     public int getHeight() {
         return height;
-    }
-
-    public void setHeight(int height) {
-        if (height > 0) {
-            this.height = height;
-        }
     }
 
 }
