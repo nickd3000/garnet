@@ -167,7 +167,7 @@ public class Garnet {
     public void updateLogicAndRender(int delta) {
 
         long nanoSecondsPerSecond = 1_000_000_000;
-        int logicUpdatesPerSecond = 200;
+        int logicUpdatesPerSecond = 60;
         double secondsPerLogicUpdate = 1.0 / (double) logicUpdatesPerSecond;
 
         long logicTime = nanoSecondsPerSecond / logicUpdatesPerSecond;

@@ -11,6 +11,7 @@ import static org.lwjgl.opengl.GL11.glTexCoord2f;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 import static org.lwjgl.opengl.GL11.glVertex2f;
 
+// TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
 public class Sprite2D implements BatchElement {
 
     public static int FLAG_COLOR = 1;
@@ -18,16 +19,19 @@ public class Sprite2D implements BatchElement {
 
     private int FLAGS = 0;
 
-    private float scale = 1;
     private float textureScale = 1; //1.0f/255f; // TODO: get texture size
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
     private float r, g, b;
 
+    public Sprite2D() {
+
+    }
+
     public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
-        this.x = x * scale;
-        this.y = y * scale;
-        this.w = w * scale;
-        this.h = h * scale;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
         this.tx = tx * textureScale;
         this.ty = ty * textureScale;
         this.tw = tw * textureScale;
@@ -37,10 +41,10 @@ public class Sprite2D implements BatchElement {
     }
 
     public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
-        this.x = x * scale;
-        this.y = y * scale;
-        this.w = w * scale;
-        this.h = h * scale;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
         this.tx = tx * textureScale;
         this.ty = ty * textureScale;
         this.tw = tw * textureScale;
@@ -70,6 +74,15 @@ public class Sprite2D implements BatchElement {
         th = tileSize;
         return this;
     }
+
+    public Sprite2D setDrawPoisition(int x, int y, int w, int h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        return this;
+    }
+
 
     // Angle is 0-360
     public Sprite2D addAngle(float angle) {
