@@ -27,6 +27,10 @@ public class RegularFont {
         spriteBatch = new SpriteBatch(texture);
     }
 
+    public void clearSpriteBatch() {
+        spriteBatch.clear();
+    }
+
     public void drawText(String text, int x, int y, int scale) {
         textObjects.add(new TextObject(text, x, y, scale));
     }
@@ -36,6 +40,8 @@ public class RegularFont {
             renderTextObject(txtObj);
         }
         spriteBatch.render();
+        textObjects.clear();
+
         spriteBatch.clear();
     }
 

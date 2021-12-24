@@ -50,15 +50,17 @@ public class Garnet {
     int runningLogicDelta = 0;
     private long windowHandle;
     private int windowWidth, windowHeight;
-    private GameContainer gameContainer;
+    private GameState gameContainer;
 
-    public Garnet(GameContainer gameContainer, int windowWidth, int windowHeight) {
+    public Garnet(GameState gameContainer, int windowWidth, int windowHeight) {
         this.gameContainer = gameContainer;
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
     }
 
     public void init() {
+        initInput();
+
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
@@ -127,6 +129,10 @@ public class Garnet {
         gameContainer.init(this);
     }
 
+    public void initInput() {
+        Input.init(this);
+    }
+
     public void run() {
         GL.createCapabilities();
 
@@ -177,7 +183,7 @@ public class Garnet {
         // --------------- LOGIC
         while (runningLogicDelta > logicTime) {
             runningLogicDelta -= logicTime;
-            gameContainer.tick(secondsPerLogicUpdate);
+            gameContainer._tick(secondsPerLogicUpdate);
             gameClock.logLogicTick();
         }
 
@@ -185,7 +191,7 @@ public class Garnet {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-        gameContainer.draw();
+        gameContainer._draw();
         gameClock.logFrame();
 
         glfwSwapBuffers(windowHandle); // swap the color buffers
