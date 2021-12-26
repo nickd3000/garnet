@@ -1,4 +1,4 @@
-package com.physmo.garnet;
+package com.physmo.garnet.input;
 
 /*
 action:

@@ -28,6 +28,10 @@ public class EntityGroup {
         return entityList.get(index);
     }
 
+    public List<Entity> getAll() {
+        return entityList;
+    }
+
     public Entity getByName(String name) {
         for (Entity entity : entityList) {
             if (entity.name.equalsIgnoreCase(name)) {

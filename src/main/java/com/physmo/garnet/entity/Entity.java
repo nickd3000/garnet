@@ -2,6 +2,7 @@ package com.physmo.garnet.entity;
 
 import com.physmo.garnet.GameState;
 import com.physmo.garnet.Vec3;
+import com.physmo.garnet.collision.Collider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class Entity {
     boolean visible;
     boolean active;
     Set<String> tags;
+    List<Collider> colliders;
 
     List<Component> components;
     Map<String, Object> properties;
@@ -33,6 +35,7 @@ public class Entity {
         components = new ArrayList<>();
         properties = new HashMap<>();
         tags = new HashSet<>();
+        colliders = new ArrayList<>();
     }
 
     public void tick(double delta) {
@@ -48,6 +51,11 @@ public class Entity {
     public void addComponent(Component c) {
         components.add(c);
         c.injectParent(this);
+        c.init();
+    }
+
+    public List<Component> getComponents() {
+        return components;
     }
 
     public void addEntityDrawer(RenderComponent renderComponent) {
@@ -69,5 +77,13 @@ public class Entity {
 
     public boolean getActive() {
         return active;
+    }
+
+    public List<Collider> getColliders() {
+        return colliders;
+    }
+
+    public void addCollider(Collider collider) {
+        colliders.add(collider);
     }
 }

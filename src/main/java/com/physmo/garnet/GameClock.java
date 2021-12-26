@@ -23,7 +23,7 @@ public class GameClock {
             lps = logicCount;
             logicCount = 0;
             logicCheckpointTime = curTime;
-            System.out.println("LPS " + lps);
+            //System.out.println("LPS " + lps);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.input.Input;
+import com.physmo.garnet.input.KeyboardCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -126,7 +128,7 @@ public class Garnet {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
-        gameContainer.init(this);
+        gameContainer._init(this);
     }
 
     public void initInput() {
@@ -157,16 +159,6 @@ public class Garnet {
 
             oldTime = currentTime;
 
-            //gameContainer.tick(delta);
-
-            //gameContainer.draw();
-
-            //glfwSwapBuffers(windowHandle); // swap the color buffers
-
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            //glfwPollEvents();
         }
     }
 

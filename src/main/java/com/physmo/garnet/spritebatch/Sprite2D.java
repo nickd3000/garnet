@@ -104,7 +104,7 @@ public class Sprite2D implements BatchElement {
     }
 
     @Override
-    public void render(float textureScale) {
+    public void render(float textureScale, float outputScale) {
         if ((FLAGS & FLAG_COLOR) != 0) {
             glColor3f(r, g, b);
         } else {
@@ -124,13 +124,13 @@ public class Sprite2D implements BatchElement {
         glBegin(GL_QUADS);
         {
             glTexCoord2f(txs, tys);
-            glVertex2f(x, y);
+            glVertex2f(x*outputScale, y*outputScale);
             glTexCoord2f(txs + tws, tys);
-            glVertex2f(x + w, y);
+            glVertex2f(x*outputScale + w*outputScale, y*outputScale);
             glTexCoord2f(txs + tws, tys + ths);
-            glVertex2f(x + w, y + h);
+            glVertex2f(x*outputScale + w*outputScale, y*outputScale + h*outputScale);
             glTexCoord2f(txs, tys + ths);
-            glVertex2f(x, y + h);
+            glVertex2f(x*outputScale, y*outputScale + h*outputScale);
         }
         glEnd();
     }

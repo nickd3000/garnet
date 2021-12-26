@@ -39,7 +39,7 @@ public class RegularFont {
         for (TextObject txtObj : textObjects) {
             renderTextObject(txtObj);
         }
-        spriteBatch.render();
+        spriteBatch.render(1);
         textObjects.clear();
 
         spriteBatch.clear();

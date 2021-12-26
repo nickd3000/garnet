@@ -33,7 +33,7 @@ public class SpriteBatch {
         return elements.size();
     }
 
-    public void render() {
+    public void render(float outputScale) {
         texture.bind();
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
@@ -42,7 +42,7 @@ public class SpriteBatch {
         float textureScale = 1.0f / texture.getWidth();
 
         for (BatchElement be : elements) {
-            be.render(textureScale);
+            be.render(textureScale, outputScale);
         }
     }
 

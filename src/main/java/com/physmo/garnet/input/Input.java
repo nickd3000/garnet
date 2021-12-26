@@ -1,4 +1,6 @@
-package com.physmo.garnet;
+package com.physmo.garnet.input;
+
+import com.physmo.garnet.Garnet;
 
 import java.util.ArrayList;
 import java.util.List;
