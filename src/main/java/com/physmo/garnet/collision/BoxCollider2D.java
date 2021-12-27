@@ -3,6 +3,18 @@ package com.physmo.garnet.collision;
 import com.physmo.garnet.Rect;
 import com.physmo.garnet.entity.Entity;
 
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glTexCoord2f;
+import static org.lwjgl.opengl.GL11.glVertex2f;
+
 public class BoxCollider2D implements Collider {
 
     Entity parent;
@@ -29,6 +41,28 @@ public class BoxCollider2D implements Collider {
         Rect otherRect = ((BoxCollider2D)other).getWorldRect();
 
         return thisRect.intersect(otherRect);
+    }
+
+    @Override
+    public void render() {
+
+
+
+        double outputScale = 2;
+        Rect rect = getWorldRect();
+
+
+
+        glBegin(GL_LINE_STRIP);
+        {
+            glVertex2f((float) (rect.x*outputScale), (float) (rect.y*outputScale));
+            glVertex2f((float) ((rect.x+rect.w)*outputScale), (float) (rect.y*outputScale));
+            glVertex2f((float) ((rect.x+rect.w)*outputScale), (float) ((rect.y+rect.h)*outputScale));
+            glVertex2f((float) (rect.x*outputScale), (float) ((rect.y+rect.h)*outputScale));
+            glVertex2f((float) (rect.x*outputScale), (float) (rect.y*outputScale));
+        }
+        glEnd();
+
     }
 
 }

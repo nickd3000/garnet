@@ -7,6 +7,10 @@ import com.physmo.garnet.entity.EntityGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glDisable;
+
 public class CollisionSystem {
 
     List<CollisionPacket> collisions;
@@ -55,6 +59,17 @@ public class CollisionSystem {
         }
         for (Component component : collisionPacket.targetEntity.getComponents()) {
             component.onCollisionStart(collisionPacket);
+        }
+    }
+
+    public void debugRender(EntityGroup entityGroup) {
+        glColor3f(0.2f, 1.0f, 0.2f);
+        glDisable(GL_TEXTURE_2D);
+
+        for (Entity entity : entityGroup.getAll()) {
+            for (Collider collider : entity.getColliders()) {
+                collider.render();
+            }
         }
     }
 }

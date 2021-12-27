@@ -51,6 +51,7 @@ public class Entity {
     public void addComponent(Component c) {
         components.add(c);
         c.injectParent(this);
+        c.injectParentState(gameState);
         c.init();
     }
 
@@ -67,17 +68,25 @@ public class Entity {
         this.tags.add(tag);
     }
 
+    public boolean getActive() {
+        return active;
+    }
     public void setActive(boolean b) {
         active = b;
+    }
+
+    public boolean getVisible() {
+        return visible;
+    }
+    public void setVisible(boolean b) {
+        visible = b;
     }
 
     public GameState getGameState() {
         return gameState;
     }
 
-    public boolean getActive() {
-        return active;
-    }
+
 
     public List<Collider> getColliders() {
         return colliders;
