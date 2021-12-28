@@ -1,6 +1,7 @@
 package com.physmo.garnet.entity;
 
 import com.physmo.garnet.GameState;
+import com.physmo.garnet.Garnet;
 import com.physmo.garnet.Vec3;
 import com.physmo.garnet.collision.Collider;
 
@@ -25,9 +26,10 @@ public class Entity {
     List<Component> components;
     Map<String, Object> properties;
     RenderComponent renderComponent;
+    public Garnet garnet;
 
     public Entity(String name, GameState gameState) {
-
+        this.garnet=gameState.garnet;
         this.gameState = gameState;
         this.name = name;
         position = new Vec3();
@@ -62,6 +64,7 @@ public class Entity {
     public void addEntityDrawer(RenderComponent renderComponent) {
         this.renderComponent = renderComponent;
         this.renderComponent.injectParent(this);
+        renderComponent.init();
     }
 
     public void addTag(String tag) {
@@ -94,5 +97,9 @@ public class Entity {
 
     public void addCollider(Collider collider) {
         colliders.add(collider);
+    }
+
+    public boolean hasTag(String tagName) {
+        return tags.contains(tagName);
     }
 }

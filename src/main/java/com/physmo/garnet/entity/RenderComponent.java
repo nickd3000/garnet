@@ -8,5 +8,8 @@ public abstract class RenderComponent {
         this.parent = parent;
     }
 
+    public void init() {
+    }
+
     abstract public void draw();
 }

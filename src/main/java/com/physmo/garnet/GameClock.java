@@ -37,7 +37,7 @@ public class GameClock {
             fps = frameCount;
             frameCount = 0;
             fpsCheckpointTime = curTime;
-            System.out.println("FPS " + fps);
+            //System.out.println("FPS " + fps);
         }
 
     }

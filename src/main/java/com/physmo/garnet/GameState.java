@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class GameState {
 
-    protected Garnet garnet;
+    public Garnet garnet;
 
     CollisionSystem collisionSystem;
     EntityGroup entityGroup;
