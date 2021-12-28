@@ -9,16 +9,17 @@ import java.util.List;
 
 public abstract class GameState {
 
+    protected Garnet garnet;
+
     CollisionSystem collisionSystem;
-
-    String name;
-
-    EntityGroup entityGroup = new EntityGroup();
-
+    EntityGroup entityGroup;
     boolean debugCollision = false;
 
+
     public void _init(Garnet garnet) {
+        this.garnet = garnet;
         collisionSystem = new CollisionSystem();
+        entityGroup = new EntityGroup();
         init(garnet);
     }
 
