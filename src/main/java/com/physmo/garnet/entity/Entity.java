@@ -16,20 +16,19 @@ public class Entity {
 
     public Vec3 position;
     public Vec3 velocity;
+    public Garnet garnet;
     GameState gameState;
     String name;
     boolean visible;
     boolean active;
     Set<String> tags;
     List<Collider> colliders;
-
     List<Component> components;
     Map<String, Object> properties;
     RenderComponent renderComponent;
-    public Garnet garnet;
 
     public Entity(String name, GameState gameState) {
-        this.garnet=gameState.garnet;
+        this.garnet = gameState.garnet;
         this.gameState = gameState;
         this.name = name;
         position = new Vec3();
@@ -74,6 +73,7 @@ public class Entity {
     public boolean getActive() {
         return active;
     }
+
     public void setActive(boolean b) {
         active = b;
     }
@@ -81,6 +81,7 @@ public class Entity {
     public boolean getVisible() {
         return visible;
     }
+
     public void setVisible(boolean b) {
         visible = b;
     }
@@ -88,7 +89,6 @@ public class Entity {
     public GameState getGameState() {
         return gameState;
     }
-
 
 
     public List<Collider> getColliders() {

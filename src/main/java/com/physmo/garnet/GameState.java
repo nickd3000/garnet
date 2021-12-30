@@ -63,7 +63,7 @@ public abstract class GameState {
     public <T extends Component> T getComponent(Class<T> type) {
         for (Entity entity : entityGroup.getAll()) {
             for (Component component : entity.getComponents()) {
-                if (component.getClass()==type) return (T) component;
+                if (component.getClass() == type) return (T) component;
             }
         }
         return null;

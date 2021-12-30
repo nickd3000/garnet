@@ -11,19 +11,21 @@ public abstract class Component {
     public void injectParent(Entity parent) {
         this.parent = parent;
     }
+
     public void injectParentState(GameState parentState) {
         this.parentState = parentState;
     }
+
     abstract public void init();
 
     abstract public void tick(double delta);
 
     public void onCollisionStart(CollisionPacket collisionPacket) {
-    };
+    }
 
     // Convenience function.
     public <T extends Component> T getComponent(Class<T> type) {
-        if (parentState!=null) {
+        if (parentState != null) {
             return parentState.getComponent(type);
         }
         return null;

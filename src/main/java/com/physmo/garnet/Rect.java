@@ -15,10 +15,10 @@ public class Rect {
     }
 
     public boolean intersect(Rect other) {
-        if (x+w<other.x) return false;
-        if (y+h<other.y) return false;
-        if (x>other.x+other.w) return false;
-        if (y>other.y+other.h) return false;
+        if (x + w < other.x) return false;
+        if (y + h < other.y) return false;
+        if (x > other.x + other.w) return false;
+        if (y > other.y + other.h) return false;
         return true;
     }
 }

@@ -20,15 +20,15 @@ public class CollisionSystem {
         List<Entity> entityList = entityGroup.getAll();
 
         for (Entity entityA : entityList) {
-            if (entityA.getActive()==false) continue;
+            if (entityA.getActive() == false) continue;
             List<Collider> collidersA = entityA.getColliders();
-            if (collidersA==null || collidersA.size()==0) continue;
+            if (collidersA == null || collidersA.size() == 0) continue;
             for (Entity entityB : entityList) {
-                if (entityB.getActive()==false) continue;
-                if (entityA==entityB) continue;
+                if (entityB.getActive() == false) continue;
+                if (entityA == entityB) continue;
                 List<Collider> collidersB = entityB.getColliders();
-                if (collidersB==null || collidersB.size()==0) continue;
-                processColliders(entityA,entityB);
+                if (collidersB == null || collidersB.size() == 0) continue;
+                processColliders(entityA, entityB);
             }
         }
 
