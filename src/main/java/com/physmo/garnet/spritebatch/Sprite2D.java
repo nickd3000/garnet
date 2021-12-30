@@ -124,13 +124,13 @@ public class Sprite2D implements BatchElement {
         glBegin(GL_QUADS);
         {
             glTexCoord2f(txs, tys);
-            glVertex2f(x*outputScale, y*outputScale);
+            glVertex2f(x * outputScale, y * outputScale);
             glTexCoord2f(txs + tws, tys);
-            glVertex2f(x*outputScale + w*outputScale, y*outputScale);
+            glVertex2f(x * outputScale + w * outputScale, y * outputScale);
             glTexCoord2f(txs + tws, tys + ths);
-            glVertex2f(x*outputScale + w*outputScale, y*outputScale + h*outputScale);
+            glVertex2f(x * outputScale + w * outputScale, y * outputScale + h * outputScale);
             glTexCoord2f(txs, tys + ths);
-            glVertex2f(x*outputScale, y*outputScale + h*outputScale);
+            glVertex2f(x * outputScale, y * outputScale + h * outputScale);
         }
         glEnd();
     }

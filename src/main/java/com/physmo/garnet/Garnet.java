@@ -52,12 +52,10 @@ public class Garnet {
     List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
-    private long windowHandle;
-    private int windowWidth, windowHeight;
-
-
     StateManager stateManager;
     Map<String, Object> globalStore;
+    private long windowHandle;
+    private int windowWidth, windowHeight;
 
     public Garnet(int windowWidth, int windowHeight) {
         //this.activeState = null;
@@ -184,7 +182,8 @@ public class Garnet {
         // --------------- LOGIC
         while (runningLogicDelta > logicTime) {
             runningLogicDelta -= logicTime;
-            stateManager.getActiveState().ifPresent(gameState -> gameState._tick(secondsPerLogicUpdate));
+            //stateManager.getActiveState().ifPresent(gameState -> gameState._tick(secondsPerLogicUpdate));
+            stateManager.tick(secondsPerLogicUpdate);
             gameClock.logLogicTick();
         }
 
@@ -192,7 +191,8 @@ public class Garnet {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-        stateManager.getActiveState().ifPresent(gameState -> gameState._draw());
+        //stateManager.getActiveState().ifPresent(gameState -> gameState._draw());
+        stateManager.draw();
         gameClock.logFrame();
 
         glfwSwapBuffers(windowHandle); // swap the color buffers
