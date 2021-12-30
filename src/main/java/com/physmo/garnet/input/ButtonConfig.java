@@ -1,7 +1,5 @@
 package com.physmo.garnet.input;
 
-import com.physmo.garnet.input.Input;
-
 public class ButtonConfig {
     public int keyboardKey;
     public Input.VirtualButton virtualButton;
