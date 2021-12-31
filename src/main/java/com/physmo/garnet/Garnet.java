@@ -53,6 +53,7 @@ public class Garnet {
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
     StateManager stateManager;
+    Input input;
     Map<String, Object> globalStore;
     private long windowHandle;
     private int windowWidth, windowHeight;
@@ -64,6 +65,7 @@ public class Garnet {
         this.windowHeight = windowHeight;
         //gameStates = new HashMap<>();
         globalStore = new HashMap<>();
+        input = new Input();
     }
 
     public void init() {
@@ -139,7 +141,7 @@ public class Garnet {
     }
 
     public void initInput() {
-        Input.init(this);
+        input.init(this);
     }
 
     public void run() {
@@ -181,10 +183,12 @@ public class Garnet {
 
         // --------------- LOGIC
         while (runningLogicDelta > logicTime) {
+
             runningLogicDelta -= logicTime;
             //stateManager.getActiveState().ifPresent(gameState -> gameState._tick(secondsPerLogicUpdate));
             stateManager.tick(secondsPerLogicUpdate);
             gameClock.logLogicTick();
+            input.tick();
         }
 
         // --------------- RENDER
@@ -225,12 +229,23 @@ public class Garnet {
         globalStore.put(name, object);
     }
 
-    public void addState(String name, GameState state) {
-        stateManager.addState(name, state);
+    public void addState(GameState state) {
+        stateManager.addState(state.getName(), state);
     }
 
     public void switchActiveState(String name) {
         stateManager.switchActiveState(name);
     }
 
+    public void pushSubState(String name) {
+        stateManager.pushSubState(name);
+    }
+
+    public void popSubState(String name) {
+        stateManager.popSubState(name);
+    }
+
+    public Input getInput() {
+        return input;
+    }
 }

@@ -10,11 +10,19 @@ import java.util.List;
 public abstract class GameState {
 
     public Garnet garnet;
-
+    String name;
     CollisionSystem collisionSystem;
     EntityGroup entityGroup;
     boolean debugCollision = false;
 
+    public GameState(Garnet garnet, String name) {
+        this.garnet = garnet;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void _init(Garnet garnet) {
         this.garnet = garnet;
@@ -26,6 +34,10 @@ public abstract class GameState {
     public abstract void init(Garnet garnet);
 
     public void _tick(double delta) {
+        if (this.garnet == null) {
+            System.out.println("ERROR, init not called on game state");
+        }
+
         collisionSystem.tick(entityGroup);
         entityGroup.tickAll(delta);
         tick(delta);

@@ -1,13 +1,13 @@
 package com.physmo.garnet.input;
 
 public class ButtonConfig {
-    public int keyboardKey;
+    public int scancode;
     public Input.VirtualButton virtualButton;
     public boolean pressed;
 
-    public ButtonConfig(int keyboardKey, Input.VirtualButton virtualButton) {
+    public ButtonConfig(int scancode, Input.VirtualButton virtualButton) {
 
-        this.keyboardKey = keyboardKey;
+        this.scancode = scancode;
         this.virtualButton = virtualButton;
     }
 }

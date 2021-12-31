@@ -10,45 +10,71 @@ public class Input {
     static Garnet garnet;
     static List<ButtonConfig> buttonConfigList;
 
-    ;
+    boolean [] buttonState;
+    boolean [] buttonStatePrev;
 
-    public static void init(Garnet _garnet) {
+    public void tick() {
+        for (int i=0;i< buttonState.length;i++) {
+            buttonStatePrev[i] = buttonState[i];
+        }
+    }
+
+    // TODO: move garnet injection to constructor
+    public void init(Garnet _garnet) {
 
         garnet = _garnet;
 
         buttonConfigList = new ArrayList<>();
 
-        buttonConfigList.add(new ButtonConfig(0, VirtualButton.LEFT));
-        buttonConfigList.add(new ButtonConfig(2, VirtualButton.RIGHT));
-        buttonConfigList.add(new ButtonConfig(49, VirtualButton.FIRE1));
+        buttonConfigList.add(new ButtonConfig(123, VirtualButton.LEFT));
+        buttonConfigList.add(new ButtonConfig(124, VirtualButton.RIGHT));
+        buttonConfigList.add(new ButtonConfig(6, VirtualButton.FIRE1));
+        buttonConfigList.add(new ButtonConfig(48, VirtualButton.MENU));
+
+        buttonState = new boolean[1024];
+        buttonStatePrev = new boolean[1024];
 
         garnet.addKeyboardCallback((key, scancode, action, mods) -> {
-            //System.out.println("keyboard handler" + scancode + "  " + action);
+            System.out.println("keyboard handler - key:"+key+ " scancode:" + scancode + "  action:" + action);
 
             // a=0, d=2, space =49 / action 1/0 down/up
 
-            for (ButtonConfig buttonConfig : buttonConfigList) {
-                if (scancode == buttonConfig.keyboardKey) {
-                    if (action == 1) {
-                        buttonConfig.pressed = true;
-                    } else if (action == 0) {
-                        buttonConfig.pressed = false;
-                    }
-                }
+            if (action==1) {
+                buttonState[scancode]=true;
+            } else if (action==0) {
+                buttonState[scancode]=false;
             }
 
+//            for (ButtonConfig buttonConfig : buttonConfigList) {
+//                if (scancode == buttonConfig.keyboardKey) {
+//                    if (action == 1) {
+//                        buttonConfig.pressed = true;
+//                    } else if (action == 0) {
+//                        buttonConfig.pressed = false;
+//                    }
+//                }
+//            }
 
         });
 
     }
 
-    public static boolean isPressed(VirtualButton button) {
+    public boolean isPressed(VirtualButton button) {
         for (ButtonConfig buttonConfig : buttonConfigList) {
             if (buttonConfig.virtualButton == button) {
-                return buttonConfig.pressed;
+                return buttonState[buttonConfig.scancode];
             }
         }
+        return false;
+    }
 
+    public boolean isFirstPress(VirtualButton button) {
+        for (ButtonConfig buttonConfig : buttonConfigList) {
+            if (buttonConfig.virtualButton == button) {
+                if (    buttonState[buttonConfig.scancode]==true &&
+                        buttonStatePrev[buttonConfig.scancode]==false) return true;
+            }
+        }
         return false;
     }
 
@@ -58,6 +84,6 @@ public class Input {
     }
 
     public enum VirtualButton {
-        LEFT, RIGHT, FIRE1, FIRE2
+        LEFT, RIGHT, FIRE1, FIRE2, MENU
     }
 }
