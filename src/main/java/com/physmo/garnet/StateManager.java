@@ -53,6 +53,7 @@ public class StateManager {
             targetState._init(garnet);
             activeState = targetState;
             targetState = null;
+            garnet.getInput().tick();
         }
 
 
@@ -70,6 +71,7 @@ public class StateManager {
 
             if (!skip) {
                 newActiveSubStates.add(activeSubState);
+                garnet.getInput().tick();
             }
         }
         subStatePopRequests.clear();

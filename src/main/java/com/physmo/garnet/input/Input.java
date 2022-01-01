@@ -13,19 +13,20 @@ public class Input {
     boolean [] buttonState;
     boolean [] buttonStatePrev;
 
+    public Input(Garnet garnet) {
+        this.garnet = garnet;
+    }
+
     public void tick() {
         for (int i=0;i< buttonState.length;i++) {
             buttonStatePrev[i] = buttonState[i];
         }
     }
 
-    // TODO: move garnet injection to constructor
-    public void init(Garnet _garnet) {
 
-        garnet = _garnet;
+    public void init() {
 
         buttonConfigList = new ArrayList<>();
-
         buttonConfigList.add(new ButtonConfig(123, VirtualButton.LEFT));
         buttonConfigList.add(new ButtonConfig(124, VirtualButton.RIGHT));
         buttonConfigList.add(new ButtonConfig(6, VirtualButton.FIRE1));

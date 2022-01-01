@@ -65,7 +65,7 @@ public class Garnet {
         this.windowHeight = windowHeight;
         //gameStates = new HashMap<>();
         globalStore = new HashMap<>();
-        input = new Input();
+        input = new Input(this);
     }
 
     public void init() {
@@ -141,7 +141,7 @@ public class Garnet {
     }
 
     public void initInput() {
-        input.init(this);
+        input.init();
     }
 
     public void run() {
@@ -188,6 +188,7 @@ public class Garnet {
             //stateManager.getActiveState().ifPresent(gameState -> gameState._tick(secondsPerLogicUpdate));
             stateManager.tick(secondsPerLogicUpdate);
             gameClock.logLogicTick();
+
             input.tick();
         }
 
@@ -205,8 +206,8 @@ public class Garnet {
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();
-
         stateManager.update();
+
 
     }
 
