@@ -4,6 +4,7 @@ import com.physmo.garnet.collision.CollisionSystem;
 import com.physmo.garnet.entity.Component;
 import com.physmo.garnet.entity.Entity;
 import com.physmo.garnet.entity.EntityGroup;
+import com.physmo.garnet.particle.ParticleManager;
 
 import java.util.List;
 
@@ -13,6 +14,12 @@ public abstract class GameState {
     String name;
     CollisionSystem collisionSystem;
     EntityGroup entityGroup;
+
+    public ParticleManager getParticleManager() {
+        return particleManager;
+    }
+
+    ParticleManager particleManager;
     boolean debugCollision = false;
 
     public GameState(Garnet garnet, String name) {
@@ -28,6 +35,7 @@ public abstract class GameState {
         this.garnet = garnet;
         collisionSystem = new CollisionSystem();
         entityGroup = new EntityGroup();
+        particleManager = new ParticleManager(1000);
         init(garnet);
     }
 
@@ -40,6 +48,7 @@ public abstract class GameState {
 
         collisionSystem.tick(entityGroup);
         entityGroup.tickAll(delta);
+        particleManager.tick(delta);
         tick(delta);
     }
 
@@ -49,6 +58,7 @@ public abstract class GameState {
         entityGroup.drawAll();
         if (debugCollision) collisionSystem.debugRender(entityGroup);
         draw();
+        particleManager.draw();
     }
 
     public abstract void draw();

@@ -55,4 +55,9 @@ public class Vec3 {
         newVec.z *= v;
         return newVec;
     }
+
+    public static Vec3 generateRandomRadial2D(double magnitude) {
+        double angle = (Math.random()*Math.PI*2);
+        return new Vec3(Math.sin(angle)*magnitude, Math.cos(angle)*magnitude, 0);
+    }
 }

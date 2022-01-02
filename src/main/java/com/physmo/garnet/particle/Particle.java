@@ -1,29 +1,47 @@
 package com.physmo.garnet.particle;
 
 import com.physmo.garnet.Vec3;
+import com.physmo.garnet.curve.Curve;
+import com.physmo.garnet.spritebatch.Sprite2D;
+import com.physmo.garnet.spritebatch.SpriteBatch;
 
 public class Particle {
-    Vec3 position;
-    Vec3 velocity;
-    Vec3 force;
-    double friction;
+    Vec3 position = new Vec3();
+    Vec3 direction = new Vec3();
+    double speed = 5;
+    Curve speedCurve;
+    Vec3 force = new Vec3();
+    //double friction;
 
-    boolean active=false;
+    boolean active = false;
 
     double lifeTime;
     double age;
 
     public void tick(double delta) {
-        position.x+=velocity.x*delta;
-        position.y+=velocity.y*delta;
-        position.z+=velocity.z*delta;
+        double pAge = age / lifeTime;
+        double _speed = speed * delta * speedCurve.value(pAge);
 
-        velocity.x+=force.x*delta;
-        velocity.y+=force.y*delta;
-        velocity.z+=force.z*delta;
+        position.x += direction.x * _speed;
+        position.y += direction.y * _speed;
+        position.z += direction.z * _speed;
 
-        velocity.x -= velocity.x*friction*delta;
-        velocity.y -= velocity.y*friction*delta;
-        velocity.z -= velocity.z*friction*delta;
+//        direction.x += force.x * delta;
+//        direction.y += force.y * delta;
+//        direction.z += force.z * delta;
+
+//        direction.x -= direction.x * friction * delta;
+//        direction.y -= direction.y * friction * delta;
+//        direction.z -= direction.z * friction * delta;
+
+        age += delta;
+        if (age > lifeTime) active = false;
+    }
+
+    public void draw(SpriteBatch sb) {
+        sb.add(Sprite2D.build(
+                (int) (position.x) - 8,
+                (int) (position.y) - 8,
+                16, 16, 16 * 3, 0, 16, 16));
     }
 }
