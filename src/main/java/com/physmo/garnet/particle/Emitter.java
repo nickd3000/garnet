@@ -1,6 +1,9 @@
 package com.physmo.garnet.particle;
 
 import com.physmo.garnet.Vec3;
+import com.physmo.garnet.curve.Curve;
+import com.physmo.garnet.curve.CurveType;
+import com.physmo.garnet.curve.StandardCurve;
 
 public class Emitter {
     ParticleManager particleManager;
@@ -12,12 +15,14 @@ public class Emitter {
 
     ParticleTemplate particleTemplate;
 
-    double emitPerSecond = 100;
+    double emitPerSecond = 1500;
+    Curve emissionRateCurve;
 
     public Emitter(Vec3 position, double duration) {
         particleTemplate = new ParticleTemplate();
         this.position = new Vec3(position);
         this.duration = duration;
+        this.emissionRateCurve = new StandardCurve(CurveType.LINE_DOWN);
         age = 0;
     }
 
@@ -27,8 +32,14 @@ public class Emitter {
 
     public void tick(double delta) {
         age += delta;
+        double pAge = age / duration;
+        double chance = emitPerSecond * delta * emissionRateCurve.value(pAge);
 
-        double chance = emitPerSecond * delta;
+        while (chance > 1) {
+            chance -= 1;
+            emit();
+        }
+
         if (Math.random() < chance) {
             emit();
         }

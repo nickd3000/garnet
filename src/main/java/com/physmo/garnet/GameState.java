@@ -14,17 +14,15 @@ public abstract class GameState {
     String name;
     CollisionSystem collisionSystem;
     EntityGroup entityGroup;
-
-    public ParticleManager getParticleManager() {
-        return particleManager;
-    }
-
     ParticleManager particleManager;
     boolean debugCollision = false;
-
     public GameState(Garnet garnet, String name) {
         this.garnet = garnet;
         this.name = name;
+    }
+
+    public ParticleManager getParticleManager() {
+        return particleManager;
     }
 
     public String getName() {

@@ -1,8 +1,10 @@
 package com.physmo.garnet.spritebatch;
 
+import com.physmo.garnet.color.Color;
+
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glPopMatrix;
 import static org.lwjgl.opengl.GL11.glPushMatrix;
@@ -21,10 +23,9 @@ public class Sprite2D implements BatchElement {
 
     private float textureScale = 1; //1.0f/255f; // TODO: get texture size
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
-    private float r, g, b;
+    private Color color = new Color(1, 1, 1, 1);
 
     public Sprite2D() {
-
     }
 
     public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
@@ -75,7 +76,7 @@ public class Sprite2D implements BatchElement {
         return this;
     }
 
-    public Sprite2D setDrawPoisition(int x, int y, int w, int h) {
+    public Sprite2D setDrawPosition(int x, int y, int w, int h) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -95,20 +96,26 @@ public class Sprite2D implements BatchElement {
         FLAGS |= flag;
     }
 
-    public Sprite2D addColor(double r, double g, double b) {
-        this.r = (float) r;
-        this.g = (float) g;
-        this.b = (float) b;
+    public Sprite2D addColor(Color c) {
+        return addColor(c.r, c.g, c.b, c.a);
+    }
+
+    public Sprite2D addColor(float r, float g, float b, float a) {
+        color.setValues(r, g, b, a);
         setFlag(FLAG_COLOR);
         return this;
+    }
+
+    public Sprite2D addColor(float r, float g, float b) {
+        return addColor(r, g, b, 1.0f);
     }
 
     @Override
     public void render(float textureScale, float outputScale) {
         if ((FLAGS & FLAG_COLOR) != 0) {
-            glColor3f(r, g, b);
+            glColor4f(color.r, color.g, color.b, color.a);
         } else {
-            glColor3f(1.0f, 1.0f, 1.0f);
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
 
         if ((FLAGS & FLAG_ANGLE) != 0) {

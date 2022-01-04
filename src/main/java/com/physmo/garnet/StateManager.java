@@ -31,23 +31,6 @@ public class StateManager {
         handleSubstatePop();
     }
 
-    public void tick(double delta) {
-        // Only tick main state if there are no active sub states.
-        if (activeSubStates.size() == 0) activeState._tick(delta);
-
-        // Find the last active substate and tick it.
-        if (activeSubStates.size() > 0)
-            activeSubStates.get(activeSubStates.size() - 1)._tick(delta);
-    }
-
-    public void draw() {
-        activeState._draw();
-        for (GameState activeSubState : activeSubStates) {
-            activeSubState._draw();
-        }
-
-    }
-
     public void handleStateChange() {
         if (targetState != null) {
             targetState._init(garnet);
@@ -76,6 +59,23 @@ public class StateManager {
         }
         subStatePopRequests.clear();
         activeSubStates = newActiveSubStates;
+    }
+
+    public void tick(double delta) {
+        // Only tick main state if there are no active sub states.
+        if (activeSubStates.size() == 0) activeState._tick(delta);
+
+        // Find the last active substate and tick it.
+        if (activeSubStates.size() > 0)
+            activeSubStates.get(activeSubStates.size() - 1)._tick(delta);
+    }
+
+    public void draw() {
+        activeState._draw();
+        for (GameState activeSubState : activeSubStates) {
+            activeSubState._draw();
+        }
+
     }
 
     public Optional<GameState> getActiveState() {

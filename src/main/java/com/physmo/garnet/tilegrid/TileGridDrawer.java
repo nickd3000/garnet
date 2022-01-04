@@ -53,7 +53,7 @@ public class TileGridDrawer {
                 int tileId = tileGridData.getTileId(window_xx + x, window_yy + y);
 
                 sprite2D.setTile(tileId, 0, 16);
-                sprite2D.setDrawPoisition((x * 16) - offsetX, (y * 16) - offsetY, 16, 16);
+                sprite2D.setDrawPosition((x * 16) - offsetX, (y * 16) - offsetY, 16, 16);
 
                 //spriteBatch.add(Sprite2D.build(x * spriteDrawWidth, y * spriteDrawHeight, spriteDrawWidth, spriteDrawHeight, 0, 0, spriteWidth, spriteHeight));
                 spriteBatch.add(sprite2D);

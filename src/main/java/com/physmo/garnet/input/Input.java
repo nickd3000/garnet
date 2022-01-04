@@ -10,15 +10,15 @@ public class Input {
     static Garnet garnet;
     static List<ButtonConfig> buttonConfigList;
 
-    boolean [] buttonState;
-    boolean [] buttonStatePrev;
+    boolean[] buttonState;
+    boolean[] buttonStatePrev;
 
     public Input(Garnet garnet) {
         this.garnet = garnet;
     }
 
     public void tick() {
-        for (int i=0;i< buttonState.length;i++) {
+        for (int i = 0; i < buttonState.length; i++) {
             buttonStatePrev[i] = buttonState[i];
         }
     }
@@ -36,14 +36,14 @@ public class Input {
         buttonStatePrev = new boolean[1024];
 
         garnet.addKeyboardCallback((key, scancode, action, mods) -> {
-            System.out.println("keyboard handler - key:"+key+ " scancode:" + scancode + "  action:" + action);
+            //System.out.println("keyboard handler - key:"+key+ " scancode:" + scancode + "  action:" + action);
 
             // a=0, d=2, space =49 / action 1/0 down/up
 
-            if (action==1) {
-                buttonState[scancode]=true;
-            } else if (action==0) {
-                buttonState[scancode]=false;
+            if (action == 1) {
+                buttonState[scancode] = true;
+            } else if (action == 0) {
+                buttonState[scancode] = false;
             }
 
 //            for (ButtonConfig buttonConfig : buttonConfigList) {
@@ -72,8 +72,8 @@ public class Input {
     public boolean isFirstPress(VirtualButton button) {
         for (ButtonConfig buttonConfig : buttonConfigList) {
             if (buttonConfig.virtualButton == button) {
-                if (    buttonState[buttonConfig.scancode]==true &&
-                        buttonStatePrev[buttonConfig.scancode]==false) return true;
+                if (buttonState[buttonConfig.scancode] == true &&
+                        buttonStatePrev[buttonConfig.scancode] == false) return true;
             }
         }
         return false;

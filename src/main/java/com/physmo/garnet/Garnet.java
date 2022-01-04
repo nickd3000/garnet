@@ -196,6 +196,7 @@ public class Garnet {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
         //stateManager.getActiveState().ifPresent(gameState -> gameState._draw());
         stateManager.draw();
         gameClock.logFrame();
