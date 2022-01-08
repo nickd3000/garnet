@@ -145,6 +145,7 @@ public class Garnet {
     }
 
     public void run() {
+        glfwMakeContextCurrent(windowHandle);
         GL.createCapabilities();
 
         long currentTime = System.nanoTime();

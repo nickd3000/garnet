@@ -12,7 +12,8 @@ public class ParticleTemplate {
     Vec3 force;
     //double friction;
 
-    double lifeTime;
+    RangedValue lifeTime;
+    RangedValue speed;
 
     public ParticleTemplate() {
         positionJitter = 2.1;
@@ -21,18 +22,19 @@ public class ParticleTemplate {
         velocityJitter = 0.1;
         force = new Vec3();
         //friction=0.9;
-        lifeTime = 2;
+        lifeTime = new RangedValue(0.2, 3);
+        speed = new RangedValue(10, 50);
     }
 
     public void initParticle(Particle p, Vec3 emitterPos) {
         p.active = true;
         p.position = getVectorWithJitter(emitterPos, positionJitter);
-        p.lifeTime = lifeTime;
+        p.lifeTime = lifeTime.getValue();
 
         p.direction = Vec3.generateRandomRadial2D(Math.random());
 
         p.age = 0;
-        p.speed = 40;
+        p.speed = speed.getValue();
         p.speedCurve = new StandardCurve(CurveType.LINE_DOWN);
     }
 
