@@ -12,6 +12,7 @@ public class StateManager {
     private GameState targetState;
     private List<GameState> activeSubStates;
 
+    private List<String> subStatePushRequests;
     private List<String> subStatePopRequests;
 
     private Map<String, GameState> gameStates;
@@ -21,6 +22,7 @@ public class StateManager {
         this.garnet = garnet;
         gameStates = new HashMap<>();
         activeSubStates = new ArrayList<>();
+        subStatePushRequests = new ArrayList<>();
         subStatePopRequests = new ArrayList<>();
     }
 
@@ -29,6 +31,7 @@ public class StateManager {
 
         handleStateChange();
         handleSubstatePop();
+        handleSubstatePush();
     }
 
     public void handleStateChange() {
@@ -36,29 +39,50 @@ public class StateManager {
             targetState._init(garnet);
             activeState = targetState;
             targetState = null;
-            garnet.getInput().tick();
+            garnet.getInput().postStateChangeTask();
         }
 
 
     }
 
+    public void handleSubstatePush() {
+        for (String substateName : subStatePushRequests) {
+
+            GameState state = gameStates.get(substateName);
+            state._init(garnet);
+            if (state == null) {
+                System.out.println("Substate not found: " + substateName);
+                return;
+            }
+            activeSubStates.add(state);
+            garnet.getInput().postStateChangeTask();
+        }
+
+        subStatePushRequests.clear();
+    }
+
     public void handleSubstatePop() {
         List<GameState> newActiveSubStates = new ArrayList<>();
+        boolean substateRemoved = false;
         for (GameState activeSubState : activeSubStates) {
             boolean skip = false;
             for (String subStatePopRequest : subStatePopRequests) {
                 if (activeSubState.getName().equalsIgnoreCase(subStatePopRequest)) {
                     skip = true;
+                    substateRemoved = true;
+                    System.out.println("remove");
                 }
             }
 
             if (!skip) {
                 newActiveSubStates.add(activeSubState);
-                garnet.getInput().tick();
             }
         }
         subStatePopRequests.clear();
         activeSubStates = newActiveSubStates;
+        if (substateRemoved) {
+            garnet.getInput().postStateChangeTask();
+        }
     }
 
     public void tick(double delta) {
@@ -97,13 +121,9 @@ public class StateManager {
     }
 
     public void pushSubState(String name) {
-        GameState state = gameStates.get(name);
-        state._init(garnet);
-        if (state == null) {
-            System.out.println("Substate not found: " + name);
-            return;
-        }
-        activeSubStates.add(state);
+        subStatePushRequests.add(name);
+
+
     }
 
     public void popSubState(String name) {

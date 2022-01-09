@@ -23,6 +23,9 @@ public class Input {
         }
     }
 
+    public void postStateChangeTask() {
+        tick();
+    }
 
     public void init() {
 
@@ -32,8 +35,8 @@ public class Input {
         buttonConfigList.add(new ButtonConfig(6, VirtualButton.FIRE1));
         buttonConfigList.add(new ButtonConfig(48, VirtualButton.MENU));
 
-        buttonState = new boolean[1024];
-        buttonStatePrev = new boolean[1024];
+        buttonState = new boolean[0xff];
+        buttonStatePrev = new boolean[0xff];
 
         garnet.addKeyboardCallback((key, scancode, action, mods) -> {
             //System.out.println("keyboard handler - key:"+key+ " scancode:" + scancode + "  action:" + action);
