@@ -68,6 +68,7 @@ public class Garnet {
         input = new Input(this);
     }
 
+    // todo: clean and split
     public void init() {
         initInput();
 
@@ -136,7 +137,7 @@ public class Garnet {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
-        stateManager.getActiveState().ifPresent(gameState -> gameState._init(this));
+        //stateManager.getActiveState().ifPresent(gameState -> gameState._init(this));
 
     }
 
@@ -145,6 +146,9 @@ public class Garnet {
     }
 
     public void run() {
+        // todo - state manager to handle this
+        stateManager.getActiveState().ifPresent(gameState -> gameState._init(this));
+
         glfwMakeContextCurrent(windowHandle);
         GL.createCapabilities();
 
@@ -156,6 +160,7 @@ public class Garnet {
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(windowHandle)) {
 
+            // todo: create class for this - track fps too
             currentTime = System.nanoTime();
             long delta = currentTime - oldTime;
 
@@ -198,7 +203,6 @@ public class Garnet {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        //stateManager.getActiveState().ifPresent(gameState -> gameState._draw());
         stateManager.draw();
         gameClock.logFrame();
 
