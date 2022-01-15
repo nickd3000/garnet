@@ -56,10 +56,6 @@ public class Entity {
         c.init();
     }
 
-    public List<Component> getComponents() {
-        return components;
-    }
-
     public void addEntityDrawer(RenderComponent renderComponent) {
         this.renderComponent = renderComponent;
         this.renderComponent.injectParent(this);
@@ -90,7 +86,6 @@ public class Entity {
         return gameState;
     }
 
-
     public List<Collider> getColliders() {
         return colliders;
     }
@@ -110,5 +105,9 @@ public class Entity {
         }
 
         return null;
+    }
+
+    public List<Component> getComponents() {
+        return components;
     }
 }
