@@ -102,4 +102,13 @@ public class Entity {
     public boolean hasTag(String tagName) {
         return tags.contains(tagName);
     }
+
+    public <T extends Component> T getComponent(Class<T> type) {
+
+        for (Component component : getComponents()) {
+            if (component.getClass() == type) return (T) component;
+        }
+
+        return null;
+    }
 }

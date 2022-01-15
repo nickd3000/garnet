@@ -59,11 +59,9 @@ public class Garnet {
     private int windowWidth, windowHeight;
 
     public Garnet(int windowWidth, int windowHeight) {
-        //this.activeState = null;
         stateManager = new StateManager(this);
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
-        //gameStates = new HashMap<>();
         globalStore = new HashMap<>();
         input = new Input(this);
     }
@@ -137,8 +135,6 @@ public class Garnet {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
-        //stateManager.getActiveState().ifPresent(gameState -> gameState._init(this));
-
     }
 
     public void initInput() {
@@ -146,8 +142,6 @@ public class Garnet {
     }
 
     public void run() {
-        // todo - state manager to handle this
-        stateManager.getActiveState().ifPresent(gameState -> gameState._init(this));
 
         glfwMakeContextCurrent(windowHandle);
         GL.createCapabilities();

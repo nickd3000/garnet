@@ -112,11 +112,11 @@ public class Sprite2D implements BatchElement {
 
     @Override
     public void render(float textureScale, float outputScale) {
-        if ((FLAGS & FLAG_COLOR) != 0) {
-            glColor4f(color.r, color.g, color.b, color.a);
-        } else {
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        }
+        //if ((FLAGS & FLAG_COLOR) != 0) {
+        glColor4f(color.r, color.g, color.b, color.a);
+        //} else {
+        //    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        //}
 
         if ((FLAGS & FLAG_ANGLE) != 0) {
             renderRotated(textureScale);

@@ -95,11 +95,10 @@ public class StateManager {
     }
 
     public void draw() {
-        activeState._draw();
+        if (activeState != null) activeState._draw();
         for (GameState activeSubState : activeSubStates) {
             activeSubState._draw();
         }
-
     }
 
     public Optional<GameState> getActiveState() {
@@ -107,7 +106,7 @@ public class StateManager {
     }
 
     public void addState(String name, GameState state) {
-        if (activeState == null) activeState = state;
+        if (targetState == null) targetState = state;
         gameStates.put(name, state);
     }
 

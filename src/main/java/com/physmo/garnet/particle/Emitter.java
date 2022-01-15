@@ -18,12 +18,16 @@ public class Emitter {
     double emitPerSecond = 1500;
     Curve emissionRateCurve;
 
-    public Emitter(Vec3 position, double duration) {
-        particleTemplate = new ParticleTemplate();
+    public Emitter(Vec3 position, double duration, ParticleTemplate particleTemplate) {
+        this.particleTemplate = particleTemplate;
         this.position = new Vec3(position);
         this.duration = duration;
         this.emissionRateCurve = new StandardCurve(CurveType.LINE_DOWN);
         age = 0;
+    }
+
+    public Emitter(Vec3 position, double duration) {
+        new Emitter(position, duration, new ParticleTemplate());
     }
 
     public void setParticleManager(ParticleManager particleManager) {
@@ -58,5 +62,9 @@ public class Emitter {
 
     public void addParticleTemplate(ParticleTemplate particleTemplate) {
         this.particleTemplate = particleTemplate;
+    }
+
+    public void setEmitPerSecond(double emitPerSecond) {
+        this.emitPerSecond = emitPerSecond;
     }
 }
