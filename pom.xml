@@ -6,10 +6,10 @@
 
     <groupId>com.physmo.garnet</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
 
     <properties>
-        <lwjgl.version>3.2.3</lwjgl.version>
+        <lwjgl.version>3.3.0</lwjgl.version>
         <lwjgl.natives>natives-macos</lwjgl.natives>
     </properties>
 
@@ -137,6 +137,12 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-vulkan</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

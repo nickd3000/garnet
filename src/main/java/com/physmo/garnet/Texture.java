@@ -99,6 +99,24 @@ public class Texture {
         return createTexture(width, height, image);
     }
 
+//    public static Texture loadTexture(BufferedImage bufferedImage) {
+//        ByteBuffer byteBuffer = bufferedImageToByteBuffer(bufferedImage);
+//        return createTexture(bufferedImage.getWidth(), bufferedImage.getHeight(), byteBuffer);
+//    }
+
+//    public static ByteBuffer bufferedImageToByteBuffer(BufferedImage bufferedImage) {
+//        Raster raster = bufferedImage.getRaster();
+//        DataBufferByte dataBufferByte = (DataBufferByte) raster.getDataBuffer();
+//        byte[] data = dataBufferByte.getData();
+//
+//        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(data.length);
+//        byteBuffer.order(ByteOrder.nativeOrder());
+//        byteBuffer.put(data, 0, data.length);
+//        byteBuffer.flip();
+//
+//        return byteBuffer;
+//    }
+
     /**
      * Creates a texture with specified width, height and data.
      *

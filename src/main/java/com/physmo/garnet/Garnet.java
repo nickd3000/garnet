@@ -1,5 +1,7 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.input.Input;
+import com.physmo.garnet.input.KeyboardCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -7,7 +9,9 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
@@ -48,16 +52,21 @@ public class Garnet {
     List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
+    StateManager stateManager;
+    Input input;
+    Map<String, Object> globalStore;
     private long windowHandle;
     private int windowWidth, windowHeight;
-    private GameState gameContainer;
 
-    public Garnet(GameState gameContainer, int windowWidth, int windowHeight) {
-        this.gameContainer = gameContainer;
+    public Garnet(int windowWidth, int windowHeight) {
+        stateManager = new StateManager(this);
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
+        globalStore = new HashMap<>();
+        input = new Input(this);
     }
 
+    // todo: clean and split
     public void init() {
         initInput();
 
@@ -126,14 +135,15 @@ public class Garnet {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
-        gameContainer.init(this);
     }
 
     public void initInput() {
-        Input.init(this);
+        input.init();
     }
 
     public void run() {
+
+        glfwMakeContextCurrent(windowHandle);
         GL.createCapabilities();
 
         long currentTime = System.nanoTime();
@@ -144,6 +154,7 @@ public class Garnet {
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(windowHandle)) {
 
+            // todo: create class for this - track fps too
             currentTime = System.nanoTime();
             long delta = currentTime - oldTime;
 
@@ -157,16 +168,6 @@ public class Garnet {
 
             oldTime = currentTime;
 
-            //gameContainer.tick(delta);
-
-            //gameContainer.draw();
-
-            //glfwSwapBuffers(windowHandle); // swap the color buffers
-
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            //glfwPollEvents();
         }
     }
 
@@ -182,16 +183,21 @@ public class Garnet {
 
         // --------------- LOGIC
         while (runningLogicDelta > logicTime) {
+
             runningLogicDelta -= logicTime;
-            gameContainer._tick(secondsPerLogicUpdate);
+            //stateManager.getActiveState().ifPresent(gameState -> gameState._tick(secondsPerLogicUpdate));
+            stateManager.tick(secondsPerLogicUpdate);
             gameClock.logLogicTick();
+
+            input.tick();
         }
 
         // --------------- RENDER
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-        gameContainer._draw();
+
+        stateManager.draw();
         gameClock.logFrame();
 
         glfwSwapBuffers(windowHandle); // swap the color buffers
@@ -200,6 +206,9 @@ public class Garnet {
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();
+        stateManager.update();
+
+
     }
 
     public void addKeyboardCallback(KeyboardCallback keyboardCallback) {
@@ -207,4 +216,37 @@ public class Garnet {
         keyboardCallbacks.add(keyboardCallback);
     }
 
+    public Object getGlobalObject(String name) {
+
+        for (String s : globalStore.keySet()) {
+            if (s.equalsIgnoreCase(name)) {
+                return globalStore.get(s);
+            }
+        }
+        return null;
+    }
+
+    public void addGlobalObject(String name, Object object) {
+        globalStore.put(name, object);
+    }
+
+    public void addState(GameState state) {
+        stateManager.addState(state.getName(), state);
+    }
+
+    public void switchActiveState(String name) {
+        stateManager.switchActiveState(name);
+    }
+
+    public void pushSubState(String name) {
+        stateManager.pushSubState(name);
+    }
+
+    public void popSubState(String name) {
+        stateManager.popSubState(name);
+    }
+
+    public Input getInput() {
+        return input;
+    }
 }

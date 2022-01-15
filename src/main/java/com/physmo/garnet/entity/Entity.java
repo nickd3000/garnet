@@ -1,7 +1,9 @@
 package com.physmo.garnet.entity;
 
 import com.physmo.garnet.GameState;
+import com.physmo.garnet.Garnet;
 import com.physmo.garnet.Vec3;
+import com.physmo.garnet.collision.Collider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,18 +16,19 @@ public class Entity {
 
     public Vec3 position;
     public Vec3 velocity;
+    public Garnet garnet;
     GameState gameState;
     String name;
     boolean visible;
     boolean active;
     Set<String> tags;
-
+    List<Collider> colliders;
     List<Component> components;
     Map<String, Object> properties;
     RenderComponent renderComponent;
 
     public Entity(String name, GameState gameState) {
-
+        this.garnet = gameState.garnet;
         this.gameState = gameState;
         this.name = name;
         position = new Vec3();
@@ -33,6 +36,7 @@ public class Entity {
         components = new ArrayList<>();
         properties = new HashMap<>();
         tags = new HashSet<>();
+        colliders = new ArrayList<>();
     }
 
     public void tick(double delta) {
@@ -48,26 +52,62 @@ public class Entity {
     public void addComponent(Component c) {
         components.add(c);
         c.injectParent(this);
+        c.injectParentState(gameState);
+        c.init();
     }
 
     public void addEntityDrawer(RenderComponent renderComponent) {
         this.renderComponent = renderComponent;
         this.renderComponent.injectParent(this);
+        renderComponent.init();
     }
 
     public void addTag(String tag) {
         this.tags.add(tag);
     }
 
+    public boolean getActive() {
+        return active;
+    }
+
     public void setActive(boolean b) {
         active = b;
+    }
+
+    public boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean b) {
+        visible = b;
     }
 
     public GameState getGameState() {
         return gameState;
     }
 
-    public boolean getActive() {
-        return active;
+    public List<Collider> getColliders() {
+        return colliders;
+    }
+
+    public void addCollider(Collider collider) {
+        colliders.add(collider);
+    }
+
+    public boolean hasTag(String tagName) {
+        return tags.contains(tagName);
+    }
+
+    public <T extends Component> T getComponent(Class<T> type) {
+
+        for (Component component : getComponents()) {
+            if (component.getClass() == type) return (T) component;
+        }
+
+        return null;
+    }
+
+    public List<Component> getComponents() {
+        return components;
     }
 }

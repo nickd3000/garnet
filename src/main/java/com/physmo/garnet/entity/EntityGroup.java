@@ -13,11 +13,14 @@ public class EntityGroup {
     }
 
     public void tickAll(double delta) {
-        entityList.forEach((entity) -> entity.tick(delta));
+        entityList.stream().filter(entity -> entity.getActive()).forEach(entity -> entity.tick(delta));
     }
 
     public void drawAll() {
-        entityList.forEach((entity) -> entity.draw());
+        entityList.stream().
+                filter(entity -> entity.getActive()).
+                filter(entity -> entity.getVisible()).
+                forEach(entity -> entity.draw());
     }
 
     public void add(Entity e) {
@@ -26,6 +29,10 @@ public class EntityGroup {
 
     public Entity get(int index) {
         return entityList.get(index);
+    }
+
+    public List<Entity> getAll() {
+        return entityList;
     }
 
     public Entity getByName(String name) {
