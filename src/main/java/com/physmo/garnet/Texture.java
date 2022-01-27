@@ -200,4 +200,7 @@ public class Texture {
         return height;
     }
 
+    public int getId() {
+        return id;
+    }
 }

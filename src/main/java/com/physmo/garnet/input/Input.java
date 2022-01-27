@@ -49,16 +49,6 @@ public class Input {
                 buttonState[scancode] = false;
             }
 
-//            for (ButtonConfig buttonConfig : buttonConfigList) {
-//                if (scancode == buttonConfig.keyboardKey) {
-//                    if (action == 1) {
-//                        buttonConfig.pressed = true;
-//                    } else if (action == 0) {
-//                        buttonConfig.pressed = false;
-//                    }
-//                }
-//            }
-
         });
 
     }

@@ -21,6 +21,7 @@ public class Entity {
     String name;
     boolean visible;
     boolean active;
+    boolean paused; // Rendered but no logic is processed.
     Set<String> tags;
     List<Collider> colliders;
     List<Component> components;
@@ -37,9 +38,20 @@ public class Entity {
         properties = new HashMap<>();
         tags = new HashSet<>();
         colliders = new ArrayList<>();
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 
     public void tick(double delta) {
+        if (paused) return;
+
         for (Component component : components) {
             component.tick(delta);
         }
