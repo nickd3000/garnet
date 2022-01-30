@@ -26,7 +26,6 @@ public class Entity {
     List<Collider> colliders;
     List<Component> components;
     Map<String, Object> properties;
-    RenderComponent renderComponent;
 
     public Entity(String name, GameState gameState) {
         this.garnet = gameState.garnet;
@@ -58,7 +57,10 @@ public class Entity {
     }
 
     public void draw() {
-        if (renderComponent != null) renderComponent.draw();
+        //if (renderComponent != null) renderComponent.draw();
+        for (Component component : components) {
+            component.draw();
+        }
     }
 
     public void addComponent(Component c) {
@@ -68,11 +70,11 @@ public class Entity {
         c.init();
     }
 
-    public void addEntityDrawer(RenderComponent renderComponent) {
-        this.renderComponent = renderComponent;
-        this.renderComponent.injectParent(this);
-        renderComponent.init();
-    }
+//    public void addEntityDrawer(RenderComponent renderComponent) {
+//        this.renderComponent = renderComponent;
+//        this.renderComponent.injectParent(this);
+//        renderComponent.init();
+//    }
 
     public void addTag(String tag) {
         this.tags.add(tag);

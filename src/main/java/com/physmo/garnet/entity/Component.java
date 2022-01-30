@@ -20,6 +20,11 @@ public abstract class Component {
 
     abstract public void tick(double delta);
 
+    public void draw() {
+    }
+
+    ;
+
     public void onCollisionStart(CollisionPacket collisionPacket) {
     }
 
