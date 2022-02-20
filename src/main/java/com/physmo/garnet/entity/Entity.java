@@ -38,6 +38,8 @@ public class Entity {
         tags = new HashSet<>();
         colliders = new ArrayList<>();
         paused = false;
+        visible = true;
+        active = true;
     }
 
     public boolean isPaused() {

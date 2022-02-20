@@ -32,7 +32,7 @@ public class Garnet {
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
     StateManager stateManager;
-    Map<String, Object> globalStore;
+    Map<String, Object> sharedStore;
     Input input;
     Display display;
 
@@ -42,7 +42,7 @@ public class Garnet {
         stateManager = new StateManager(this);
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
-        globalStore = new HashMap<>();
+        sharedStore = new HashMap<>();
         input = new Input(this);
         display = new Display();
     }
@@ -142,18 +142,18 @@ public class Garnet {
         keyboardCallbacks.add(keyboardCallback);
     }
 
-    public Object getGlobalObject(String name) {
+    public Object getSharedObject(String name) {
 
-        for (String s : globalStore.keySet()) {
+        for (String s : sharedStore.keySet()) {
             if (s.equalsIgnoreCase(name)) {
-                return globalStore.get(s);
+                return sharedStore.get(s);
             }
         }
         return null;
     }
 
-    public void addGlobalObject(String name, Object object) {
-        globalStore.put(name, object);
+    public void addSharedObject(String name, Object object) {
+        sharedStore.put(name, object);
     }
 
     public void addState(GameState state) {
