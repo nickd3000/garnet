@@ -152,6 +152,13 @@ public class Garnet {
         return null;
     }
 
+    public <T> T getSharedObject(Class<T> clazz) {
+        for (String s : sharedStore.keySet()) {
+            if (sharedStore.get(s).getClass() == clazz) return (T) sharedStore.get(s);
+        }
+        return null;
+    }
+
     public void addSharedObject(String name, Object object) {
         sharedStore.put(name, object);
     }
