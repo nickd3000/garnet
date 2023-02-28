@@ -5,9 +5,7 @@ import com.physmo.garnet.input.KeyboardCallback;
 import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -31,27 +29,30 @@ public class Garnet {
     List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
-    StateManager stateManager;
-    Map<String, Object> sharedStore;
+    //StateManager stateManager;
+    //Map<String, Object> sharedStore;
     Input input;
     Display display;
-
+    GarnetApp garnetApp;
     private int windowWidth, windowHeight;
 
+
     public Garnet(int windowWidth, int windowHeight) {
-        stateManager = new StateManager(this);
+
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
-        sharedStore = new HashMap<>();
+
         input = new Input(this);
         display = new Display();
     }
-
 
     public void init() {
 
         input.init();
         display.init(windowWidth, windowHeight);
+
+        garnetApp.init(this);
+
         //windowHandle = display.getWindowHandle();
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
@@ -65,7 +66,6 @@ public class Garnet {
         });
 
     }
-
 
     public void run() {
 
@@ -111,8 +111,10 @@ public class Garnet {
         while (runningLogicDelta > logicTime) {
 
             runningLogicDelta -= logicTime;
-            //stateManager.getActiveState().ifPresent(gameState -> gameState._tick(secondsPerLogicUpdate));
-            stateManager.tick(secondsPerLogicUpdate);
+
+            //stateManager.tick(secondsPerLogicUpdate);
+            garnetApp.tick(secondsPerLogicUpdate);
+
             gameClock.logLogicTick();
 
             input.tick();
@@ -123,7 +125,9 @@ public class Garnet {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        stateManager.draw();
+        //stateManager.draw();
+        garnetApp.draw();
+
         gameClock.logFrame();
 
         glfwSwapBuffers(display.getWindowHandle()); // swap the color buffers
@@ -132,7 +136,7 @@ public class Garnet {
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();
-        stateManager.update();
+        //stateManager.update();
 
 
     }
@@ -140,43 +144,6 @@ public class Garnet {
     public void addKeyboardCallback(KeyboardCallback keyboardCallback) {
         System.out.println("addKeyboardCallback");
         keyboardCallbacks.add(keyboardCallback);
-    }
-
-    public Object getSharedObject(String name) {
-
-        for (String s : sharedStore.keySet()) {
-            if (s.equalsIgnoreCase(name)) {
-                return sharedStore.get(s);
-            }
-        }
-        return null;
-    }
-
-    public <T> T getSharedObject(Class<T> clazz) {
-        for (String s : sharedStore.keySet()) {
-            if (sharedStore.get(s).getClass() == clazz) return (T) sharedStore.get(s);
-        }
-        return null;
-    }
-
-    public void addSharedObject(String name, Object object) {
-        sharedStore.put(name, object);
-    }
-
-    public void addState(GameState state) {
-        stateManager.addState(state.getName(), state);
-    }
-
-    public void switchActiveState(String name) {
-        stateManager.switchActiveState(name);
-    }
-
-    public void pushSubState(String name) {
-        stateManager.pushSubState(name);
-    }
-
-    public void popSubState(String name) {
-        stateManager.popSubState(name);
     }
 
     public Input getInput() {
@@ -190,5 +157,9 @@ public class Garnet {
 
     public Display getDisplay() {
         return display;
+    }
+
+    public void setApp(GarnetApp garnetApp) {
+        this.garnetApp = garnetApp;
     }
 }

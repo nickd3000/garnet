@@ -52,12 +52,12 @@ public class ParticleManager {
         }
     }
 
-    public void setSpriteBatch(SpriteBatch spriteBatch) {
-        this.spriteBatch = spriteBatch;
-    }
-
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
+    }
+
+    public void setSpriteBatch(SpriteBatch spriteBatch) {
+        this.spriteBatch = spriteBatch;
     }
 
     public void addEmitter(Emitter emitter) {

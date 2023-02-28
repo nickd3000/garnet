@@ -17,14 +17,14 @@ public class Input {
         this.garnet = garnet;
     }
 
+    public void postStateChangeTask() {
+        tick();
+    }
+
     public void tick() {
         for (int i = 0; i < buttonState.length; i++) {
             buttonStatePrev[i] = buttonState[i];
         }
-    }
-
-    public void postStateChangeTask() {
-        tick();
     }
 
     public void init() {
