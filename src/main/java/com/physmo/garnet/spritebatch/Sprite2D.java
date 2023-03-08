@@ -1,6 +1,7 @@
 package com.physmo.garnet.spritebatch;
 
-import com.physmo.garnet.color.Color;
+
+import com.physmo.garnet.Utils;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -14,7 +15,8 @@ public class Sprite2D implements BatchElement {
 
     private float textureScale = 1; //1.0f/255f; // TODO: get texture size
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
-    private Color color = new Color(1, 1, 1, 1);
+
+    private float[] color = new float[4];
 
     public Sprite2D() {
     }
@@ -87,12 +89,20 @@ public class Sprite2D implements BatchElement {
         FLAGS |= flag;
     }
 
-    public Sprite2D addColor(Color c) {
-        return addColor(c.r, c.g, c.b, c.a);
+    public Sprite2D addColor(int rgb) {
+        return addColor(Utils.rgbToFloat(rgb));
+    }
+
+    public Sprite2D addColor(float[] c) {
+        return addColor(c[0], c[1], c[2], c[3]);
     }
 
     public Sprite2D addColor(float r, float g, float b, float a) {
-        color.setValues(r, g, b, a);
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
+        color[3] = a;
+        //color.setValues(r, g, b, a);
         setFlag(FLAG_COLOR);
         return this;
     }
@@ -104,7 +114,7 @@ public class Sprite2D implements BatchElement {
     @Override
     public void render(float textureScale, float outputScale) {
         //if ((FLAGS & FLAG_COLOR) != 0) {
-        glColor4f(color.r, color.g, color.b, color.a);
+        glColor4f(color[0], color[1], color[2], color[3]);
         //} else {
         //    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         //}

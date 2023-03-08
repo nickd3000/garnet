@@ -20,6 +20,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glScissor;
 
@@ -161,5 +162,14 @@ public class Garnet {
 
     public void setApp(GarnetApp garnetApp) {
         this.garnetApp = garnetApp;
+    }
+
+    public void setDrawColor(float r, float g, float b, float a) {
+        glColor4f(r, g, b, a);
+    }
+
+    public void setDrawColor(int rgb) {
+        float[] f = Utils.rgbToFloat(rgb);
+        glColor4f(f[0], f[1], f[2], f[3]);
     }
 }
