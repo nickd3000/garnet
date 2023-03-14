@@ -166,6 +166,12 @@ public class Garnet {
         glColor4f(f[0], f[1], f[2], f[3]);
     }
 
+    public void setDrawModeWireframe() {
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
     public void setDrawModeNormal2D() {
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
