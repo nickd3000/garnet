@@ -1,3 +1,3 @@
 # Garnet
 
-A small LWJGL based game engine for Java.
+A small LWJGL based game engine in Java.
