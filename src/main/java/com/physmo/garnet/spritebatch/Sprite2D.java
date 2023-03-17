@@ -18,11 +18,27 @@ public class Sprite2D implements BatchElement {
     float textureScaleX;
     float textureScaleY;
     private int FLAGS = 0;
-    //private float textureScale = 1; //1.0f/255f; // TODO: get texture size
+
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
     private float[] color = new float[4];
 
     public Sprite2D() {
+    }
+
+    public Sprite2D(float[] vertexCoords, float[] texCoords) {
+        float[] v = vertexCoords;
+        float[] t = texCoords;
+
+        this.x = v[0];
+        this.y = v[1];
+        this.w = v[2] - v[0];
+        this.h = v[7] - v[1];
+        this.tx = t[0];
+        this.ty = t[1];
+        this.tw = t[2] - t[0];
+        this.th = t[7] - t[1];
+        this._w = this.w / 2;
+        this._h = this.h / 2;
     }
 
     public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
@@ -96,7 +112,7 @@ public class Sprite2D implements BatchElement {
 
     // Set texture coords based on grid id.
     public Sprite2D setTile(int tileX, int tileY, int tileSize) {
-        //int tx, int ty, int tw, int th
+
         tx = tileX * tileSize;
         ty = tileY * tileSize;
         tw = tileSize;
@@ -136,7 +152,7 @@ public class Sprite2D implements BatchElement {
         color[1] = g;
         color[2] = b;
         color[3] = a;
-        //color.setValues(r, g, b, a);
+
         setFlag(FLAG_COLOR);
         return this;
     }
@@ -147,11 +163,7 @@ public class Sprite2D implements BatchElement {
 
     @Override
     public void render(Graphics graphics) {
-        //if ((FLAGS & FLAG_COLOR) != 0) {
         glColor4f(color[0], color[1], color[2], color[3]);
-        //} else {
-        //    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        //}
 
         if ((FLAGS & FLAG_ANGLE) != 0) {
             renderRotated(1.0f); //textureScale);
@@ -181,11 +193,8 @@ public class Sprite2D implements BatchElement {
     private void renderRotated(float textureScale) {
         glPushMatrix();
 
-        //glLoadIdentity();
-        //glTranslatef(-_w,-_h,0);
         glTranslatef(x + _w, y + _h, 0);
         glRotatef(angle, 0f, 0f, 1.0f);
-        //glTranslatef(_w,_h,0);
 
         float txs = tx * textureScale;
         float tys = ty * textureScale;

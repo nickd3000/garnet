@@ -92,6 +92,22 @@ public class Graphics {
 
     }
 
+    public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
+        for (int i = 0; i < vertexCoords.length; i++) {
+            vertexCoords[i] = vertexCoords[i] * (float) scale;
+        }
+
+        // TODO: make font register texture
+        if (!textures.containsKey(texture.getId())) this.addTexture(texture);
+
+        Sprite2D sprite2D = new Sprite2D(vertexCoords, texCoords);
+        sprite2D.setTextureId(texture.getId());
+        sprite2D.addColor(currentColor);
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+        sprite2D.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(sprite2D);
+    }
+
     public void addTexture(Texture texture) {
         System.out.println("Registered texture id: " + texture.getId());
         textures.put(texture.getId(), texture);

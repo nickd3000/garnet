@@ -15,6 +15,15 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Display {
 
     private long windowHandle;
+
+    public int getWindowWidth() {
+        return windowWidth;
+    }
+
+    public int getWindowHeight() {
+        return windowHeight;
+    }
+
     private int windowWidth, windowHeight;
 
     public Display() {

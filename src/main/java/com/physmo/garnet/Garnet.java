@@ -24,8 +24,7 @@ public class Garnet {
     List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
-    //StateManager stateManager;
-    //Map<String, Object> sharedStore;
+
     Input input;
     Display display;
     Graphics graphics;
@@ -52,8 +51,6 @@ public class Garnet {
         display.init(windowWidth, windowHeight);
 
         garnetApp.init(this);
-
-        //windowHandle = display.getWindowHandle();
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(display.getWindowHandle(), (window, key, scancode, action, mods) -> {
@@ -112,7 +109,6 @@ public class Garnet {
 
             runningLogicDelta -= logicTime;
 
-            //stateManager.tick(secondsPerLogicUpdate);
             garnetApp.tick(secondsPerLogicUpdate);
 
             gameClock.logLogicTick();
@@ -125,19 +121,15 @@ public class Garnet {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        //stateManager.draw();
         garnetApp.draw();
 
         gameClock.logFrame();
 
         glfwSwapBuffers(display.getWindowHandle()); // swap the color buffers
 
-
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();
-        //stateManager.update();
-
 
     }
 
