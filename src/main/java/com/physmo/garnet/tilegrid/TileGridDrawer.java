@@ -1,8 +1,8 @@
 package com.physmo.garnet.tilegrid;
 
 import com.physmo.garnet.Texture;
+import com.physmo.garnet.spritebatch.DrawableBatch;
 import com.physmo.garnet.spritebatch.Sprite2D;
-import com.physmo.garnet.spritebatch.SpriteBatch;
 
 public class TileGridDrawer {
 
@@ -13,7 +13,7 @@ public class TileGridDrawer {
     int windowWidth = 10; // Measured in tiles
     int windowHeight = 10;// Measured in tiles
     private Texture texture;
-    private SpriteBatch spriteBatch;
+    private DrawableBatch spriteBatch;
     private TileGridData tileGridData;
 
     public TileGridDrawer() {
@@ -23,7 +23,7 @@ public class TileGridDrawer {
         spriteDrawHeight = 16 * drawScale;
     }
 
-    public TileGridDrawer setSpriteBatch(SpriteBatch spriteBatch) {
+    public TileGridDrawer setSpriteBatch(DrawableBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
         return this;
     }

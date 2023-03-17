@@ -1,5 +1,6 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.KeyboardCallback;
 import org.lwjgl.opengl.GL;
@@ -27,9 +28,9 @@ public class Garnet {
     //Map<String, Object> sharedStore;
     Input input;
     Display display;
+    Graphics graphics;
     GarnetApp garnetApp;
     private int windowWidth, windowHeight;
-
 
     public Garnet(int windowWidth, int windowHeight) {
 
@@ -38,6 +39,11 @@ public class Garnet {
 
         input = new Input(this);
         display = new Display();
+        graphics = new Graphics(display);
+    }
+
+    public Graphics getGraphics() {
+        return graphics;
     }
 
     public void init() {

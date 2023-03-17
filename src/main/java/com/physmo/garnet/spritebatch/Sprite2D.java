@@ -2,6 +2,9 @@ package com.physmo.garnet.spritebatch;
 
 
 import com.physmo.garnet.Utils;
+import com.physmo.garnet.graphics.Graphics;
+
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -10,12 +13,13 @@ public class Sprite2D implements BatchElement {
 
     public static int FLAG_COLOR = 1;
     public static int FLAG_ANGLE = 2;
-
+    int textureId = 0;
+    int drawOrder = 0;
+    float textureScaleX;
+    float textureScaleY;
     private int FLAGS = 0;
-
-    private float textureScale = 1; //1.0f/255f; // TODO: get texture size
+    //private float textureScale = 1; //1.0f/255f; // TODO: get texture size
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
-
     private float[] color = new float[4];
 
     public Sprite2D() {
@@ -26,10 +30,10 @@ public class Sprite2D implements BatchElement {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.tx = tx * textureScale;
-        this.ty = ty * textureScale;
-        this.tw = tw * textureScale;
-        this.th = th * textureScale;
+        this.tx = tx;// * textureScale;
+        this.ty = ty;// * textureScale;
+        this.tw = tw;// * textureScale;
+        this.th = th;// * textureScale;
         this._w = this.w / 2;
         this._h = this.h / 2;
     }
@@ -39,10 +43,10 @@ public class Sprite2D implements BatchElement {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.tx = tx * textureScale;
-        this.ty = ty * textureScale;
-        this.tw = tw * textureScale;
-        this.th = th * textureScale;
+        this.tx = tx;// * textureScale;
+        this.ty = ty;// * textureScale;
+        this.tw = tw;// * textureScale;
+        this.th = th;// * textureScale;
         this.angle = angle;
         this._w = this.w / 2;
         this._h = this.h / 2;
@@ -57,6 +61,37 @@ public class Sprite2D implements BatchElement {
     public static Sprite2D build(int x, int y, int w, int h) {
         Sprite2D spr = new Sprite2D(x, y, w, h, 0, 0, 0, 0);
         return spr;
+    }
+
+    @Override
+    public String toString() {
+        return "Sprite2D{" +
+                "textureId=" + textureId +
+                ", FLAGS=" + FLAGS +
+                ", textureScaleX=" + textureScaleX +
+                ", textureScaleY=" + textureScaleY +
+                ", x=" + x +
+                ", y=" + y +
+                ", w=" + w +
+                ", h=" + h +
+                ", tx=" + tx +
+                ", ty=" + ty +
+                ", tw=" + tw +
+                ", th=" + th +
+                ", angle=" + angle +
+                ", _w=" + _w +
+                ", _h=" + _h +
+                ", color=" + Arrays.toString(color) +
+                '}';
+    }
+
+    @Override
+    public int getTextureId() {
+        return textureId;
+    }
+
+    public void setTextureId(int textureId) {
+        this.textureId = textureId;
     }
 
     // Set texture coords based on grid id.
@@ -76,7 +111,6 @@ public class Sprite2D implements BatchElement {
         this.h = h;
         return this;
     }
-
 
     // Angle is 0-360
     public Sprite2D addAngle(float angle) {
@@ -112,7 +146,7 @@ public class Sprite2D implements BatchElement {
     }
 
     @Override
-    public void render(float textureScale, float outputScale) {
+    public void render(Graphics graphics) {
         //if ((FLAGS & FLAG_COLOR) != 0) {
         glColor4f(color[0], color[1], color[2], color[3]);
         //} else {
@@ -120,14 +154,15 @@ public class Sprite2D implements BatchElement {
         //}
 
         if ((FLAGS & FLAG_ANGLE) != 0) {
-            renderRotated(textureScale);
+            renderRotated(1.0f); //textureScale);
             return;
         }
 
-        float txs = tx * textureScale;
-        float tys = ty * textureScale;
-        float tws = tw * textureScale;
-        float ths = th * textureScale;
+        float outputScale = 1;
+        float txs = tx * textureScaleX;
+        float tys = ty * textureScaleY;
+        float tws = tw * textureScaleX;
+        float ths = th * textureScaleY;
 
         glBegin(GL_QUADS);
         {
@@ -173,4 +208,23 @@ public class Sprite2D implements BatchElement {
         glPopMatrix();
     }
 
+    @Override
+    public int getDrawOrder() {
+        return drawOrder;
+    }
+
+    @Override
+    public void setDrawOrder(int drawOrder) {
+        this.drawOrder = drawOrder;
+    }
+
+    @Override
+    public boolean hasTexture() {
+        return true;
+    }
+
+    public void setTextureScale(float x, float y) {
+        textureScaleX = x;
+        textureScaleY = y;
+    }
 }
