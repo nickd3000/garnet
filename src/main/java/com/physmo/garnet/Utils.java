@@ -10,10 +10,10 @@ public class Utils {
 
     public static String getPathForResource(Object me, String resourceName) {
 
-        URL resource = me.getClass().getResource(resourceName);
+        URL resource = me.getClass().getClassLoader().getResource(resourceName);
 
         if (resource == null) {
-            System.out.println("File not found: " + resourceName);
+            throw new RuntimeException("File not found: [" + resourceName + "]");
         }
 
         File file = null;
@@ -22,7 +22,6 @@ public class Utils {
             file = path.toFile();
         } catch (URISyntaxException e) {
             e.printStackTrace();
-            //System.out.println("File not found: "+resourceName);
         }
 
         if (file != null)
@@ -91,5 +90,18 @@ public class Utils {
     public static double lerp(double v1, double v2, double pos) {
         double span = v2 - v1;
         return (v1 + span * pos);
+    }
+
+    public String getPathToResource(String resourceName) {
+        URL resource = Utils.class.getResource(resourceName);
+        String path;
+        try {
+            File file = Paths.get(resource.toURI()).toFile();
+            path = file.getAbsolutePath();
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        return path;
     }
 }

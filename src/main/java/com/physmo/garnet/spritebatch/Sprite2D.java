@@ -163,6 +163,10 @@ public class Sprite2D implements BatchElement {
 
     @Override
     public void render(Graphics graphics) {
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glColor4f(color[0], color[1], color[2], color[3]);
 
         if ((FLAGS & FLAG_ANGLE) != 0) {
