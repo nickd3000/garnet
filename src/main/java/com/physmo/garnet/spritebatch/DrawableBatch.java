@@ -15,13 +15,13 @@ import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 public class DrawableBatch {
-    List<BatchElement> elements;
+    List<DrawableElement> elements;
 
     public DrawableBatch() {
         elements = new ArrayList<>();
     }
 
-    public void add(BatchElement batchElement) {
+    public void add(DrawableElement batchElement) {
         elements.add(batchElement);
     }
 
@@ -30,13 +30,13 @@ public class DrawableBatch {
     }
 
     public void render(Graphics graphics) {
-        List<BatchElement> orderedList = elements.stream().sorted(Comparator.comparingInt(BatchElement::getDrawOrder)).collect(Collectors.toList());
+        List<DrawableElement> orderedList = elements.stream().sorted(Comparator.comparingInt(DrawableElement::getDrawOrder)).collect(Collectors.toList());
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        for (BatchElement be : orderedList) {
+        for (DrawableElement be : orderedList) {
             graphics.bindTexture(be.getTextureId());
             be.render(graphics);
         }
