@@ -4,6 +4,7 @@ import com.physmo.garnet.Display;
 import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
 import com.physmo.garnet.spritebatch.DrawableBatch;
+import com.physmo.garnet.spritebatch.Line2D;
 import com.physmo.garnet.spritebatch.Sprite2D;
 import com.physmo.garnet.spritebatch.TileSheet;
 
@@ -93,6 +94,10 @@ public class Graphics {
     }
 
     public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
+
+        if (vertexCoords.length % 4 != 0) System.out.println("vertex coords " + vertexCoords.length);
+        if (texCoords.length % 4 != 0) System.out.println("texCoords  " + texCoords.length);
+
         for (int i = 0; i < vertexCoords.length; i++) {
             vertexCoords[i] = vertexCoords[i] * (float) scale;
         }
@@ -132,5 +137,19 @@ public class Graphics {
 
     public void setDrawOrder(int i) {
         currentDrawOrder = i;
+    }
+
+    public void drawRect(float x, float y, float w, float h) {
+        drawLine(x, y, x + w, y);
+        drawLine(x + w, y, x + w, y + h);
+        drawLine(x + w, y + h, x, y + h);
+        drawLine(x, y + h, x, y);
+    }
+
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
+        line.addColor(currentColor);
+        line.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(line);
     }
 }
