@@ -22,6 +22,7 @@ public class Graphics {
     int currentColor;
     int currentDrawOrder;
     int currentlyBoundTextureId;
+    int backgroundColor = 0;
 
     public Graphics(Display display) {
         this.display = display;
@@ -82,21 +83,18 @@ public class Graphics {
         int ty = tileY * tileHeight;
         int tw = tileWidth;
         int th = tileHeight;
-
+        Texture texture = tileSheet.getTexture();
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale),
                 (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tw, th);
-        sprite2D.setTextureId(tileSheet.getTexture().getId());
+        sprite2D.setTextureId(texture.getId());
         sprite2D.addColor(currentColor);
-        sprite2D.setTextureScale(1.0f / 256f, 1.0f / 256f);
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         drawableBatch.add(sprite2D);
 
     }
 
     public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
-
-        if (vertexCoords.length % 4 != 0) System.out.println("vertex coords " + vertexCoords.length);
-        if (texCoords.length % 4 != 0) System.out.println("texCoords  " + texCoords.length);
 
         for (int i = 0; i < vertexCoords.length; i++) {
             vertexCoords[i] = vertexCoords[i] * (float) scale;
@@ -114,7 +112,9 @@ public class Graphics {
     }
 
     public void addTexture(Texture texture) {
-        System.out.println("Registered texture id: " + texture.getId());
+        if (textures.containsKey(texture.getId())) {
+            System.out.println("Registered texture id: " + texture.getId());
+        }
         textures.put(texture.getId(), texture);
         currentTextureId = texture.getId();
     }
@@ -151,5 +151,17 @@ public class Graphics {
         line.addColor(currentColor);
         line.setDrawOrder(currentDrawOrder);
         drawableBatch.add(line);
+    }
+
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(int rgba) {
+        backgroundColor = rgba;
+    }
+
+    public boolean hasTexture(int id) {
+        return textures.containsKey(id);
     }
 }

@@ -31,6 +31,7 @@ public class Garnet {
     GarnetApp garnetApp;
     private int windowWidth, windowHeight;
 
+
     public Garnet(int windowWidth, int windowHeight) {
 
         this.windowWidth = windowWidth;
@@ -118,7 +119,8 @@ public class Garnet {
 
         // --------------- RENDER
         // Set the clear color
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        float[] bgCols = Utils.rgbToFloat(graphics.getBackgroundColor());
+        glClearColor(bgCols[0], bgCols[1], bgCols[2], bgCols[3]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
         garnetApp.draw();
