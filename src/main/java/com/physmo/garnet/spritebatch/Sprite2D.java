@@ -9,7 +9,7 @@ import java.util.Arrays;
 import static org.lwjgl.opengl.GL11.*;
 
 // TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
-public class Sprite2D implements BatchElement {
+public class Sprite2D implements DrawableElement {
 
     public static int FLAG_COLOR = 1;
     public static int FLAG_ANGLE = 2;
