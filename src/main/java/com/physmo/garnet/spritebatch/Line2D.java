@@ -5,7 +5,7 @@ import com.physmo.garnet.graphics.Graphics;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Line2D implements BatchElement {
+public class Line2D implements DrawableElement {
 
     int drawOrder;
     float[] coords = new float[4];

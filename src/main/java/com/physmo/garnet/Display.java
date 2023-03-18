@@ -15,6 +15,12 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Display {
 
     private long windowHandle;
+    private int windowWidth, windowHeight;
+
+    public Display() {
+        windowWidth = 0;
+        windowHeight = 0;
+    }
 
     public int getWindowWidth() {
         return windowWidth;
@@ -23,14 +29,6 @@ public class Display {
     public int getWindowHeight() {
         return windowHeight;
     }
-
-    private int windowWidth, windowHeight;
-
-    public Display() {
-        windowWidth = 0;
-        windowHeight = 0;
-    }
-
 
     public void bindTexture(int textureId) {
         glBindTexture(GL_TEXTURE_2D, textureId);
