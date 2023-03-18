@@ -2,7 +2,7 @@ package com.physmo.garnet.spritebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
-public interface BatchElement {
+public interface DrawableElement {
     void render(Graphics graphics);
 
     /**
