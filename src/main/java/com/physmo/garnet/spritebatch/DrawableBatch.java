@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 public class DrawableBatch {
-    List<DrawableElement> elements;
+    final List<DrawableElement> elements;
 
     public DrawableBatch() {
         elements = new ArrayList<>();

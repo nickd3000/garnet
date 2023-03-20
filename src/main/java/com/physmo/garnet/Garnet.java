@@ -24,13 +24,12 @@ public class Garnet {
     List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     GameClock gameClock = new GameClock();
     int runningLogicDelta = 0;
-
+    double tickRate = 1;
     Input input;
     Display display;
     Graphics graphics;
     GarnetApp garnetApp;
     private int windowWidth, windowHeight;
-
 
     public Garnet(int windowWidth, int windowHeight) {
 
@@ -40,6 +39,10 @@ public class Garnet {
         input = new Input(this);
         display = new Display();
         graphics = new Graphics(display);
+    }
+
+    public GameClock getGameClock() {
+        return gameClock;
     }
 
     public Graphics getGraphics() {
@@ -98,7 +101,7 @@ public class Garnet {
     public void updateLogicAndRender(int delta) {
 
         long nanoSecondsPerSecond = 1_000_000_000;
-        int logicUpdatesPerSecond = 60;
+        int logicUpdatesPerSecond = 120;
         double secondsPerLogicUpdate = 1.0 / (double) logicUpdatesPerSecond;
 
         long logicTime = nanoSecondsPerSecond / logicUpdatesPerSecond;
@@ -110,7 +113,7 @@ public class Garnet {
 
             runningLogicDelta -= logicTime;
 
-            garnetApp.tick(secondsPerLogicUpdate);
+            garnetApp.tick(secondsPerLogicUpdate * tickRate);
 
             gameClock.logLogicTick();
 

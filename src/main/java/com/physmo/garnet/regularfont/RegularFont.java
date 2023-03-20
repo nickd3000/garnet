@@ -4,15 +4,16 @@ import com.physmo.garnet.Texture;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.spritebatch.TileSheet;
 
-/*
-    Image requirements: a png containing 16x16 character grid in ascii format.
+/**
+ * RegularFont is a simpler font drawer.  It requires a font image file arranged in
+ * a specific grid pattern to match the ascii character system.
  */
 public class RegularFont {
 
-    TileSheet tileSheet;
-    private Texture texture;
-    private int charWidth;
-    private int charHeight;
+    private final TileSheet tileSheet;
+    private final Texture texture;
+    private final int charWidth;
+    private final int charHeight;
     private int horizontalPad = 0;
 
     public RegularFont(String imageFile, int charWidth, int charHeight) {
@@ -42,11 +43,11 @@ public class RegularFont {
         if (str == null) return;
 
         int textLength = str.length();
-        int xpos = textObject.x, ypos = textObject.y;
+        int xPos = textObject.x, yPos = textObject.y;
         for (int i = 0; i < textLength; i++) {
             char c = str.charAt(i);
-            renderChar(graphics, c, xpos, ypos);
-            xpos += charWidth + horizontalPad;
+            renderChar(graphics, c, xPos, yPos);
+            xPos += charWidth + horizontalPad;
         }
     }
 
