@@ -9,6 +9,14 @@ public class GameClock {
     double fps = 0;
     double lps = 0;
 
+    public double getFps() {
+        return fps;
+    }
+
+    public double getLps() {
+        return lps;
+    }
+
     public void tick() {
         long l = System.nanoTime();
     }
