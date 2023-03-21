@@ -30,20 +30,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_RGBA8;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glTexImage2D;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.stb.STBImage.stbi_failure_reason;
 import static org.lwjgl.stb.STBImage.stbi_load;
@@ -165,18 +152,6 @@ public class Texture {
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     }
 
-    public void setWidth(int width) {
-        if (width > 0) {
-            this.width = width;
-        }
-    }
-
-    public void setHeight(int height) {
-        if (height > 0) {
-            this.height = height;
-        }
-    }
-
     /**
      * Uploads image data with specified width and height.
      *
@@ -196,8 +171,23 @@ public class Texture {
         return width;
     }
 
+    public void setWidth(int width) {
+        if (width > 0) {
+            this.width = width;
+        }
+    }
+
     public int getHeight() {
         return height;
     }
 
+    public void setHeight(int height) {
+        if (height > 0) {
+            this.height = height;
+        }
+    }
+
+    public int getId() {
+        return id;
+    }
 }

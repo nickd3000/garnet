@@ -1,79 +1,63 @@
 package com.physmo.garnet.regularfont;
 
 import com.physmo.garnet.Texture;
-import com.physmo.garnet.spritebatch.Sprite2D;
-import com.physmo.garnet.spritebatch.SpriteBatch;
+import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.spritebatch.TileSheet;
 
-/*
-    Image requirements: a png containing 16x16 character grid in ascii format.
+/**
+ * RegularFont is a simpler font drawer.  It requires a font image file arranged in
+ * a specific grid pattern to match the ascii character system.
  */
 public class RegularFont {
 
-    SpriteBatch spriteBatch;
-    private Texture texture;
-
-    private int charWidth;
-    private int charHeight;
+    private final TileSheet tileSheet;
+    private final Texture texture;
+    private final int charWidth;
+    private final int charHeight;
+    private int horizontalPad = 0;
 
     public RegularFont(String imageFile, int charWidth, int charHeight) {
         this.charWidth = charWidth;
         this.charHeight = charHeight;
         texture = Texture.loadTexture(imageFile);
-        spriteBatch = new SpriteBatch(texture);
+        tileSheet = new TileSheet(texture, charWidth, charHeight);
     }
 
-    public SpriteBatch getSpriteBatch() {
-        return spriteBatch;
+    public int getHorizontalPad() {
+        return horizontalPad;
     }
 
-    public void clearSpriteBatch() {
-        spriteBatch.clear();
+    public void setHorizontalPad(int horizontalPad) {
+        this.horizontalPad = horizontalPad;
     }
 
-    public void drawText(String text, int x, int y, int scale) {
-        TextObject textObject = new TextObject(text, x, y, scale);
-        renderTextObject(textObject, spriteBatch);
+    public void drawText(Graphics graphics, String text, int x, int y) {
+        if (!graphics.hasTexture(texture.getId()))
+            graphics.addTexture(texture);
+        TextObject textObject = new TextObject(text, x, y);
+        renderTextObject(graphics, textObject);
     }
 
-    private void renderTextObject(TextObject textObject, SpriteBatch sb) {
+    private void renderTextObject(Graphics graphics, TextObject textObject) {
         String str = textObject.text;
         if (str == null) return;
 
         int textLength = str.length();
-        int xpos = textObject.x, ypos = textObject.y;
+        int xPos = textObject.x, yPos = textObject.y;
         for (int i = 0; i < textLength; i++) {
             char c = str.charAt(i);
-            renderChar(sb, c, xpos, ypos, textObject.scale);
-            xpos += charWidth * textObject.scale;
+            renderChar(graphics, c, xPos, yPos);
+            xPos += charWidth + horizontalPad;
         }
     }
 
-    public void renderChar(SpriteBatch sb, char c, int x, int y, int scale) {
-
+    public void renderChar(Graphics graphics, char c, int x, int y) {
         int cy = ((int) c) / 16;
         int cx = ((int) c) % 16;
 
-        sb.add(Sprite2D.build(
-                x, y, charWidth * scale, charHeight * scale,
-                cx * charWidth, cy * charHeight, charWidth, charHeight));
+        graphics.drawImage(tileSheet, x, y, cx, cy);
     }
 
-    public void drawTextToSpriteBatch(SpriteBatch sb, String text, int x, int y, int scale) {
-        TextObject textObject = new TextObject(text, x, y, scale);
-        renderTextObject(textObject, sb);
-    }
 
-    public void render() {
-        render(1);
-    }
-
-    public void render(float scale) {
-        spriteBatch.render(scale);
-        spriteBatch.clear();
-    }
-
-    public int getCount() {
-        return spriteBatch.size();
-    }
 }
 

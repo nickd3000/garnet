@@ -27,7 +27,7 @@ public class BMFChar {
 
     public void parseToken(String token) {
         String[] parts = token.split("=");
-        //System.out.println(part);
+
         if (parts.length < 2) return;
         switch (parts[0].toLowerCase()) {
             case "id":

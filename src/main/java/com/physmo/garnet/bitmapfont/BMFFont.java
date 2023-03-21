@@ -1,18 +1,13 @@
 package com.physmo.garnet.bitmapfont;
 
 import com.physmo.garnet.Texture;
+import com.physmo.garnet.graphics.Graphics;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glTexCoord2f;
-import static org.lwjgl.opengl.GL11.glVertex2f;
 
 public class BMFFont {
 
@@ -46,22 +41,40 @@ public class BMFFont {
         });
     }
 
-    public void drawString(Texture bmfFontTexture, String text, int x, int y, int scale) {
+
+    public void drawString(Graphics graphics, Texture bmfFontTexture, String text, int x, int y) {
         float[] floats = generateCoordsForStrings(text, x, y);
-        float tScale = 1.0f / bmfFontTexture.getWidth();
-        //float tScale = bmfFontTexture.getWidth();
+
+        float[] v = new float[8];
+        float[] t = new float[8];
 
         int idx = 0;
+        int numPoints = floats.length / 4;
+        int numQuads = numPoints / 4;
 
-        glBegin(GL_QUADS);
-        {
-            for (int i = 0; i < floats.length / 4; i++) {
-
-                glTexCoord2f(floats[idx++] * tScale, floats[idx++] * tScale);
-                glVertex2f(floats[idx++] * scale, floats[idx++] * scale);
+        for (int q = 0; q < numQuads; q++) {
+            int ti = 0;
+            int vi = 0;
+            for (int i = 0; i < 4; i++) {
+                v[vi++] = floats[idx++];
+                v[vi++] = floats[idx++];
+                t[ti++] = floats[idx++];
+                t[ti++] = floats[idx++];
             }
+            graphics.drawImage(bmfFontTexture, t, v);
         }
-        glEnd();
+
+    }
+
+    public int getStringWidth(String text) {
+        int stringWidth = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            BMFChar bmfChar = chars.get((int) c);
+            if (bmfChar == null) continue;
+            stringWidth += bmfChar.xadvance;
+        }
+        return stringWidth;
     }
 
     public float[] generateCoordsForStrings(String text, int x, int y) {
