@@ -2,6 +2,9 @@ package com.physmo.garnet.spritebatch;
 
 import com.physmo.garnet.Texture;
 
+/**
+ * Define the layout of a regular spaced sprite sheet.
+ */
 public class TileSheet {
     Texture texture;
     int tileWidth;
