@@ -9,12 +9,24 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BMFFont {
+public class BitmapFont {
 
-    Map<Integer, BMFChar> chars = new HashMap<>();
+    private static final int coordsPerChar = 16;
+    Map<Integer, GlyphGeometry> geometry;
+    Texture texture;
 
-    public String init(String path) throws IOException {
-        FileReader fileReader = new FileReader(path);
+    public BitmapFont(String texturePath, String definitionPath) throws IOException {
+        geometry = new HashMap<>();
+        loadDefinitionData(definitionPath);
+        loadTexture(texturePath);
+    }
+
+    private void loadTexture(String texturePath) {
+        texture = Texture.loadTexture(texturePath);
+    }
+
+    public String loadDefinitionData(String definitionPath) throws IOException {
+        FileReader fileReader = new FileReader(definitionPath);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
 
         String outString = "";
@@ -26,23 +38,24 @@ public class BMFFont {
         bufferedReader.close();
         fileReader.close();
 
-        parse(outString);
+        parseDefinitionData(outString);
 
         return outString;
     }
 
-    public void parse(String fileData) {
+    private void parseDefinitionData(String fileData) {
         fileData.lines().forEach(s -> {
             if (s.startsWith("char ")) {
-                BMFChar bmfChar = new BMFChar();
+                GlyphGeometry bmfChar = new GlyphGeometry();
                 bmfChar.parseLine(s);
-                chars.put(bmfChar.id, bmfChar);
+                geometry.put(bmfChar.id, bmfChar);
             }
         });
     }
 
+    public void drawString(Graphics graphics, String text, int x, int y) {
+        graphics.addTexture(texture);
 
-    public void drawString(Graphics graphics, Texture bmfFontTexture, String text, int x, int y) {
         float[] floats = generateCoordsForStrings(text, x, y);
 
         float[] v = new float[8];
@@ -61,30 +74,19 @@ public class BMFFont {
                 t[ti++] = floats[idx++];
                 t[ti++] = floats[idx++];
             }
-            graphics.drawImage(bmfFontTexture, t, v);
+            graphics.drawImage(texture, t, v);
         }
 
     }
 
-    public int getStringWidth(String text) {
-        int stringWidth = 0;
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            BMFChar bmfChar = chars.get((int) c);
-            if (bmfChar == null) continue;
-            stringWidth += bmfChar.xadvance;
-        }
-        return stringWidth;
-    }
-
-    public float[] generateCoordsForStrings(String text, int x, int y) {
+    private float[] generateCoordsForStrings(String text, int x, int y) {
         int xOffset = 0;
-        float[] coords = new float[text.length() * 16];
+        float[] coords = new float[text.length() * coordsPerChar];
         int cidx = 0;
 
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            BMFChar bmfChar = chars.get((int) c);
+            GlyphGeometry bmfChar = geometry.get((int) c);
             if (bmfChar == null) continue;
 
             float[] floats = generateCoordsForCharacter(bmfChar, x + xOffset, y + bmfChar.yoffset);
@@ -99,7 +101,7 @@ public class BMFFont {
     }
 
     // texture, vertex clockwise
-    public float[] generateCoordsForCharacter(BMFChar bmfChar, int x, int y) {
+    private float[] generateCoordsForCharacter(GlyphGeometry bmfChar, int x, int y) {
 
         float[] coords = new float[16];
         float[] tex = coords;
@@ -122,12 +124,22 @@ public class BMFFont {
 
         tex[i++] = bmfChar.x;
         tex[i++] = bmfChar.y + bmfChar.height;
-        ;
         coords[i++] = x;
         coords[i++] = y + bmfChar.height;
 
 
         return coords;
+    }
+
+    public int getStringWidth(String text) {
+        int stringWidth = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            GlyphGeometry bmfChar = geometry.get((int) c);
+            if (bmfChar == null) continue;
+            stringWidth += bmfChar.xadvance;
+        }
+        return stringWidth;
     }
 
 }
