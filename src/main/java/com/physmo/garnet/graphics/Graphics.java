@@ -113,7 +113,8 @@ public class Graphics {
 
     public void addTexture(Texture texture) {
         if (textures.containsKey(texture.getId())) {
-            System.out.println("Registered texture id: " + texture.getId());
+            //System.out.println("Registered texture id: " + texture.getId());
+            return;
         }
         textures.put(texture.getId(), texture);
         currentTextureId = texture.getId();
