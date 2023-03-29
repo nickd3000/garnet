@@ -61,6 +61,8 @@ public class GlyphGeometry {
             case "chnl":
                 channel = Integer.parseInt(parts[1]);
                 break;
+            default:
+                break;
         }
     }
 
