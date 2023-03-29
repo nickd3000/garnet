@@ -54,4 +54,10 @@ public class Line2D implements DrawableElement {
     public boolean hasTexture() {
         return false;
     }
+
+
+    @Override
+    public int getClipRect() {
+        return 0;
+    }
 }

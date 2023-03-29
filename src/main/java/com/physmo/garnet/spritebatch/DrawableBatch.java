@@ -36,10 +36,17 @@ public class DrawableBatch {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        for (DrawableElement be : orderedList) {
-            graphics.bindTexture(be.getTextureId());
-            be.render(graphics);
+        for (DrawableElement de : orderedList) {
+            applyClipRectIfRequired(graphics, de);
+            graphics.bindTexture(de.getTextureId());
+            de.render(graphics);
         }
+    }
+
+    public void applyClipRectIfRequired(Graphics graphics, DrawableElement de) {
+
+        graphics._activateClipRect(de.getClipRect());
+
     }
 
     public void clear() {

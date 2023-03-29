@@ -1,30 +1,40 @@
 package com.physmo.garnet.tilegrid;
 
-import com.physmo.garnet.Texture;
-import com.physmo.garnet.spritebatch.DrawableBatch;
-import com.physmo.garnet.spritebatch.Sprite2D;
+import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.spritebatch.TileSheet;
 
+// TODO: we need to clip this window
 public class TileGridDrawer {
 
     double scrollX, scrollY;
-    int spriteWidth, spriteHeight;
+    int tileWidth, tileHeight;
     int spriteDrawWidth, spriteDrawHeight;
-    int drawScale = 3;
-    int windowWidth = 10; // Measured in tiles
-    int windowHeight = 10;// Measured in tiles
-    private Texture texture;
-    private DrawableBatch spriteBatch;
+    int scale = 3;
+    int windowWidthInTiles = 10; // Measured in tiles
+    int windowHeightInTiles = 10;// Measured in tiles
+    private TileSheet tileSheet;
     private TileGridData tileGridData;
 
     public TileGridDrawer() {
-        spriteWidth = 16;
-        spriteHeight = 16;
-        spriteDrawWidth = 16 * drawScale;
-        spriteDrawHeight = 16 * drawScale;
+        tileWidth = 16;
+        tileHeight = 16;
+        spriteDrawWidth = 16 * scale;
+        spriteDrawHeight = 16 * scale;
     }
 
-    public TileGridDrawer setSpriteBatch(DrawableBatch spriteBatch) {
-        this.spriteBatch = spriteBatch;
+    public TileGridDrawer setTileSheet(TileSheet tileSheet) {
+        this.tileSheet = tileSheet;
+        return this;
+    }
+
+    public TileGridDrawer setTileSheet(int scale) {
+        this.scale = scale;
+        return this;
+    }
+
+    public TileGridDrawer setTileSize(int tileWidth, int tileHeight) {
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
         return this;
     }
 
@@ -33,30 +43,28 @@ public class TileGridDrawer {
         return this;
     }
 
-    public TileGridDrawer setWindowSize(int width, int height) {
-        windowWidth = width;
-        windowHeight = height;
+    public TileGridDrawer setWindowSize(int windowWidthInTiles, int windowHeightInTiles) {
+        this.windowWidthInTiles = windowWidthInTiles;
+        this.windowHeightInTiles = windowHeightInTiles;
         return this;
     }
 
-    public void draw() {
+    public void draw(Graphics graphics, int drawPosX, int drawPosY) {
 
-        int window_xx = ((int) scrollX) / spriteWidth;
-        int window_yy = ((int) scrollY) / spriteHeight;
+        int window_xx = ((int) scrollX) / tileWidth;
+        int window_yy = ((int) scrollY) / tileHeight;
         int offsetX = (int) (scrollX % 16);
         int offsetY = (int) (scrollY % 16);
+        int[] tCoords;
 
-        for (int y = 0; y <= windowHeight; y++) {
-            for (int x = 0; x <= windowWidth; x++) {
-                Sprite2D sprite2D = new Sprite2D();
+        graphics.setScale(scale);
 
+        for (int y = 0; y <= windowHeightInTiles; y++) {
+            for (int x = 0; x <= windowWidthInTiles; x++) {
                 int tileId = tileGridData.getTileId(window_xx + x, window_yy + y);
 
-                sprite2D.setTile(tileId, 0, 16);
-                sprite2D.setDrawPosition((x * 16) - offsetX, (y * 16) - offsetY, 16, 16);
-
-                //spriteBatch.add(Sprite2D.build(x * spriteDrawWidth, y * spriteDrawHeight, spriteDrawWidth, spriteDrawHeight, 0, 0, spriteWidth, spriteHeight));
-                spriteBatch.add(sprite2D);
+                tCoords = tileSheet.getTileCoordsFromIndex(tileId);
+                graphics.drawImage(tileSheet, drawPosX + (x * 16) - offsetX, drawPosY + (y * 16) - offsetY, tCoords[0], tCoords[1]);
             }
         }
     }

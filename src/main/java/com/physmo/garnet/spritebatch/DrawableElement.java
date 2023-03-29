@@ -17,4 +17,6 @@ public interface DrawableElement {
     int getTextureId();
 
     boolean hasTexture();
+
+    int getClipRect();
 }
