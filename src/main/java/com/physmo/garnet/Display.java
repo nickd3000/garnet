@@ -111,4 +111,18 @@ public class Display {
         glEnd();
     }
 
+    public double[] getWindowToPixelsScale() {
+
+
+        int[] windowSize = getWindowSize();
+        double w = (double) windowSize[0] / (double) windowWidth;
+        double h = (double) windowSize[1] / (double) windowHeight;
+        return new double[]{w, h};
+    }
+
+    public int[] getWindowSize() {
+        int[] w = new int[1], h = new int[1];
+        glfwGetFramebufferSize(windowHandle, w, h);
+        return new int[]{w[0], h[0]};
+    }
 }

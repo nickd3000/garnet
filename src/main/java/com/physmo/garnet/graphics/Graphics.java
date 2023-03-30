@@ -194,6 +194,16 @@ public class Graphics {
         return textures.containsKey(id);
     }
 
+    /**
+     * Register a clipping rectangle with Graphics.
+     * The location is in screen pixels and ignores any scaling applied to graphics.
+     *
+     * @param index
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     */
     public void addClipRect(int index, int x, int y, int w, int h) {
         Integer[] clipRect = new Integer[]{x, y, w, h};
         clipRects.put(index, clipRect);
@@ -216,12 +226,14 @@ public class Graphics {
         if (clipRectId == 0) {
             glDisable(GL_SCISSOR_TEST);
         } else {
+            double[] windowToPixelsScale = display.getWindowToPixelsScale();
+            int[] windowSize = display.getWindowSize();
             glEnable(GL_SCISSOR_TEST);
             Integer[] clipRect = clipRects.get(clipRectId);
-            int x = clipRect[0];
-            int y = clipRect[1];
-            int w = clipRect[2];
-            int h = clipRect[3];
+            int x = (int) (clipRect[0] * windowToPixelsScale[0]);
+            int y = (int) ((windowSize[1] - (clipRect[3] * windowToPixelsScale[1])) - (clipRect[1] * windowToPixelsScale[1]));
+            int w = (int) (clipRect[2] * windowToPixelsScale[0]);
+            int h = (int) (clipRect[3] * windowToPixelsScale[1]);
             glScissor(x, y, w, h);
 
         }
