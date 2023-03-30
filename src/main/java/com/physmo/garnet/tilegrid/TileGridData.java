@@ -16,6 +16,7 @@ public class TileGridData {
     }
 
     public int getTileId(int x, int y) {
+        if (x < 0 || y < 0 || x >= width || y >= height) return -1;
         return tileIds[getIndex(x, y)];
     }
 

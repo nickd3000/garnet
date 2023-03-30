@@ -37,4 +37,8 @@ public class TileSheet {
         int x = index % tilesWide;
         return new int[]{x, y};
     }
+
+    public int getTileIndexFromCoords(int x, int y) {
+        return x + (y * tilesWide);
+    }
 }

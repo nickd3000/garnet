@@ -219,7 +219,10 @@ public class Graphics {
      * @param clipRectId
      */
     public void _activateClipRect(int clipRectId) {
-        if (appliedClipRect == clipRectId) return;
+        // TODO: this was disabled because the rect was not being
+        // recalculated after window size change. Is doing this all
+        // the time bad for performance?
+        //if (appliedClipRect == clipRectId) return;
 
         appliedClipRect = clipRectId;
 

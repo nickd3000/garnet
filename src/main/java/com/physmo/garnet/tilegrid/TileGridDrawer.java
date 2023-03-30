@@ -6,20 +6,22 @@ import com.physmo.garnet.spritebatch.TileSheet;
 // TODO: we need to clip this window
 public class TileGridDrawer {
 
-    double scrollX, scrollY;
+    double scrollX = 0, scrollY = 0;
     int tileWidth, tileHeight;
-    int spriteDrawWidth, spriteDrawHeight;
     int scale = 3;
-    int windowWidthInTiles = 10; // Measured in tiles
-    int windowHeightInTiles = 10;// Measured in tiles
+    int windowWidth = 100; // Measured in unscaled pixels
+    int windowHeight = 100;// Measured in unscaled pixels
     private TileSheet tileSheet;
     private TileGridData tileGridData;
 
     public TileGridDrawer() {
         tileWidth = 16;
         tileHeight = 16;
-        spriteDrawWidth = 16 * scale;
-        spriteDrawHeight = 16 * scale;
+    }
+
+    public TileGridDrawer setScale(int scale) {
+        this.scale = scale;
+        return this;
     }
 
     public TileGridDrawer setTileSheet(TileSheet tileSheet) {
@@ -43,34 +45,61 @@ public class TileGridDrawer {
         return this;
     }
 
-    public TileGridDrawer setWindowSize(int windowWidthInTiles, int windowHeightInTiles) {
-        this.windowWidthInTiles = windowWidthInTiles;
-        this.windowHeightInTiles = windowHeightInTiles;
+    public TileGridDrawer setWindowSize(int windowWidth, int windowHeight) {
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
         return this;
     }
 
     public void draw(Graphics graphics, int drawPosX, int drawPosY) {
-
+        setClipRect(graphics, drawPosX, drawPosY);
         int window_xx = ((int) scrollX) / tileWidth;
         int window_yy = ((int) scrollY) / tileHeight;
-        int offsetX = (int) (scrollX % 16);
-        int offsetY = (int) (scrollY % 16);
+        int offsetX = (int) (scrollX % tileWidth);
+        int offsetY = (int) (scrollY % tileHeight);
         int[] tCoords;
 
         graphics.setScale(scale);
 
-        for (int y = 0; y <= windowHeightInTiles; y++) {
-            for (int x = 0; x <= windowWidthInTiles; x++) {
-                int tileId = tileGridData.getTileId(window_xx + x, window_yy + y);
+        int windowHeightInTiles = windowHeight / (tileHeight * scale);
+        int windowWidthInTiles = windowWidth / (tileWidth * scale);
 
+
+        for (int y = -1; y <= windowHeightInTiles; y++) {
+            for (int x = -1; x <= windowWidthInTiles; x++) {
+                int tileId = tileGridData.getTileId(window_xx + x, window_yy + y);
+                if (tileId == -1) continue;
                 tCoords = tileSheet.getTileCoordsFromIndex(tileId);
-                graphics.drawImage(tileSheet, drawPosX + (x * 16) - offsetX, drawPosY + (y * 16) - offsetY, tCoords[0], tCoords[1]);
+                graphics.drawImage(tileSheet,
+                        drawPosX + ((x - 2) * 16) - offsetX,
+                        drawPosY + ((y - 2) * 16) - offsetY,
+                        tCoords[0], tCoords[1]);
             }
         }
+
+        graphics.disableClipRect();
+
+    }
+
+    private void setClipRect(Graphics graphics, int x, int y) {
+        graphics.addClipRect(100, x, y, windowWidth, windowHeight);
+        graphics.setActiveClipRect(100);
     }
 
     public void setScroll(double scrollX, double scrollY) {
         this.scrollX = scrollX;
         this.scrollY = scrollY;
+        clampScroll();
+    }
+
+    public void clampScroll() {
+        int maxX = (tileWidth * (tileGridData.width) * scale) - windowWidth;
+        int maxY = (tileHeight * (tileGridData.height) * scale) - windowHeight;
+        maxX /= scale;
+        maxY /= scale;
+        if (scrollX < 0) scrollX = 0;
+        if (scrollY < 0) scrollY = 0;
+        if (scrollX >= maxX) scrollX = maxX;
+        if (scrollY >= maxY) scrollY = maxY;
     }
 }
