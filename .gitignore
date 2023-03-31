@@ -6,7 +6,7 @@
 target/
 .idea/
 .idea
-*.iml
+**/*.iml
 .iml
 
 # Package Files #
