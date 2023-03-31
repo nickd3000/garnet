@@ -17,6 +17,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glScissor;
 
 public class Graphics {
+
     private final Display display;
     Map<Integer, Texture> textures;
     DrawableBatch drawableBatch;
@@ -121,6 +122,15 @@ public class Graphics {
         drawableBatch.add(sprite2D);
     }
 
+    public void addTexture(Texture texture) {
+        if (textures.containsKey(texture.getId())) {
+            //System.out.println("Registered texture id: " + texture.getId());
+            return;
+        }
+        textures.put(texture.getId(), texture);
+        currentTextureId = texture.getId();
+    }
+
     public void drawImage(Texture texture, int x, int y) {
 
         int tileWidth = texture.getWidth();
@@ -137,15 +147,6 @@ public class Graphics {
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
         drawableBatch.add(sprite2D);
-    }
-
-    public void addTexture(Texture texture) {
-        if (textures.containsKey(texture.getId())) {
-            //System.out.println("Registered texture id: " + texture.getId());
-            return;
-        }
-        textures.put(texture.getId(), texture);
-        currentTextureId = texture.getId();
     }
 
     // TODO: only bind if different
@@ -252,5 +253,13 @@ public class Graphics {
 
     public void setActiveClipRect(int id) {
         activeClipRect = id;
+    }
+
+    public int getAvailableClipRectId() {
+        // Start at 100 to leave space for user defined clip rects.
+        for (int i = 100; i < 5000; i++) {
+            if (!clipRects.containsKey(i)) return i;
+        }
+        throw new RuntimeException("Too many clip rects.");
     }
 }
