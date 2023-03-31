@@ -29,7 +29,8 @@ public class Garnet {
     Display display;
     Graphics graphics;
     GarnetApp garnetApp;
-    private int windowWidth, windowHeight;
+    private final int windowWidth;
+    private final int windowHeight;
 
     public Garnet(int windowWidth, int windowHeight) {
 
@@ -124,7 +125,13 @@ public class Garnet {
         // Set the clear color
         float[] bgCols = Utils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols[0], bgCols[1], bgCols[2], bgCols[3]);
+
+        boolean scissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
+        if (scissorEnabled) glDisable(GL_SCISSOR_TEST);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+        if (scissorEnabled) glEnable(GL_SCISSOR_TEST);
 
         garnetApp.draw();
 

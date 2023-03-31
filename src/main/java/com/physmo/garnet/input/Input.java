@@ -7,8 +7,8 @@ import java.util.List;
 
 public class Input {
 
-    static Garnet garnet;
-    static List<ButtonConfig> buttonConfigList;
+    Garnet garnet;
+    List<ButtonConfig> buttonConfigList;
 
     boolean[] buttonState;
     boolean[] buttonStatePrev;
@@ -22,9 +22,7 @@ public class Input {
     }
 
     public void tick() {
-        for (int i = 0; i < buttonState.length; i++) {
-            buttonStatePrev[i] = buttonState[i];
-        }
+        System.arraycopy(buttonState, 0, buttonStatePrev, 0, buttonState.length);
     }
 
     public void init() {
@@ -65,8 +63,8 @@ public class Input {
     public boolean isFirstPress(VirtualButton button) {
         for (ButtonConfig buttonConfig : buttonConfigList) {
             if (buttonConfig.virtualButton == button) {
-                if (buttonState[buttonConfig.scancode] == true &&
-                        buttonStatePrev[buttonConfig.scancode] == false) return true;
+                if (buttonState[buttonConfig.scancode] &&
+                        !buttonStatePrev[buttonConfig.scancode]) return true;
             }
         }
         return false;

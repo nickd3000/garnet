@@ -1,7 +1,7 @@
 package com.physmo.garnet;
 
 public class GameClock {
-    long initTime = System.nanoTime();
+
     int frameCount = 0;
     int logicCount = 0;
     long fpsCheckpointTime = System.nanoTime();
@@ -18,7 +18,7 @@ public class GameClock {
     }
 
     public void tick() {
-        long l = System.nanoTime();
+
     }
 
     public void logLogicTick() {

@@ -11,7 +11,13 @@ import com.physmo.garnet.spritebatch.TileSheet;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glScissor;
+
 public class Graphics {
+
     private final Display display;
     Map<Integer, Texture> textures;
     DrawableBatch drawableBatch;
@@ -23,11 +29,15 @@ public class Graphics {
     int currentDrawOrder;
     int currentlyBoundTextureId;
     int backgroundColor = 0;
+    Map<Integer, Integer[]> clipRects;
+    int activeClipRect;
+    private int appliedClipRect = 0; // The clip rect set active in openGl.
 
     public Graphics(Display display) {
         this.display = display;
         drawableBatch = new DrawableBatch();
         textures = new HashMap<>();
+        clipRects = new HashMap<>();
         resetSettings();
     }
 
@@ -36,6 +46,7 @@ public class Graphics {
         currentColor = Utils.rgb(0xff, 0xff, 0xff, 0xff);
         currentDrawOrder = 0;
         currentlyBoundTextureId = 0;
+        activeClipRect = 0; // 0 means none.
     }
 
     public void render() {
@@ -81,15 +92,14 @@ public class Graphics {
         // texture coords
         int tx = tileX * tileWidth;
         int ty = tileY * tileHeight;
-        int tw = tileWidth;
-        int th = tileHeight;
         Texture texture = tileSheet.getTexture();
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale),
-                (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tw, th);
+                (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
         sprite2D.addColor(currentColor);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
+        sprite2D.setClipRect(activeClipRect);
         drawableBatch.add(sprite2D);
 
     }
@@ -108,15 +118,35 @@ public class Graphics {
         sprite2D.addColor(currentColor);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
+        sprite2D.setClipRect(activeClipRect);
         drawableBatch.add(sprite2D);
     }
 
     public void addTexture(Texture texture) {
         if (textures.containsKey(texture.getId())) {
-            System.out.println("Registered texture id: " + texture.getId());
+            //System.out.println("Registered texture id: " + texture.getId());
+            return;
         }
         textures.put(texture.getId(), texture);
         currentTextureId = texture.getId();
+    }
+
+    public void drawImage(Texture texture, int x, int y) {
+
+        int tileWidth = texture.getWidth();
+        int tileHeight = texture.getHeight();
+        // texture coords
+        int tx = 0;
+        int ty = 0;
+
+        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale),
+                (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        sprite2D.setTextureId(texture.getId());
+        sprite2D.addColor(currentColor);
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+        sprite2D.setDrawOrder(currentDrawOrder);
+        sprite2D.setClipRect(activeClipRect);
+        drawableBatch.add(sprite2D);
     }
 
     // TODO: only bind if different
@@ -163,5 +193,73 @@ public class Graphics {
 
     public boolean hasTexture(int id) {
         return textures.containsKey(id);
+    }
+
+    /**
+     * Register a clipping rectangle with Graphics.
+     * The location is in screen pixels and ignores any scaling applied to graphics.
+     *
+     * @param index
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     */
+    public void addClipRect(int index, int x, int y, int w, int h) {
+        Integer[] clipRect = new Integer[]{x, y, w, h};
+        clipRects.put(index, clipRect);
+    }
+
+    public void disableClipRect() {
+        setActiveClipRect(0);
+    }
+
+    /**
+     * Internal function, not for user use.
+     *
+     * @param clipRectId
+     */
+    public void _activateClipRect(int clipRectId) {
+        // TODO: this was disabled because the rect was not being
+        // recalculated after window size change. Is doing this all
+        // the time bad for performance?
+        //if (appliedClipRect == clipRectId) return;
+
+        appliedClipRect = clipRectId;
+
+        if (clipRectId == 0) {
+            glDisable(GL_SCISSOR_TEST);
+        } else {
+            double[] windowToPixelsScale = display.getWindowToPixelsScale();
+            int[] windowSize = display.getWindowSize();
+            glEnable(GL_SCISSOR_TEST);
+            Integer[] clipRect = clipRects.get(clipRectId);
+            int x = (int) (clipRect[0] * windowToPixelsScale[0]);
+            int y = (int) ((windowSize[1] - (clipRect[3] * windowToPixelsScale[1])) - (clipRect[1] * windowToPixelsScale[1]));
+            int w = (int) (clipRect[2] * windowToPixelsScale[0]);
+            int h = (int) (clipRect[3] * windowToPixelsScale[1]);
+            glScissor(x, y, w, h);
+
+        }
+    }
+
+    public boolean clipRectActive() {
+        return activeClipRect != 0;
+    }
+
+    public int getActiveClipRect() {
+        return activeClipRect;
+    }
+
+    public void setActiveClipRect(int id) {
+        activeClipRect = id;
+    }
+
+    public int getAvailableClipRectId() {
+        // Start at 100 to leave space for user defined clip rects.
+        for (int i = 100; i < 5000; i++) {
+            if (!clipRects.containsKey(i)) return i;
+        }
+        throw new RuntimeException("Too many clip rects.");
     }
 }

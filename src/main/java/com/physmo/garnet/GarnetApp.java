@@ -1,5 +1,8 @@
 package com.physmo.garnet;
 
+/**
+ * Base component to derive garnet applications from
+ */
 public abstract class GarnetApp {
 
     public Garnet garnet;
@@ -16,6 +19,12 @@ public abstract class GarnetApp {
 
     public abstract void init(Garnet garnet);
 
+    /**
+     * tick is called periodically and usually more frequently
+     * that the draw method.
+     *
+     * @param delta
+     */
     public abstract void tick(double delta);
 
     public abstract void draw();

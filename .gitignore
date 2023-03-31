@@ -6,7 +6,8 @@
 target/
 .idea/
 .idea
-
+**/*.iml
+.iml
 
 # Package Files #
 *.jar
