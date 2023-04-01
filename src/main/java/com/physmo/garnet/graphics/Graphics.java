@@ -3,10 +3,10 @@ package com.physmo.garnet.graphics;
 import com.physmo.garnet.Display;
 import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
-import com.physmo.garnet.spritebatch.DrawableBatch;
-import com.physmo.garnet.spritebatch.Line2D;
-import com.physmo.garnet.spritebatch.Sprite2D;
-import com.physmo.garnet.spritebatch.TileSheet;
+import com.physmo.garnet.drawablebatch.DrawableBatch;
+import com.physmo.garnet.drawablebatch.Line2D;
+import com.physmo.garnet.drawablebatch.Sprite2D;
+import com.physmo.garnet.drawablebatch.TileSheet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,18 +19,18 @@ import static org.lwjgl.opengl.GL11.glScissor;
 public class Graphics {
 
     private final Display display;
-    Map<Integer, Texture> textures;
-    DrawableBatch drawableBatch;
-    double scale;
-    float xOffset;
-    float yOffset;
-    int currentTextureId = 0;
-    int currentColor;
-    int currentDrawOrder;
-    int currentlyBoundTextureId;
-    int backgroundColor = 0;
-    Map<Integer, Integer[]> clipRects;
-    int activeClipRect;
+    private final Map<Integer, Texture> textures;
+    private final DrawableBatch drawableBatch;
+    private double scale;
+    private float xOffset;
+    private float yOffset;
+    private int currentTextureId = 0;
+    private int currentColor;
+    private int currentDrawOrder;
+    private int currentlyBoundTextureId;
+    private int backgroundColor = 0;
+    private final Map<Integer, Integer[]> clipRects;
+    private int activeClipRect;
     private int appliedClipRect = 0; // The clip rect set active in openGl.
 
     public Graphics(Display display) {
@@ -93,8 +93,7 @@ public class Graphics {
         int tx = tileX * tileWidth;
         int ty = tileY * tileHeight;
         Texture texture = tileSheet.getTexture();
-        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale),
-                (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
         sprite2D.addColor(currentColor);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
@@ -139,8 +138,7 @@ public class Graphics {
         int tx = 0;
         int ty = 0;
 
-        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale),
-                (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
         sprite2D.addColor(currentColor);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());

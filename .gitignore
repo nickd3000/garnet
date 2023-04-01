@@ -9,6 +9,9 @@ target/
 **/*.iml
 .iml
 
+# Docs
+javadoc/
+
 # Package Files #
 *.jar
 *.jar.original

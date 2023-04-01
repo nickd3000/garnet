@@ -8,7 +8,15 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -18,11 +26,12 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Display {
 
     private long windowHandle;
-    private int windowWidth, windowHeight;
+    private final int windowWidth;
+    private final int windowHeight;
 
-    public Display() {
-        windowWidth = 0;
-        windowHeight = 0;
+    public Display(int windowWidth, int windowHeight) {
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
     }
 
     public int getWindowWidth() {
@@ -33,18 +42,12 @@ public class Display {
         return windowHeight;
     }
 
-    public void bindTexture(int textureId) {
-        glBindTexture(GL_TEXTURE_2D, textureId);
-    }
-
 
     public long getWindowHandle() {
         return windowHandle;
     }
 
-    public void init(int windowWidth, int windowHeight) {
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
+    public void init() {
 
         // Setup an error callback. The default implementation
         // will print the error message in System.err.

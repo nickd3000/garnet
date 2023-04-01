@@ -1,4 +1,4 @@
-package com.physmo.garnet.spritebatch;
+package com.physmo.garnet.drawablebatch;
 
 
 import com.physmo.garnet.Utils;
@@ -13,6 +13,7 @@ public class Sprite2D implements DrawableElement {
 
     public static int FLAG_COLOR = 1;
     public static int FLAG_ANGLE = 2;
+    private final float[] color = new float[4];
     int textureId = 0;
     int drawOrder = 0;
     float textureScaleX;
@@ -20,7 +21,6 @@ public class Sprite2D implements DrawableElement {
     int clipRect = 0;
     private int FLAGS = 0;
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
-    private final float[] color = new float[4];
 
     public Sprite2D() {
     }
@@ -241,12 +241,12 @@ public class Sprite2D implements DrawableElement {
         return clipRect;
     }
 
+    public void setClipRect(int id) {
+        clipRect = id;
+    }
+
     public void setTextureScale(float x, float y) {
         textureScaleX = x;
         textureScaleY = y;
-    }
-
-    public void setClipRect(int id) {
-        clipRect = id;
     }
 }

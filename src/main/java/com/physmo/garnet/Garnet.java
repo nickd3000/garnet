@@ -16,29 +16,30 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glIsEnabled;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class Garnet {
 
-    List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
-    GameClock gameClock = new GameClock();
-    int runningLogicDelta = 0;
-    double tickRate = 1;
-    Input input;
-    Display display;
-    Graphics graphics;
-    GarnetApp garnetApp;
-    private final int windowWidth;
-    private final int windowHeight;
+    private final List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
+    private final GameClock gameClock = new GameClock();
+    private int runningLogicDelta = 0;
+    private final double tickRate = 1;
+    private final Input input;
+    private final Display display;
+    private final Graphics graphics;
+    private GarnetApp garnetApp;
 
     public Garnet(int windowWidth, int windowHeight) {
-
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-
         input = new Input(this);
-        display = new Display();
+        display = new Display(windowWidth, windowHeight);
         graphics = new Graphics(display);
     }
 
@@ -53,7 +54,7 @@ public class Garnet {
     public void init() {
 
         input.init();
-        display.init(windowWidth, windowHeight);
+        display.init();
 
         garnetApp.init(this);
 
@@ -154,11 +155,6 @@ public class Garnet {
         return input;
     }
 
-    public void setClipWindow(int x, int y, int width, int height) {
-        glScissor(x, y, width, height);
-        glEnable(GL_SCISSOR_TEST);
-    }
-
     public Display getDisplay() {
         return display;
     }
@@ -167,24 +163,4 @@ public class Garnet {
         this.garnetApp = garnetApp;
     }
 
-    public void setDrawColor(float r, float g, float b, float a) {
-        glColor4f(r, g, b, a);
-    }
-
-    public void setDrawColor(int rgb) {
-        float[] f = Utils.rgbToFloat(rgb);
-        glColor4f(f[0], f[1], f[2], f[3]);
-    }
-
-    public void setDrawModeWireframe() {
-        glDisable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    public void setDrawModeNormal2D() {
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
 }

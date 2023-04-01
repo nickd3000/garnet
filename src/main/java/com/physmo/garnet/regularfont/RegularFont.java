@@ -1,8 +1,8 @@
 package com.physmo.garnet.regularfont;
 
 import com.physmo.garnet.Texture;
+import com.physmo.garnet.drawablebatch.TileSheet;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.spritebatch.TileSheet;
 
 /**
  * RegularFont is a simpler font drawer.  It requires a font image file arranged in
