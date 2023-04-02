@@ -115,17 +115,33 @@ public class Display {
     }
 
     public double[] getWindowToPixelsScale() {
-
-
-        int[] windowSize = getWindowSize();
-        double w = (double) windowSize[0] / (double) windowWidth;
-        double h = (double) windowSize[1] / (double) windowHeight;
+        int[] bufferSize = getWindowSize();
+        double w = (double) bufferSize[0] / (double) windowWidth;
+        double h = (double) bufferSize[1] / (double) windowHeight;
         return new double[]{w, h};
     }
 
     public int[] getWindowSize() {
+//        int[] w = new int[1], h = new int[1];
+//        glfwGetFramebufferSize(windowHandle, w, h);
+
+        int[] w2 = new int[1], h2 = new int[1];
+        glfwGetWindowSize(windowHandle, w2, h2);
+
+        return new int[]{w2[0], h2[0]};
+    }
+
+    public double[] getWindowToBufferScale() {
+        int[] bufferSize = getBufferSize();
+        double w = (double) bufferSize[0] / (double) windowWidth;
+        double h = (double) bufferSize[1] / (double) windowHeight;
+        return new double[]{w, h};
+    }
+
+    public int[] getBufferSize() {
         int[] w = new int[1], h = new int[1];
         glfwGetFramebufferSize(windowHandle, w, h);
+
         return new int[]{w[0], h[0]};
     }
 }

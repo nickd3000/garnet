@@ -25,7 +25,7 @@ public class Graphics {
     private float xOffset;
     private float yOffset;
     private int currentTextureId = 0;
-    private int currentColor;
+    private int color;
     private int currentDrawOrder;
     private int currentlyBoundTextureId;
     private int backgroundColor = 0;
@@ -43,7 +43,7 @@ public class Graphics {
 
     public void resetSettings() {
         scale = 1;
-        currentColor = Utils.rgb(0xff, 0xff, 0xff, 0xff);
+        color = Utils.rgb(0xff, 0xff, 0xff, 0xff);
         currentDrawOrder = 0;
         currentlyBoundTextureId = 0;
         activeClipRect = 0; // 0 means none.
@@ -95,7 +95,7 @@ public class Graphics {
         Texture texture = tileSheet.getTexture();
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(currentColor);
+        sprite2D.addColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -114,7 +114,7 @@ public class Graphics {
 
         Sprite2D sprite2D = new Sprite2D(vertexCoords, texCoords);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(currentColor);
+        sprite2D.addColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -140,7 +140,7 @@ public class Graphics {
 
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(currentColor);
+        sprite2D.addColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -159,8 +159,11 @@ public class Graphics {
         currentlyBoundTextureId = textureId;
     }
 
-    public void setColor(int col) {
-        currentColor = col;
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
+        line.addColor(color);
+        line.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(line);
     }
 
     public void setDrawOrder(int i) {
@@ -174,15 +177,16 @@ public class Graphics {
         drawLine(x, y + h, x, y);
     }
 
-    public void drawLine(float x1, float y1, float x2, float y2) {
-        Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
-        line.addColor(currentColor);
-        line.setDrawOrder(currentDrawOrder);
-        drawableBatch.add(line);
+    public int getColor() {
+        return color;
     }
 
     public int getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public void setColor(int col) {
+        color = col;
     }
 
     public void setBackgroundColor(int rgba) {
@@ -228,8 +232,8 @@ public class Graphics {
         if (clipRectId == 0) {
             glDisable(GL_SCISSOR_TEST);
         } else {
-            double[] windowToPixelsScale = display.getWindowToPixelsScale();
-            int[] windowSize = display.getWindowSize();
+            double[] windowToPixelsScale = display.getWindowToBufferScale();
+            int[] windowSize = display.getBufferSize();
             glEnable(GL_SCISSOR_TEST);
             Integer[] clipRect = clipRects.get(clipRectId);
             int x = (int) (clipRect[0] * windowToPixelsScale[0]);

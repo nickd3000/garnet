@@ -30,17 +30,23 @@ public class Garnet {
 
     private final List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     private final GameClock gameClock = new GameClock();
-    private int runningLogicDelta = 0;
     private final double tickRate = 1;
     private final Input input;
     private final Display display;
     private final Graphics graphics;
+    private final DebugDrawer debugDrawer;
+    private int runningLogicDelta = 0;
     private GarnetApp garnetApp;
 
     public Garnet(int windowWidth, int windowHeight) {
-        input = new Input(this);
         display = new Display(windowWidth, windowHeight);
+        input = new Input(this);
         graphics = new Graphics(display);
+        debugDrawer = new DebugDrawer();
+    }
+
+    public DebugDrawer getDebugDrawer() {
+        return debugDrawer;
     }
 
     public GameClock getGameClock() {
@@ -53,10 +59,12 @@ public class Garnet {
 
     public void init() {
 
-        input.init();
-        display.init();
 
+        display.init();
+        input.init();
+        input.setWindowHandle(display.getWindowHandle());
         garnetApp.init(this);
+        debugDrawer.init();
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(display.getWindowHandle(), (window, key, scancode, action, mods) -> {
@@ -135,6 +143,10 @@ public class Garnet {
         if (scissorEnabled) glEnable(GL_SCISSOR_TEST);
 
         garnetApp.draw();
+
+
+        debugDrawer.setFPS(gameClock.getFps());
+        debugDrawer.draw(graphics);
 
         gameClock.logFrame();
 
