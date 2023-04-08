@@ -61,6 +61,8 @@ public class Input {
         buttonConfigList = new ArrayList<>();
         buttonConfigList.add(new ButtonConfig(123, VirtualButton.LEFT));
         buttonConfigList.add(new ButtonConfig(124, VirtualButton.RIGHT));
+        buttonConfigList.add(new ButtonConfig(126, VirtualButton.UP));
+        buttonConfigList.add(new ButtonConfig(125, VirtualButton.DOWN));
         buttonConfigList.add(new ButtonConfig(6, VirtualButton.FIRE1));
         buttonConfigList.add(new ButtonConfig(48, VirtualButton.MENU)); // tab
 
@@ -111,6 +113,6 @@ public class Input {
     }
 
     public enum VirtualButton {
-        LEFT, RIGHT, FIRE1, FIRE2, MENU
+        LEFT, RIGHT, UP, DOWN, FIRE1, FIRE2, MENU
     }
 }
