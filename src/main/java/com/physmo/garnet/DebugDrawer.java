@@ -7,14 +7,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DebugDrawer {
-    private RegularFont regularFont;
     private final Map<String, String> userStrings = new HashMap<>();
-    private double fps;
     private final int textColor = 0xffdd00ff;
     private final int shadowColor = 0x000000d0;
+    private final int lineHeight = 10;
+    private RegularFont regularFont;
+    private double fps;
     private boolean visible = true;
     private boolean drawFps = true;
-    private final int lineHeight = 10;
+    private double scale = 1;
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
 
     public boolean isVisible() {
         return visible;
@@ -41,14 +50,18 @@ public class DebugDrawer {
 
         int prevColor = g.getColor();
         double prevScale = g.getScale();
-        g.setScale(1);
+        int prevDrawOrder = g.getDrawOrder();
+        int prevClipRect = g.getActiveClipRect();
 
+        g.setScale(scale);
+        g.disableClipRect();
         if (drawFps) y += drawString(g, "FPS: " + fps, y);
-        y += drawUserStrings(g, y);
+        drawUserStrings(g, y);
 
         g.setColor(prevColor);
         g.setScale(prevScale);
-
+        g.setDrawOrder(prevDrawOrder);
+        g.setActiveClipRect(prevClipRect);
     }
 
     public int drawString(Graphics g, String str, int y) {
@@ -62,7 +75,7 @@ public class DebugDrawer {
         g.setColor(textColor);
         regularFont.drawText(g, str, 5, y);
 
-        return lineHeight;
+        return (int) (lineHeight * scale);
     }
 
     private int drawUserStrings(Graphics g, int y) {

@@ -170,6 +170,10 @@ public class Graphics {
         currentDrawOrder = i;
     }
 
+    public int getDrawOrder() {
+        return currentDrawOrder;
+    }
+
     public void drawRect(float x, float y, float w, float h) {
         drawLine(x, y, x + w, y);
         drawLine(x + w, y, x + w, y + h);

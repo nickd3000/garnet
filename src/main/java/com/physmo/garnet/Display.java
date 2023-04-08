@@ -122,9 +122,6 @@ public class Display {
     }
 
     public int[] getWindowSize() {
-//        int[] w = new int[1], h = new int[1];
-//        glfwGetFramebufferSize(windowHandle, w, h);
-
         int[] w2 = new int[1], h2 = new int[1];
         glfwGetWindowSize(windowHandle, w2, h2);
 

@@ -17,10 +17,6 @@ public class GameClock {
         return lps;
     }
 
-    public void tick() {
-
-    }
-
     public void logLogicTick() {
         long curTime = System.nanoTime();
         logicCount++;
@@ -31,7 +27,6 @@ public class GameClock {
             lps = logicCount;
             logicCount = 0;
             logicCheckpointTime = curTime;
-            //System.out.println("LPS " + lps);
         }
     }
 
@@ -45,7 +40,6 @@ public class GameClock {
             fps = frameCount;
             frameCount = 0;
             fpsCheckpointTime = curTime;
-            //System.out.println("FPS " + fps);
         }
 
     }
