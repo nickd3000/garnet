@@ -1,4 +1,4 @@
-package com.physmo.garnet.spritebatch;
+package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
