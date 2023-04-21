@@ -11,16 +11,15 @@ import static org.lwjgl.opengl.GL11.*;
 // TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
 public class Sprite2D implements DrawableElement {
 
-    public static int FLAG_COLOR = 1;
-    public static int FLAG_ANGLE = 2;
     private final float[] color = new float[4];
     int textureId = 0;
     int drawOrder = 0;
     float textureScaleX;
     float textureScaleY;
     int clipRect = 0;
-    private int FLAGS = 0;
+    boolean rotated = false;
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
+
 
     public Sprite2D() {
     }
@@ -46,10 +45,10 @@ public class Sprite2D implements DrawableElement {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.tx = tx;// * textureScale;
-        this.ty = ty;// * textureScale;
-        this.tw = tw;// * textureScale;
-        this.th = th;// * textureScale;
+        this.tx = tx;
+        this.ty = ty;
+        this.tw = tw;
+        this.th = th;
         this._w = this.w / 2;
         this._h = this.h / 2;
     }
@@ -59,31 +58,26 @@ public class Sprite2D implements DrawableElement {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.tx = tx;// * textureScale;
-        this.ty = ty;// * textureScale;
-        this.tw = tw;// * textureScale;
-        this.th = th;// * textureScale;
+        this.tx = tx;
+        this.ty = ty;
+        this.tw = tw;
+        this.th = th;
         this.angle = angle;
         this._w = this.w / 2;
         this._h = this.h / 2;
     }
 
-    public static Sprite2D build(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
-        Sprite2D spr = new Sprite2D(x, y, w, h, tx, ty, tw, th);
-        return spr;
-    }
-
-    // Build without texture coords.
-    public static Sprite2D build(int x, int y, int w, int h) {
-        Sprite2D spr = new Sprite2D(x, y, w, h, 0, 0, 0, 0);
-        return spr;
+    // Angle is 0-360
+    public Sprite2D addAngle(float angle) {
+        rotated = true;
+        this.angle = angle;
+        return this;
     }
 
     @Override
     public String toString() {
         return "Sprite2D{" +
                 "textureId=" + textureId +
-                ", FLAGS=" + FLAGS +
                 ", textureScaleX=" + textureScaleX +
                 ", textureScaleY=" + textureScaleY +
                 ", x=" + x +
@@ -110,35 +104,6 @@ public class Sprite2D implements DrawableElement {
         this.textureId = textureId;
     }
 
-    // Set texture coords based on grid id.
-    public Sprite2D setTile(int tileX, int tileY, int tileSize) {
-
-        tx = tileX * tileSize;
-        ty = tileY * tileSize;
-        tw = tileSize;
-        th = tileSize;
-        return this;
-    }
-
-    public Sprite2D setDrawPosition(int x, int y, int w, int h) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        return this;
-    }
-
-    // Angle is 0-360
-    public Sprite2D addAngle(float angle) {
-        setFlag(FLAG_ANGLE);
-        this.angle = angle;
-        return this;
-    }
-
-    private void setFlag(int flag) {
-        FLAGS |= flag;
-    }
-
     public Sprite2D addColor(int rgb) {
         return addColor(Utils.rgbToFloat(rgb));
     }
@@ -152,13 +117,7 @@ public class Sprite2D implements DrawableElement {
         color[1] = g;
         color[2] = b;
         color[3] = a;
-
-        setFlag(FLAG_COLOR);
         return this;
-    }
-
-    public Sprite2D addColor(float r, float g, float b) {
-        return addColor(r, g, b, 1.0f);
     }
 
     @Override
@@ -169,8 +128,8 @@ public class Sprite2D implements DrawableElement {
 
         glColor4f(color[0], color[1], color[2], color[3]);
 
-        if ((FLAGS & FLAG_ANGLE) != 0) {
-            renderRotated(1.0f); //textureScale);
+        if (rotated) {
+            renderRotated(1.0f);
             return;
         }
 
@@ -192,18 +151,18 @@ public class Sprite2D implements DrawableElement {
             glVertex2f(x * outputScale, y * outputScale + h * outputScale);
         }
         glEnd();
+
     }
 
     private void renderRotated(float textureScale) {
         glPushMatrix();
-
         glTranslatef(x + _w, y + _h, 0);
         glRotatef(angle, 0f, 0f, 1.0f);
 
-        float txs = tx * textureScale;
-        float tys = ty * textureScale;
-        float tws = tw * textureScale;
-        float ths = th * textureScale;
+        float txs = tx * textureScaleX;
+        float tys = ty * textureScaleY;
+        float tws = tw * textureScaleX;
+        float ths = th * textureScaleY;
 
         glBegin(GL_QUADS);
         {
@@ -217,6 +176,7 @@ public class Sprite2D implements DrawableElement {
             glVertex2f(-_w, _h);
 
         }
+
         glEnd();
         glPopMatrix();
     }

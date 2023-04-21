@@ -86,7 +86,13 @@ public class Graphics {
         this.currentTextureId = currentTextureId;
     }
 
-    public void drawImage(TileSheet tileSheet, int x, int y, int tileX, int tileY) {
+    public Sprite2D drawImage(TileSheet tileSheet, int x, int y, int tileX, int tileY, double rotation) {
+        Sprite2D sprite2D = drawImage(tileSheet, x, y, tileX, tileY);
+        sprite2D.addAngle((float) rotation);
+        return sprite2D;
+    }
+
+    public Sprite2D drawImage(TileSheet tileSheet, int x, int y, int tileX, int tileY) {
         int tileWidth = tileSheet.getTileWidth();
         int tileHeight = tileSheet.getTileHeight();
         // texture coords
@@ -100,7 +106,7 @@ public class Graphics {
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
         drawableBatch.add(sprite2D);
-
+        return sprite2D;
     }
 
     public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
