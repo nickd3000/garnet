@@ -94,22 +94,25 @@ public class Input {
 
 
     public boolean isPressed(int actionId) {
+        boolean pressed = false;
+
         for (ButtonConfig buttonConfig : actionConfigList) {
             if (buttonConfig.actionId == actionId) {
-                return buttonState[buttonConfig.keyCode];
+                if (buttonState[buttonConfig.keyCode]) pressed = true;
             }
         }
-        return false;
+        return pressed;
     }
 
     public boolean isFirstPress(int actionId) {
+        boolean firstPress = false;
         for (ButtonConfig buttonConfig : actionConfigList) {
             if (buttonConfig.actionId == actionId) {
                 if (buttonState[buttonConfig.keyCode] &&
-                        !buttonStatePrev[buttonConfig.keyCode]) return true;
+                        !buttonStatePrev[buttonConfig.keyCode]) firstPress = true;
             }
         }
-        return false;
+        return firstPress;
     }
 
     public boolean isPressedThisFrame(InputAction button) {
