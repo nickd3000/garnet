@@ -60,4 +60,9 @@ public class Line2D implements DrawableElement {
     public int getClipRect() {
         return 0;
     }
+
+    @Override
+    public int getType() {
+        return LINE;
+    }
 }

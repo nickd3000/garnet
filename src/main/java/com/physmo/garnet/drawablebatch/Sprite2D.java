@@ -201,6 +201,11 @@ public class Sprite2D implements DrawableElement {
         return clipRect;
     }
 
+    @Override
+    public int getType() {
+        return SPRITE;
+    }
+
     public void setClipRect(int id) {
         clipRect = id;
     }
