@@ -9,13 +9,15 @@ import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 
 public class Input {
 
-    Garnet garnet;
-    List<ButtonConfig> buttonConfigList;
-    long windowHandle;
-    private boolean[] buttonState;
-    private boolean[] buttonStatePrev;
     private final int[] mousePosition = new int[2];
     private final int[] mousePositionPrev = new int[2];
+    public boolean printKeyCodes = true;
+    Garnet garnet;
+    List<ButtonConfig> actionConfigList;
+    long windowHandle;
+    int maxKeys = 512;
+    private final boolean[] buttonState = new boolean[maxKeys];
+    private final boolean[] buttonStatePrev = new boolean[maxKeys];
 
     public Input(Garnet garnet) {
         this.garnet = garnet;
@@ -52,58 +54,68 @@ public class Input {
     }
 
     public int[] getMousePositionScaled(double scale) {
-        int[] mp = new int[]{(int) (mousePosition[0] / scale), (int) (mousePosition[1] / scale)};
-        return mp;
+        return new int[]{(int) (mousePosition[0] / scale), (int) (mousePosition[1] / scale)};
     }
 
     public void init() {
 
-        buttonConfigList = new ArrayList<>();
-        buttonConfigList.add(new ButtonConfig(123, VirtualButton.LEFT));
-        buttonConfigList.add(new ButtonConfig(124, VirtualButton.RIGHT));
-        buttonConfigList.add(new ButtonConfig(126, VirtualButton.UP));
-        buttonConfigList.add(new ButtonConfig(125, VirtualButton.DOWN));
-        buttonConfigList.add(new ButtonConfig(6, VirtualButton.FIRE1));
-        buttonConfigList.add(new ButtonConfig(48, VirtualButton.MENU)); // tab
+        actionConfigList = new ArrayList<>();
 
-        buttonState = new boolean[0xff];
-        buttonStatePrev = new boolean[0xff];
+        setDefaults();
 
         garnet.addKeyboardCallback((key, scancode, action, mods) -> {
-            //System.out.println("keyboard handler - key:" + key + " scancode:" + scancode + "  action:" + action);
 
-            // a=0, d=2, space =49 / action 1/0 down/up
-
-            if (action == 1) {
-                buttonState[scancode] = true;
-            } else if (action == 0) {
-                buttonState[scancode] = false;
+            if (printKeyCodes) {
+                System.out.println("keyboard handler - key:" + key + " scancode:" + scancode + "  action:" + action);
             }
 
+            if (action == 1) {
+                buttonState[key] = true;
+            } else if (action == 0) {
+                buttonState[key] = false;
+            }
         });
 
     }
 
-    public boolean isPressed(VirtualButton button) {
-        for (ButtonConfig buttonConfig : buttonConfigList) {
-            if (buttonConfig.virtualButton == button) {
-                return buttonState[buttonConfig.scancode];
-            }
-        }
-        return false;
+    public void setDefaults() {
+
+        addKeyboardAction(InputKeys.KEY_LEFT, InputAction.LEFT);
+        addKeyboardAction(InputKeys.KEY_RIGHT, InputAction.RIGHT);
+        addKeyboardAction(InputKeys.KEY_UP, InputAction.UP);
+        addKeyboardAction(InputKeys.KEY_DOWN, InputAction.DOWN);
+        addKeyboardAction(InputKeys.KEY_Z, InputAction.FIRE1);
+        addKeyboardAction(InputKeys.KEY_TAB, InputAction.MENU);
     }
 
-    public boolean isFirstPress(VirtualButton button) {
-        for (ButtonConfig buttonConfig : buttonConfigList) {
-            if (buttonConfig.virtualButton == button) {
-                if (buttonState[buttonConfig.scancode] &&
-                        !buttonStatePrev[buttonConfig.scancode]) return true;
-            }
-        }
-        return false;
+    public void addKeyboardAction(int keyCode, int actionId) {
+        actionConfigList.add(new ButtonConfig(keyCode, actionId));
     }
 
-    public boolean isPressedThisFrame(VirtualButton button) {
+
+    public boolean isPressed(int actionId) {
+        boolean pressed = false;
+
+        for (ButtonConfig buttonConfig : actionConfigList) {
+            if (buttonConfig.actionId == actionId) {
+                if (buttonState[buttonConfig.keyCode]) pressed = true;
+            }
+        }
+        return pressed;
+    }
+
+    public boolean isFirstPress(int actionId) {
+        boolean firstPress = false;
+        for (ButtonConfig buttonConfig : actionConfigList) {
+            if (buttonConfig.actionId == actionId) {
+                if (buttonState[buttonConfig.keyCode] &&
+                        !buttonStatePrev[buttonConfig.keyCode]) firstPress = true;
+            }
+        }
+        return firstPress;
+    }
+
+    public boolean isPressedThisFrame(InputAction button) {
 
         return false;
     }
@@ -112,7 +124,4 @@ public class Input {
         this.windowHandle = windowHandle;
     }
 
-    public enum VirtualButton {
-        LEFT, RIGHT, UP, DOWN, FIRE1, FIRE2, MENU
-    }
 }

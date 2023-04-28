@@ -8,15 +8,10 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glVertex2f;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -104,14 +99,6 @@ public class Display {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
-    }
-
-    public void drawLine(float x1, float y1, float x2, float y2) {
-        glColor3f(1f, 1f, 1f);
-        glBegin(GL_LINES);
-        glVertex2f(x1 * 2, y1 * 2);
-        glVertex2f(x2 * 2, y2 * 2);
-        glEnd();
     }
 
     public double[] getWindowToPixelsScale() {

@@ -83,8 +83,8 @@ public class Garnet {
         glfwMakeContextCurrent(display.getWindowHandle());
         GL.createCapabilities();
 
-        long currentTime = System.nanoTime();
-        long oldTime = currentTime;
+        long newTime = System.nanoTime();
+        long currentTime = newTime;
 
 
         // Run the rendering loop until the user has attempted to close
@@ -92,8 +92,9 @@ public class Garnet {
         while (!glfwWindowShouldClose(display.getWindowHandle())) {
 
             // todo: create class for this - track fps too
-            currentTime = System.nanoTime();
-            long delta = currentTime - oldTime;
+            newTime = System.nanoTime();
+            long frameTime = newTime - currentTime;
+            currentTime = newTime;
 
             try {
                 Thread.sleep(5);
@@ -101,9 +102,9 @@ public class Garnet {
                 e.printStackTrace();
             }
 
-            updateLogicAndRender((int) delta);
+            updateLogicAndRender((int) frameTime);
 
-            oldTime = currentTime;
+
 
         }
     }
@@ -111,7 +112,7 @@ public class Garnet {
     public void updateLogicAndRender(int delta) {
 
         long nanoSecondsPerSecond = 1_000_000_000;
-        int logicUpdatesPerSecond = 120;
+        int logicUpdatesPerSecond = 60 * 5;
         double secondsPerLogicUpdate = 1.0 / (double) logicUpdatesPerSecond;
 
         long logicTime = nanoSecondsPerSecond / logicUpdatesPerSecond;
