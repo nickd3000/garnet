@@ -3,6 +3,7 @@ package com.physmo.garnet.graphics;
 import com.physmo.garnet.Display;
 import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
+import com.physmo.garnet.drawablebatch.Circle2D;
 import com.physmo.garnet.drawablebatch.DrawableBatch;
 import com.physmo.garnet.drawablebatch.Line2D;
 import com.physmo.garnet.drawablebatch.Sprite2D;
@@ -170,6 +171,13 @@ public class Graphics {
         line.addColor(color);
         line.setDrawOrder(currentDrawOrder);
         drawableBatch.add(line);
+    }
+
+    public void drawCircle(float x, float y, float w, float h) {
+        Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
+        circle.addColor(color);
+        circle.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(circle);
     }
 
     public void setDrawOrder(int i) {
