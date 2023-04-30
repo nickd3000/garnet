@@ -11,7 +11,7 @@ public class Input {
 
     private final int[] mousePosition = new int[2];
     private final int[] mousePositionPrev = new int[2];
-    public boolean printKeyCodes = true;
+    public boolean printKeyCodes = false;
     Garnet garnet;
     List<ButtonConfig> actionConfigList;
     long windowHandle;
