@@ -1,5 +1,6 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.audio.Sound;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.KeyboardCallback;
@@ -34,6 +35,7 @@ public class Garnet {
     private final Input input;
     private final Display display;
     private final Graphics graphics;
+    private final Sound sound;
     private final DebugDrawer debugDrawer;
     private int runningLogicDelta = 0;
     private GarnetApp garnetApp;
@@ -42,6 +44,7 @@ public class Garnet {
         display = new Display(windowWidth, windowHeight);
         input = new Input(this);
         graphics = new Graphics(display);
+        sound = new Sound();
         debugDrawer = new DebugDrawer();
     }
 
@@ -61,6 +64,7 @@ public class Garnet {
 
 
         display.init();
+        sound.init();
         input.init();
         input.setWindowHandle(display.getWindowHandle());
         garnetApp.init(this);
@@ -170,6 +174,10 @@ public class Garnet {
 
     public Display getDisplay() {
         return display;
+    }
+
+    public Sound getSound() {
+        return sound;
     }
 
     public void setApp(GarnetApp garnetApp) {
