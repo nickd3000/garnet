@@ -14,8 +14,8 @@ public class TileGridDrawer {
     private int windowWidth = 100; // Measured in unscaled pixels
     private int windowHeight = 100;// Measured in unscaled pixels
     private int clipRectId = -1;
-    private int screenOffsetX;
-    private int screenOffsetY;
+    private double screenOffsetX;
+    private double screenOffsetY;
     private TileSheet tileSheet;
     private TileGridData tileGridData;
 
@@ -23,6 +23,10 @@ public class TileGridDrawer {
         tileWidth = 16;
         tileHeight = 16;
 
+    }
+
+    public double[] getScrollPosition() {
+        return new double[]{scrollX, scrollY};
     }
 
     public TileGridDrawer setScale(int scale) {
@@ -118,10 +122,14 @@ public class TileGridDrawer {
         return new int[]{maxX, maxY};
     }
 
-    public int[] translateMapToScreenPosition(int x, int y) {
+    public int[] getWindowSizeInTiles() {
+        return new int[]{windowWidth / tileWidth, windowHeight / tileHeight};
+    }
+
+    public int[] translateMapToScreenPosition(double x, double y) {
         int[] translated = new int[2];
-        translated[0] = x + screenOffsetX;
-        translated[1] = y + screenOffsetY;
+        translated[0] = (int) (x + screenOffsetX);
+        translated[1] = (int) (y + screenOffsetY);
         return translated;
     }
 }
