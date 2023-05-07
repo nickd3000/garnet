@@ -3,18 +3,12 @@ package com.physmo.garnet.graphics;
 import com.physmo.garnet.Display;
 import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
-import com.physmo.garnet.drawablebatch.DrawableBatch;
-import com.physmo.garnet.drawablebatch.Line2D;
-import com.physmo.garnet.drawablebatch.Sprite2D;
-import com.physmo.garnet.drawablebatch.TileSheet;
+import com.physmo.garnet.drawablebatch.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glScissor;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Graphics {
 
@@ -86,13 +80,13 @@ public class Graphics {
         this.currentTextureId = currentTextureId;
     }
 
-    public Sprite2D drawImage(TileSheet tileSheet, int x, int y, int tileX, int tileY, double rotation) {
+    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY, double rotation) {
         Sprite2D sprite2D = drawImage(tileSheet, x, y, tileX, tileY);
         sprite2D.addAngle((float) rotation);
         return sprite2D;
     }
 
-    public Sprite2D drawImage(TileSheet tileSheet, int x, int y, int tileX, int tileY) {
+    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
         int tileWidth = tileSheet.getTileWidth();
         int tileHeight = tileSheet.getTileHeight();
         // texture coords
@@ -170,6 +164,13 @@ public class Graphics {
         line.addColor(color);
         line.setDrawOrder(currentDrawOrder);
         drawableBatch.add(line);
+    }
+
+    public void drawCircle(float x, float y, float w, float h) {
+        Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
+        circle.addColor(color);
+        circle.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(circle);
     }
 
     public void setDrawOrder(int i) {

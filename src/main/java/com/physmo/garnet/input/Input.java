@@ -5,19 +5,26 @@ import com.physmo.garnet.Garnet;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
 
     private final int[] mousePosition = new int[2];
     private final int[] mousePositionPrev = new int[2];
-    public boolean printKeyCodes = true;
+    public boolean printKeyCodes = false;
     Garnet garnet;
     List<ButtonConfig> actionConfigList;
     long windowHandle;
     int maxKeys = 512;
     private final boolean[] buttonState = new boolean[maxKeys];
     private final boolean[] buttonStatePrev = new boolean[maxKeys];
+
+    public static final int MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
+    public static final int MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
+    public static final int MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
+
+    private final boolean[] mouseButtonState = new boolean[3];
+    private final boolean[] mouseButtonStatePrev = new boolean[3];
 
     public Input(Garnet garnet) {
         this.garnet = garnet;
@@ -47,6 +54,11 @@ public class Input {
 
         mousePosition[0] = (int) x[0];
         mousePosition[1] = (int) y[0];
+
+        System.arraycopy(mouseButtonState, 0, mouseButtonStatePrev, 0, mouseButtonState.length);
+        mouseButtonState[MOUSE_BUTTON_LEFT] = glfwGetMouseButton(windowHandle, MOUSE_BUTTON_LEFT) > 0;
+        mouseButtonState[MOUSE_BUTTON_MIDDLE] = glfwGetMouseButton(windowHandle, MOUSE_BUTTON_MIDDLE) > 0;
+        mouseButtonState[MOUSE_BUTTON_RIGHT] = glfwGetMouseButton(windowHandle, MOUSE_BUTTON_RIGHT) > 0;
     }
 
     public int[] getMousePosition() {
@@ -92,6 +104,19 @@ public class Input {
         actionConfigList.add(new ButtonConfig(keyCode, actionId));
     }
 
+    public boolean isMouseButtonPressed(int mouseButtonId) {
+        return mouseButtonState[mouseButtonId];
+    }
+
+    /**
+     * True if mouse button first pressed this frame.
+     *
+     * @param mouseButtonId
+     * @return
+     */
+    public boolean isMouseButtonFirstPress(int mouseButtonId) {
+        return (mouseButtonState[mouseButtonId] && !mouseButtonStatePrev[mouseButtonId]);
+    }
 
     public boolean isPressed(int actionId) {
         boolean pressed = false;

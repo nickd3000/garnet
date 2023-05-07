@@ -1,5 +1,6 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.audio.Sound;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.KeyboardCallback;
@@ -8,22 +9,8 @@ import org.lwjgl.opengl.GL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glIsEnabled;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class Garnet {
@@ -34,6 +21,7 @@ public class Garnet {
     private final Input input;
     private final Display display;
     private final Graphics graphics;
+    private final Sound sound;
     private final DebugDrawer debugDrawer;
     private int runningLogicDelta = 0;
     private GarnetApp garnetApp;
@@ -42,6 +30,7 @@ public class Garnet {
         display = new Display(windowWidth, windowHeight);
         input = new Input(this);
         graphics = new Graphics(display);
+        sound = new Sound();
         debugDrawer = new DebugDrawer();
     }
 
@@ -61,6 +50,7 @@ public class Garnet {
 
 
         display.init();
+        sound.init();
         input.init();
         input.setWindowHandle(display.getWindowHandle());
         garnetApp.init(this);
@@ -170,6 +160,10 @@ public class Garnet {
 
     public Display getDisplay() {
         return display;
+    }
+
+    public Sound getSound() {
+        return sound;
     }
 
     public void setApp(GarnetApp garnetApp) {

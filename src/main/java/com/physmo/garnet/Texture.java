@@ -32,9 +32,7 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
-import static org.lwjgl.stb.STBImage.stbi_failure_reason;
-import static org.lwjgl.stb.STBImage.stbi_load;
-import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
+import static org.lwjgl.stb.STBImage.*;
 
 //import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 
