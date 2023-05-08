@@ -7,11 +7,45 @@
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
     <version>0.1.0</version>
+    <packaging>jar</packaging>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <url>https://github.com/nickd3000/garnet</url>
+    <description>LWJGL Based game engine</description>
 
     <properties>
         <lwjgl.version>3.3.0</lwjgl.version>
         <lwjgl.natives>natives-macos</lwjgl.natives>
     </properties>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Nick Donnelly</name>
+            <email>nickd3000@hotmail.com</email>
+            <organization>github</organization>
+            <organizationUrl>https://github.com/nickd3000</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/nickd3000/garnet.git</connection>
+        <developerConnection>scm:git:ssh://github.com:nickd3000/garnet.git</developerConnection>
+        <url>https://github.com/nickd3000/garnet/tree/master</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <plugins>
