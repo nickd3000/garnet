@@ -37,5 +37,5 @@ jobs:
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        USERNAME: ${{ secrets.OSSRHUSERNAME }}
-        PASSWORD: ${{ secrets.OSSRHPASSWORD }}
+        MAVEN_USERNAME: ${{ secrets.OSSRHUSERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRHPASSWORD }}
