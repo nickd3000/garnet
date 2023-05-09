@@ -27,14 +27,15 @@ package com.physmo.garnet;
 
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.stb.STBImage.*;
-
-//import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 
 /**
  * This class represents a texture.
@@ -52,14 +53,33 @@ public class Texture {
         id = glGenTextures();
     }
 
+    public static Texture loadTexture(String path) {
+        InputStream inputStream = Utils.getFileFromResourceAsStream(path);
+        return loadTexture(inputStream);
+    }
+
     /**
      * Load texture from file.
      *
-     * @param path File path of the texture
+     * @param inputStream Input stream for the data
      * @return Texture from specified file
      */
-    public static Texture loadTexture(String path) {
-        ByteBuffer image;
+    public static Texture loadTexture(InputStream inputStream) {
+
+        byte[] bytes;
+        try {
+            bytes = inputStream.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        byteBuffer.put(bytes);
+        byteBuffer.position(0); // Causes crash if not present!
+
+        ByteBuffer imageBuffer;
         int width, height;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             // Prepare image buffers
@@ -67,13 +87,19 @@ public class Texture {
             IntBuffer h = stack.mallocInt(1);
             IntBuffer comp = stack.mallocInt(1);
 
+            if (!stbi_info_from_memory(byteBuffer, w, h, comp)) {
+                throw new RuntimeException("Failed to read image information: " + stbi_failure_reason());
+            } else {
+                System.out.println("OK with reason: " + stbi_failure_reason());
+            }
+
             // Load image.
             stbi_set_flip_vertically_on_load(false);
-            image = stbi_load(path, w, h, comp, 4);
-            if (image == null) {
+            imageBuffer = stbi_load_from_memory(byteBuffer, w, h, comp, 4);
+            if (imageBuffer == null) {
                 System.out.println("image was null");
                 throw new RuntimeException("Failed to load a texture file!"
-                        + System.lineSeparator() + stbi_failure_reason() + " " + path);
+                        + System.lineSeparator() + stbi_failure_reason() + " " + inputStream);
             }
 
             // Get width and height of image.
@@ -81,26 +107,9 @@ public class Texture {
             height = h.get();
         }
 
-        return createTexture(width, height, image);
+        return createTexture(width, height, imageBuffer);
     }
 
-//    public static Texture loadTexture(BufferedImage bufferedImage) {
-//        ByteBuffer byteBuffer = bufferedImageToByteBuffer(bufferedImage);
-//        return createTexture(bufferedImage.getWidth(), bufferedImage.getHeight(), byteBuffer);
-//    }
-
-//    public static ByteBuffer bufferedImageToByteBuffer(BufferedImage bufferedImage) {
-//        Raster raster = bufferedImage.getRaster();
-//        DataBufferByte dataBufferByte = (DataBufferByte) raster.getDataBuffer();
-//        byte[] data = dataBufferByte.getData();
-//
-//        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(data.length);
-//        byteBuffer.order(ByteOrder.nativeOrder());
-//        byteBuffer.put(data, 0, data.length);
-//        byteBuffer.flip();
-//
-//        return byteBuffer;
-//    }
 
     /**
      * Creates a texture with specified width, height and data.

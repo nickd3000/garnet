@@ -1,8 +1,11 @@
 package com.physmo.garnet.regularfont;
 
 import com.physmo.garnet.Texture;
+import com.physmo.garnet.Utils;
 import com.physmo.garnet.drawablebatch.TileSheet;
 import com.physmo.garnet.graphics.Graphics;
+
+import java.io.InputStream;
 
 /**
  * RegularFont is a simpler font drawer.  It requires a font image file arranged in
@@ -16,10 +19,14 @@ public class RegularFont {
     private final int charHeight;
     private int horizontalPad = 0;
 
-    public RegularFont(String imageFile, int charWidth, int charHeight) {
+    public RegularFont(String path, int charWidth, int charHeight) {
+        this(Utils.getFileFromResourceAsStream(path), charWidth, charHeight);
+    }
+
+    public RegularFont(InputStream inputStream, int charWidth, int charHeight) {
         this.charWidth = charWidth;
         this.charHeight = charHeight;
-        texture = Texture.loadTexture(imageFile);
+        texture = Texture.loadTexture(inputStream);
         tileSheet = new TileSheet(texture, charWidth, charHeight);
     }
 

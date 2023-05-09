@@ -60,7 +60,7 @@ public class SimpleSpriteExample extends GarnetApp {
 
     @Override
     public void init(Garnet garnet) {
-        texture = Texture.loadTexture(Utils.getPathForResource(this, "space.png"));
+        texture = Texture.loadTexture("space.png");
         tileSheet = new TileSheet(texture, 16, 16);
         graphics = garnet.getGraphics();
         graphics.addTexture(texture);
