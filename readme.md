@@ -10,6 +10,16 @@ Featuring
 - Font drawing
 - Tile map support
 
+### Maven Dependency
+
+``` xml
+<dependency>
+    <groupId>io.github.nickd3000</groupId>
+    <artifactId>garnet</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
 ### Minimal example with sprites
 
 ``` java
