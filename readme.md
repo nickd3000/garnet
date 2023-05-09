@@ -1,5 +1,8 @@
 # Garnet
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet)
+![GitHub](https://img.shields.io/github/license/nickd3000/garnet)
+
 A 2D LWJGL based game engine for Java.
 
 Featuring
