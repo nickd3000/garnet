@@ -1,11 +1,14 @@
 package com.physmo.garnet.bitmapfont;
 
 import com.physmo.garnet.Texture;
+import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +29,8 @@ public class BitmapFont {
     }
 
     public String loadDefinitionData(String definitionPath) throws IOException {
-        FileReader fileReader = new FileReader(definitionPath);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        InputStream inputStream = Utils.getFileFromResourceAsStream(definitionPath);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
         String outString = "";
         String line = "";
@@ -36,12 +39,13 @@ public class BitmapFont {
         }
 
         bufferedReader.close();
-        fileReader.close();
+        inputStream.close();
 
         parseDefinitionData(outString);
 
         return outString;
     }
+
 
     private void parseDefinitionData(String fileData) {
         fileData.lines().forEach(s -> {

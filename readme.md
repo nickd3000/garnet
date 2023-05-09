@@ -1,5 +1,8 @@
 # Garnet
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet)
+![GitHub](https://img.shields.io/github/license/nickd3000/garnet)
+
 A 2D LWJGL based game engine for Java.
 
 Featuring
@@ -9,6 +12,16 @@ Featuring
 - Input handling
 - Font drawing
 - Tile map support
+
+### Maven Dependency
+
+``` xml
+<dependency>
+    <groupId>io.github.nickd3000</groupId>
+    <artifactId>garnet</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
 
 ### Minimal example with sprites
 
@@ -47,7 +60,7 @@ public class SimpleSpriteExample extends GarnetApp {
 
     @Override
     public void init(Garnet garnet) {
-        texture = Texture.loadTexture(Utils.getPathForResource(this, "space.png"));
+        texture = Texture.loadTexture("space.png");
         tileSheet = new TileSheet(texture, 16, 16);
         graphics = garnet.getGraphics();
         graphics.addTexture(texture);

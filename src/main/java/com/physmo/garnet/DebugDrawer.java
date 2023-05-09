@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DebugDrawer {
+    public static String DEBUG_FONT_NAME = "drake_10x10.png";
     private final Map<String, String> userStrings = new HashMap<>();
     private final int textColor = 0xffdd00ff;
     private final int shadowColor = 0x000000d0;
@@ -38,8 +39,8 @@ public class DebugDrawer {
     }
 
     public void init() {
-        //visible=false;
-        regularFont = new RegularFont(Utils.getPathForResource(this, "drake_10x10.png"), 10, 10);
+        visible = false;
+        regularFont = new RegularFont(DEBUG_FONT_NAME, 10, 10);
         regularFont.setHorizontalPad(-1);
     }
 
