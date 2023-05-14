@@ -23,6 +23,10 @@ Featuring
 </dependency>
 ```
 
+### Example project
+
+See the [garnet-examples](https://github.com/nickd3000/garnetexamples) project for examples.
+
 ### Minimal example with sprites
 
 ``` java
