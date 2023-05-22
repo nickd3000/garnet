@@ -6,7 +6,7 @@
 
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/nickd3000/garnet</url>
@@ -238,7 +238,7 @@
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
 
-        <!--        /////////////////////////////////////////////////////////////////-->
+        <!-- // WINDOWS NATIVES ///////////////////////////////////////////////////////////////-->
 
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -289,6 +289,61 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-stb</artifactId>
             <classifier>natives-windows</classifier>
+        </dependency>
+
+
+        <!-- ////////// LINUX NATIVES ////////////////////////////////-->
+
+
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-assimp</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-bgfx</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nanovg</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nuklear</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-par</artifactId>
+            <classifier>natives-linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+            <classifier>natives-linux</classifier>
         </dependency>
 
 
