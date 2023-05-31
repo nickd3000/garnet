@@ -1,5 +1,6 @@
 package com.physmo.garnet.regularfont;
 
+import com.physmo.garnet.DrawableFont;
 import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
 import com.physmo.garnet.drawablebatch.TileSheet;
@@ -11,7 +12,7 @@ import java.io.InputStream;
  * RegularFont is a simpler font drawer.  It requires a font image file arranged in
  * a specific grid pattern to match the ascii character system.
  */
-public class RegularFont {
+public class RegularFont implements DrawableFont {
 
     private final TileSheet tileSheet;
     private final Texture texture;
@@ -38,25 +39,46 @@ public class RegularFont {
         this.horizontalPad = horizontalPad;
     }
 
+    @Override
     public void drawText(Graphics graphics, String text, int x, int y) {
         if (!graphics.hasTexture(texture.getId()))
             graphics.addTexture(texture);
-        TextObject textObject = new TextObject(text, x, y);
-        renderTextObject(graphics, textObject);
+
+        renderText(graphics, text, x, y);
     }
 
-    private void renderTextObject(Graphics graphics, TextObject textObject) {
-        String str = textObject.text;
-        if (str == null) return;
+    @Override
+    public int getLineHeight() {
+        return charHeight;
+    }
 
-        int textLength = str.length();
-        int xPos = textObject.x, yPos = textObject.y;
+    @Override
+    public int getStringWidth(String text) {
+        if (text == null) return 0;
+
+        int textLength = text.length();
+        return textLength * (charWidth + horizontalPad);
+
+    }
+
+    @Override
+    public int getSpaceWidth() {
+        return charWidth;
+    }
+
+    private void renderText(Graphics graphics, String text, int x, int y) {
+
+        if (text == null) return;
+
+        int textLength = text.length();
+        int xPos = x, yPos = y;
         for (int i = 0; i < textLength; i++) {
-            char c = str.charAt(i);
+            char c = text.charAt(i);
             renderChar(graphics, c, xPos, yPos);
             xPos += charWidth + horizontalPad;
         }
     }
+
 
     public void renderChar(Graphics graphics, char c, int x, int y) {
         int cy = ((int) c) / 16;

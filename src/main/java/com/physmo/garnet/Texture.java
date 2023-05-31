@@ -90,7 +90,8 @@ public class Texture {
             if (!stbi_info_from_memory(byteBuffer, w, h, comp)) {
                 throw new RuntimeException("Failed to read image information: " + stbi_failure_reason());
             } else {
-                System.out.println("OK with reason: " + stbi_failure_reason());
+                // Commented this out because it was reporting "Corrupt JPEG" when loading a png file
+                //System.out.println("OK with reason: " + stbi_failure_reason());
             }
 
             // Load image.
