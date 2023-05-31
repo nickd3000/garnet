@@ -14,8 +14,8 @@ public class DebugDrawer {
     private final int lineHeight = 10;
     private RegularFont regularFont;
     private double fps;
-    private boolean visible = true;
-    private boolean drawFps = true;
+    private boolean visible = false;
+    private boolean drawFps = false;
     private double scale = 1;
 
     public double getScale() {
@@ -39,7 +39,7 @@ public class DebugDrawer {
     }
 
     public void init() {
-        visible = false;
+        //visible = false;
         regularFont = new RegularFont(DEBUG_FONT_NAME, 10, 10);
         regularFont.setHorizontalPad(-1);
     }
