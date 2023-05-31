@@ -1,5 +1,6 @@
 package com.physmo.garnet.bitmapfont;
 
+import com.physmo.garnet.DrawableFont;
 import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
@@ -12,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BitmapFont {
+public class BitmapFont implements DrawableFont {
 
     private static final int coordsPerChar = 16;
     Map<Integer, GlyphGeometry> geometry;
@@ -57,7 +58,8 @@ public class BitmapFont {
         });
     }
 
-    public void drawString(Graphics graphics, String text, int x, int y) {
+    @Override
+    public void drawText(Graphics graphics, String text, int x, int y) {
         graphics.addTexture(texture);
 
         float[] floats = generateCoordsForStrings(text, x, y);
@@ -81,6 +83,12 @@ public class BitmapFont {
             graphics.drawImage(texture, t, v);
         }
 
+    }
+
+    @Override
+    public int getLineHeight() {
+        GlyphGeometry glyphGeometry = geometry.get((int) 'T');
+        return glyphGeometry.height;
     }
 
     private float[] generateCoordsForStrings(String text, int x, int y) {
@@ -144,6 +152,11 @@ public class BitmapFont {
             stringWidth += bmfChar.xadvance;
         }
         return stringWidth;
+    }
+
+    @Override
+    public int getSpaceWidth() {
+        return getStringWidth(" ");
     }
 
 }
