@@ -47,7 +47,7 @@ public class Texture {
     private final int id;
     private int width;
     private int height;
-
+    public static int defaultFilterMode = GL_NEAREST; // Default filter mode is pixelated, not smooth.
 
     public Texture() {
         id = glGenTextures();
@@ -112,6 +112,7 @@ public class Texture {
     }
 
 
+
     /**
      * Creates a texture with specified width, height and data.
      *
@@ -130,12 +131,20 @@ public class Texture {
 
         texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+        texture.setParameter(GL_TEXTURE_MIN_FILTER, defaultFilterMode);
+        texture.setParameter(GL_TEXTURE_MAG_FILTER, defaultFilterMode);
 
         texture.uploadData(GL_RGBA8, width, height, GL_RGBA, data);
 
         return texture;
+    }
+
+    public void setFilter(boolean val) {
+        int filterMode = !val ? GL_NEAREST : GL_LINEAR;
+        setParameter(GL_TEXTURE_MIN_FILTER, filterMode);
+        setParameter(GL_TEXTURE_MAG_FILTER, filterMode);
     }
 
     public void bind() {
