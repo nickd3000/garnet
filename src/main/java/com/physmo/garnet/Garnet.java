@@ -133,7 +133,7 @@ public class Garnet {
 
         if (scissorEnabled) glEnable(GL_SCISSOR_TEST);
 
-        garnetApp.draw();
+        garnetApp.draw(graphics);
 
 
         debugDrawer.setFPS(gameClock.getFps());

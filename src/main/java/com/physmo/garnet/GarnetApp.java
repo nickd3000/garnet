@@ -1,5 +1,7 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.graphics.Graphics;
+
 /**
  * Base component to derive garnet applications from
  */
@@ -27,7 +29,7 @@ public abstract class GarnetApp {
      */
     public abstract void tick(double delta);
 
-    public abstract void draw();
+    public abstract void draw(Graphics g);
 
 
 }
