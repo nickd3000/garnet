@@ -1,22 +1,16 @@
 package com.physmo.garnet.drawablebatch;
 
 
-import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
-
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.*;
 
 // TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
-public class Sprite2D implements DrawableElement {
+public class Sprite2D extends DrawableElement {
 
-    private final float[] color = new float[4];
     int textureId = 0;
-    int drawOrder = 0;
     float textureScaleX;
     float textureScaleY;
-    int clipRect = 0;
     boolean rotated = false;
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
 
@@ -91,33 +85,8 @@ public class Sprite2D implements DrawableElement {
                 ", angle=" + angle +
                 ", _w=" + _w +
                 ", _h=" + _h +
-                ", color=" + Arrays.toString(color) +
+                ", color=" + color +
                 '}';
-    }
-
-    @Override
-    public int getTextureId() {
-        return textureId;
-    }
-
-    public void setTextureId(int textureId) {
-        this.textureId = textureId;
-    }
-
-    public Sprite2D addColor(int rgb) {
-        return addColor(Utils.rgbToFloat(rgb));
-    }
-
-    public Sprite2D addColor(float[] c) {
-        return addColor(c[0], c[1], c[2], c[3]);
-    }
-
-    public Sprite2D addColor(float r, float g, float b, float a) {
-        color[0] = r;
-        color[1] = g;
-        color[2] = b;
-        color[3] = a;
-        return this;
     }
 
     @Override
@@ -126,7 +95,8 @@ public class Sprite2D implements DrawableElement {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glColor4f(color[0], color[1], color[2], color[3]);
+        glColor4fv(colorFloats);
+
 
         if (rotated) {
             renderRotated(1.0f);
@@ -154,6 +124,25 @@ public class Sprite2D implements DrawableElement {
 
     }
 
+    @Override
+    public int getTextureId() {
+        return textureId;
+    }
+
+    public void setTextureId(int textureId) {
+        this.textureId = textureId;
+    }
+
+    @Override
+    public boolean hasTexture() {
+        return true;
+    }
+
+    @Override
+    public int getType() {
+        return SPRITE;
+    }
+
     private void renderRotated(float textureScale) {
         glPushMatrix();
         glTranslatef(x + _w, y + _h, 0);
@@ -179,35 +168,6 @@ public class Sprite2D implements DrawableElement {
 
         glEnd();
         glPopMatrix();
-    }
-
-    @Override
-    public int getDrawOrder() {
-        return drawOrder;
-    }
-
-    @Override
-    public void setDrawOrder(int drawOrder) {
-        this.drawOrder = drawOrder;
-    }
-
-    @Override
-    public boolean hasTexture() {
-        return true;
-    }
-
-    @Override
-    public int getClipRect() {
-        return clipRect;
-    }
-
-    @Override
-    public int getType() {
-        return SPRITE;
-    }
-
-    public void setClipRect(int id) {
-        clipRect = id;
     }
 
     public void setTextureScale(float x, float y) {

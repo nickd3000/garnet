@@ -1,19 +1,15 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Circle2D implements DrawableElement {
+public class Circle2D extends DrawableElement {
 
     float x;
     float y;
     float width;
     float height;
-
-    int drawOrder;
-    int color;
 
     int numSegments;
 
@@ -26,17 +22,14 @@ public class Circle2D implements DrawableElement {
         if (numSegments < 5) numSegments = 5;
     }
 
-    public void addColor(int rgb) {
-        this.color = rgb;
-    }
-
     @Override
     public void render(Graphics graphics) {
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glColor4fv(Utils.rgbToFloat(color));
+        glColor4fv(colorFloats);
+
         glBegin(GL_LINE_LOOP);
 
         float[] coords = generatePoints();
@@ -63,17 +56,6 @@ public class Circle2D implements DrawableElement {
     }
 
     @Override
-    public int getDrawOrder() {
-        return drawOrder;
-    }
-
-    @Override
-    public void setDrawOrder(int drawOrder) {
-        this.drawOrder = drawOrder;
-
-    }
-
-    @Override
     public int getTextureId() {
         return 0;
     }
@@ -81,11 +63,6 @@ public class Circle2D implements DrawableElement {
     @Override
     public boolean hasTexture() {
         return false;
-    }
-
-    @Override
-    public int getClipRect() {
-        return 0;
     }
 
     @Override

@@ -95,7 +95,7 @@ public class Graphics {
         Texture texture = tileSheet.getTexture();
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(color);
+        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -114,7 +114,7 @@ public class Graphics {
 
         Sprite2D sprite2D = new Sprite2D(vertexCoords, texCoords);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(color);
+        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -140,7 +140,7 @@ public class Graphics {
 
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(color);
+        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -161,14 +161,14 @@ public class Graphics {
 
     public void drawLine(float x1, float y1, float x2, float y2) {
         Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
-        line.addColor(color);
+        line.setColor(color);
         line.setDrawOrder(currentDrawOrder);
         drawableBatch.add(line);
     }
 
     public void drawCircle(float x, float y, float w, float h) {
         Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
-        circle.addColor(color);
+        circle.setColor(color);
         circle.setDrawOrder(currentDrawOrder);
         drawableBatch.add(circle);
     }
