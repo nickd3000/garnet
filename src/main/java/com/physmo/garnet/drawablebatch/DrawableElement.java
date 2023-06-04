@@ -7,6 +7,7 @@ public abstract class DrawableElement {
     int SPRITE = 1;
     int LINE = 2;
     int CIRCLE = 3;
+    int SHAPE = 4;
     int OTHER = 0;
 
     int drawOrder = 0;
