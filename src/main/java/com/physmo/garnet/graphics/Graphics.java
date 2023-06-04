@@ -15,15 +15,13 @@ public class Graphics {
     private final Display display;
     private final Map<Integer, Texture> textures;
     private final DrawableBatch drawableBatch;
+    private final Map<Integer, Integer[]> clipRects;
     private double scale;
-    private float xOffset;
-    private float yOffset;
     private int currentTextureId = 0;
     private int color;
     private int currentDrawOrder;
     private int currentlyBoundTextureId;
     private int backgroundColor = 0;
-    private final Map<Integer, Integer[]> clipRects;
     private int activeClipRect;
     private int appliedClipRect = 0; // The clip rect set active in openGl.
 
@@ -56,21 +54,6 @@ public class Graphics {
         this.scale = scale;
     }
 
-    public float getxOffset() {
-        return xOffset;
-    }
-
-    public void setxOffset(float xOffset) {
-        this.xOffset = xOffset;
-    }
-
-    public float getyOffset() {
-        return yOffset;
-    }
-
-    public void setyOffset(float yOffset) {
-        this.yOffset = yOffset;
-    }
 
     public int getCurrentTextureId() {
         return currentTextureId;
@@ -95,7 +78,7 @@ public class Graphics {
         Texture texture = tileSheet.getTexture();
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(color);
+        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -114,7 +97,7 @@ public class Graphics {
 
         Sprite2D sprite2D = new Sprite2D(vertexCoords, texCoords);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(color);
+        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -140,7 +123,7 @@ public class Graphics {
 
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.addColor(color);
+        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
         sprite2D.setDrawOrder(currentDrawOrder);
         sprite2D.setClipRect(activeClipRect);
@@ -159,26 +142,27 @@ public class Graphics {
         currentlyBoundTextureId = textureId;
     }
 
-    public void drawLine(float x1, float y1, float x2, float y2) {
-        Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
-        line.addColor(color);
-        line.setDrawOrder(currentDrawOrder);
-        drawableBatch.add(line);
-    }
-
     public void drawCircle(float x, float y, float w, float h) {
         Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
-        circle.addColor(color);
+        circle.setColor(color);
         circle.setDrawOrder(currentDrawOrder);
         drawableBatch.add(circle);
     }
 
-    public void setDrawOrder(int i) {
-        currentDrawOrder = i;
+    public void filledCircle(float x, float y, float w, float h) {
+        Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
+        circle.setColor(color);
+        circle.setFilled(true);
+        circle.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(circle);
     }
 
     public int getDrawOrder() {
         return currentDrawOrder;
+    }
+
+    public void setDrawOrder(int i) {
+        currentDrawOrder = i;
     }
 
     public void drawRect(float x, float y, float w, float h) {
@@ -188,16 +172,45 @@ public class Graphics {
         drawLine(x, y + h, x, y);
     }
 
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
+        line.setColor(color);
+        line.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(line);
+    }
+
+    public void filledRect(float _x, float _y, float _w, float _h) {
+        float[] coords = new float[8];
+        float x = (float) (_x * scale);
+        float y = (float) (_y * scale);
+        float w = (float) (_w * scale);
+        float h = (float) (_h * scale);
+
+        coords[0] = x;
+        coords[1] = y;
+        coords[2] = x + w;
+        coords[3] = y;
+        coords[4] = x + w;
+        coords[5] = y + h;
+        coords[6] = x;
+        coords[7] = y + h;
+
+        Shape2D shape2D = new Shape2D(coords);
+        shape2D.setColor(color);
+        shape2D.setDrawOrder(currentDrawOrder);
+        drawableBatch.add(shape2D);
+    }
+
     public int getColor() {
         return color;
     }
 
-    public int getBackgroundColor() {
-        return backgroundColor;
-    }
-
     public void setColor(int col) {
         color = col;
+    }
+
+    public int getBackgroundColor() {
+        return backgroundColor;
     }
 
     public void setBackgroundColor(int rgba) {

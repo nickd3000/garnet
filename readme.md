@@ -3,15 +3,18 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet)
 ![GitHub](https://img.shields.io/github/license/nickd3000/garnet)
 
-A 2D LWJGL based game engine for Java.
+A 2D game engine for Java, built on LWJGL.
 
-Featuring
+### Main features
 
 - Timed Game Loop
-- 2D Sprite and primitive drawing
+- 2D Sprite and sprite sheets
+- Primitive drawing - circle, rectangle, lines
+- Texture loading
 - Input handling
 - Font drawing
 - Tile map support
+- Sound player
 
 ### Maven Dependency
 
@@ -19,7 +22,7 @@ Featuring
 <dependency>
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -35,7 +38,6 @@ package com.physmo.garnetexamples.graphics;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.Texture;
-import com.physmo.garnet.Utils;
 import com.physmo.garnet.drawablebatch.TileSheet;
 import com.physmo.garnet.graphics.Graphics;
 
@@ -44,8 +46,7 @@ public class SimpleSpriteExample extends GarnetApp {
 
     TileSheet tileSheet;
     Texture texture;
-    Graphics graphics;
-    double x = 0;
+    double xPos = 0;
     double scale = 4;
 
     public SimpleSpriteExample(Garnet garnet, String name) {
@@ -66,28 +67,30 @@ public class SimpleSpriteExample extends GarnetApp {
     public void init(Garnet garnet) {
         texture = Texture.loadTexture("space.png");
         tileSheet = new TileSheet(texture, 16, 16);
-        graphics = garnet.getGraphics();
+        Graphics graphics = garnet.getGraphics();
         graphics.addTexture(texture);
     }
 
     @Override
     public void tick(double delta) {
-        x += delta * 50;
-        if (x > 80) x = -16;
+        xPos += delta * 50;
+        if (xPos > 80) xPos = -16;
     }
 
     @Override
-    public void draw() {
-        int[] mousePosition = garnet.getInput().getMousePositionScaled(scale);
-        
-        graphics.setColor(0xaaff22ff);
-        graphics.setScale(scale);
-        graphics.drawImage(tileSheet, (int) x, 5, 2, 2);
+    public void draw(Graphics g) {
+        g.setScale(scale);
 
-        graphics.setColor(0xaa22ffff);
-        graphics.drawImage(tileSheet, mousePosition[0], mousePosition[1], 2, 2);
-        graphics.render();
+        int[] mousePosition = garnet.getInput().getMousePositionScaled(scale);
+
+        g.setColor(0xaaff22ff);
+        g.drawImage(tileSheet, (int) xPos, 5, 2, 2);
+
+        g.setColor(0xaa22ffff);
+        g.drawImage(tileSheet, mousePosition[0], mousePosition[1], 2, 2);
     }
 }
+
+
 ```
 

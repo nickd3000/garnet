@@ -1,21 +1,18 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Circle2D implements DrawableElement {
+public class Circle2D extends DrawableElement {
 
     float x;
     float y;
     float width;
     float height;
-
-    int drawOrder;
-    int color;
-
+    double detail = 1.5;
     int numSegments;
+    boolean filled = false;
 
     public Circle2D(float x, float y, float width, float height) {
         this.x = x;
@@ -23,11 +20,8 @@ public class Circle2D implements DrawableElement {
         this.width = width;
         this.height = height;
         numSegments = (int) (Math.max(width, height) / 2);
+        numSegments = (int) (numSegments * detail);
         if (numSegments < 5) numSegments = 5;
-    }
-
-    public void addColor(int rgb) {
-        this.color = rgb;
     }
 
     @Override
@@ -36,15 +30,28 @@ public class Circle2D implements DrawableElement {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glColor4fv(Utils.rgbToFloat(color));
-        glBegin(GL_LINE_LOOP);
+        glColor4fv(colorFloats);
 
         float[] coords = generatePoints();
-        for (int i = 0; i < coords.length / 2; i++) {
-            glVertex2f(coords[i * 2], coords[(i * 2) + 1]);
+
+        if (!filled) {
+            glBegin(GL_LINE_LOOP);
+            for (int i = 0; i < coords.length / 2; i++) {
+                glVertex2f(coords[i * 2], coords[(i * 2) + 1]);
+            }
+            glEnd();
+        } else {
+            glBegin(GL_TRIANGLE_FAN);
+            // Add mid-point
+            glVertex2f(x, y);
+            for (int i = 0; i < coords.length / 2; i++) {
+                glVertex2f(coords[i * 2], coords[(i * 2) + 1]);
+            }
+            glVertex2f(coords[0], coords[1]);
+            glEnd();
         }
 
-        glEnd();
+
     }
 
     public float[] generatePoints() {
@@ -63,17 +70,6 @@ public class Circle2D implements DrawableElement {
     }
 
     @Override
-    public int getDrawOrder() {
-        return drawOrder;
-    }
-
-    @Override
-    public void setDrawOrder(int drawOrder) {
-        this.drawOrder = drawOrder;
-
-    }
-
-    @Override
     public int getTextureId() {
         return 0;
     }
@@ -84,13 +80,11 @@ public class Circle2D implements DrawableElement {
     }
 
     @Override
-    public int getClipRect() {
-        return 0;
-    }
-
-    @Override
     public int getType() {
         return CIRCLE;
     }
 
+    public void setFilled(boolean val) {
+        filled = val;
+    }
 }
