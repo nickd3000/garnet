@@ -3,7 +3,10 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet)
 ![GitHub](https://img.shields.io/github/license/nickd3000/garnet)
 
-A 2D game engine for Java, built on LWJGL.
+A cross-platform 2D game engine for Java, built on LWJGL.
+
+Garnet is still in development but the main functionality is all working.
+Feedback is really useful at this stage, so please feel free to create a small project and let me know how you get on.
 
 ### Main features
 
@@ -29,6 +32,11 @@ A 2D game engine for Java, built on LWJGL.
 ### Example project
 
 See the [garnet-examples](https://github.com/nickd3000/garnetexamples) project for examples.
+
+### Toolkit
+
+A [companion toolkit](https://github.com/nickd3000/garnettoolkit) is also available with lots of useful game features,
+like an entity-component system, tilemap drawer, collision system and much more.
 
 ### Minimal example with sprites
 
