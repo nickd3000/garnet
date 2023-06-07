@@ -1,4 +1,4 @@
-package com.physmo.garnet;
+package com.physmo.garnet.text;
 
 
 import com.physmo.garnet.graphics.Graphics;

@@ -1,10 +1,9 @@
-package com.physmo.garnet.regularfont;
+package com.physmo.garnet.text;
 
-import com.physmo.garnet.DrawableFont;
-import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
-import com.physmo.garnet.drawablebatch.TileSheet;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.graphics.TileSheet;
 
 import java.io.InputStream;
 

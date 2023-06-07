@@ -1,7 +1,7 @@
 package com.physmo.garnet.tilegrid;
 
-import com.physmo.garnet.drawablebatch.TileSheet;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.TileSheet;
 
 /**
  * Note: window position and size will be scaled by the scale value.

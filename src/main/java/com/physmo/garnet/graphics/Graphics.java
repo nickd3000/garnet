@@ -1,7 +1,6 @@
 package com.physmo.garnet.graphics;
 
 import com.physmo.garnet.Display;
-import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
 import com.physmo.garnet.drawablebatch.*;
 
@@ -77,6 +76,21 @@ public class Graphics {
         int ty = tileY * tileHeight;
         Texture texture = tileSheet.getTexture();
         Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        sprite2D.setTextureId(texture.getId());
+        sprite2D.setColor(color);
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+        sprite2D.setDrawOrder(currentDrawOrder);
+        sprite2D.setClipRect(activeClipRect);
+        drawableBatch.add(sprite2D);
+        return sprite2D;
+    }
+
+    public Sprite2D drawImage(SubImage subImage, double x, double y) {
+        // texture coords
+        int tx = subImage.x;
+        int ty = subImage.y;
+        Texture texture = subImage.texture;
+        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());

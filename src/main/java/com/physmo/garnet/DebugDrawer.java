@@ -1,7 +1,7 @@
 package com.physmo.garnet;
 
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.regularfont.RegularFont;
+import com.physmo.garnet.text.RegularFont;
 
 import java.util.HashMap;
 import java.util.Map;

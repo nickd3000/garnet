@@ -1,4 +1,4 @@
-package com.physmo.garnet;
+package com.physmo.garnet.graphics;
 
 /*
  * The MIT License (MIT)
@@ -25,6 +25,7 @@ package com.physmo.garnet;
  */
 
 
+import com.physmo.garnet.Utils;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
