@@ -125,4 +125,8 @@ public class Display {
 
         return new int[]{w[0], h[0]};
     }
+
+    public void setWindowTitle(String title) {
+        glfwSetWindowTitle(windowHandle, title);
+    }
 }
