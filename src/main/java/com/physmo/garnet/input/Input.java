@@ -1,6 +1,7 @@
 package com.physmo.garnet.input;
 
 import com.physmo.garnet.Garnet;
+import com.physmo.garnet.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +10,13 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
 
+    public static final int MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
+    public static final int MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
+    public static final int MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
     private final int[] mousePosition = new int[2];
     private final int[] mousePositionPrev = new int[2];
+    private final boolean[] mouseButtonState = new boolean[3];
+    private final boolean[] mouseButtonStatePrev = new boolean[3];
     public boolean printKeyCodes = false;
     Garnet garnet;
     List<ButtonConfig> actionConfigList;
@@ -18,13 +24,6 @@ public class Input {
     int maxKeys = 512;
     private final boolean[] buttonState = new boolean[maxKeys];
     private final boolean[] buttonStatePrev = new boolean[maxKeys];
-
-    public static final int MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
-    public static final int MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
-    public static final int MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
-
-    private final boolean[] mouseButtonState = new boolean[3];
-    private final boolean[] mouseButtonStatePrev = new boolean[3];
 
     public Input(Garnet garnet) {
         this.garnet = garnet;
@@ -67,6 +66,20 @@ public class Input {
 
     public int[] getMousePositionScaled(double scale) {
         return new int[]{(int) (mousePosition[0] / scale), (int) (mousePosition[1] / scale)};
+    }
+
+    /**
+     * Returns the mouse position normalised to 0..1 double values.
+     *
+     * @return
+     */
+    public double[] getMousePositionNormalised() {
+        int windowWidth = garnet.getDisplay().getWindowWidth();
+        int windowHeight = garnet.getDisplay().getWindowHeight();
+        double x = (double) mousePosition[0] / (double) windowWidth;
+        double y = (double) mousePosition[1] / (double) windowHeight;
+
+        return new double[]{Utils.clampUnit(x), Utils.clampUnit(y)};
     }
 
     public void init() {
