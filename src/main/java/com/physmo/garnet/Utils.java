@@ -121,4 +121,15 @@ public class Utils {
 //        return path;
 //    }
 
+    public static float clampUnit(float v) {
+        if (v < 0) return 0;
+        if (v > 1) return 1;
+        return v;
+    }
+
+    public static double clampUnit(double v) {
+        if (v < 0) return 0;
+        if (v > 1) return 1;
+        return v;
+    }
 }
