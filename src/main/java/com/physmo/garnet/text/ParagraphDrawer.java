@@ -14,7 +14,7 @@ import java.util.List;
 public class ParagraphDrawer {
     DrawableFont font;
     int padY = 0;
-
+    private final boolean showLineBreaks = false;
     public ParagraphDrawer(DrawableFont font) {
         this.font = font;
     }
@@ -40,27 +40,46 @@ public class ParagraphDrawer {
      * @return The total height of the drawn paragraph.
      */
     public int drawParagraph(Graphics graphics, String text, int width, int height, int x, int y) {
-        List<WordMetrics> wordInfos = analyzeText(font, text);
+        List<Token> wordInfos = analyzeText(font, text);
 
         int rx = 0; // rolling x
         int ry = 0; // rolling y
+        boolean newLineSpaceConsume = true;
+        for (Token token : wordInfos) {
 
-        for (WordMetrics wordInfo : wordInfos) {
-
-            if (wordIsCarriageReturn(wordInfo.text)) {
+            if (token.tokenType == TOKEN_TYPE.NEWLINE) {
+                if (showLineBreaks) font.drawText(graphics, "<br>", x + rx, y + ry);
                 rx = 0;
                 ry += font.getLineHeight() + padY;
+                newLineSpaceConsume = true;
                 continue;
             }
 
-            if (rx + wordInfo.width > width) {
-                rx = 0;
-                ry += font.getLineHeight() + padY;
+            if (token.tokenType == TOKEN_TYPE.SPACE) {
+                if (newLineSpaceConsume) continue;
+                rx += font.getSpaceWidth();
+                continue;
             }
 
-            font.drawText(graphics, wordInfo.text, x + rx, y + ry);
-            rx += wordInfo.width;
-            rx += font.getSpaceWidth();
+            if (token.tokenType == TOKEN_TYPE.IGNORE) {
+                continue;
+            }
+
+            if (token.tokenType == TOKEN_TYPE.WORD) {
+                // Will this word wit within bounds?
+                if (rx + token.width > width) {
+                    rx = 0;
+                    ry += font.getLineHeight() + padY;
+                }
+
+                font.drawText(graphics, token.text, x + rx, y + ry);
+                rx += token.width;
+
+                newLineSpaceConsume = false;
+            }
+
+
+            //rx += font.getSpaceWidth();
         }
 
         ry += font.getLineHeight() + padY;
@@ -68,30 +87,72 @@ public class ParagraphDrawer {
 
     }
 
-    private boolean wordIsCarriageReturn(String str) {
-        if (str.equals(("\n"))) return true;
-        return str.equals(System.lineSeparator());
-    }
-
     /*
         Split string into words and measure the display size of each word.
      */
-    private List<WordMetrics> analyzeText(DrawableFont font, String text) {
-        List<WordMetrics> words = new ArrayList<>();
-        String[] s = text.split(" ");
-        for (int i = 0; i < s.length; i++) {
-            words.add(new WordMetrics(s[i], font.getStringWidth(s[i])));
+    private List<Token> analyzeText(DrawableFont font, String text) {
+        List<Token> words = new ArrayList<>();
+
+        int seekPosition = 0;
+        while (seekPosition < text.length()) {
+            Token newToken = getNextToken(text, seekPosition);
+            if (newToken.tokenType == TOKEN_TYPE.WORD) newToken.width = font.getStringWidth(newToken.text);
+            seekPosition += newToken.consumedCharacters;
+            words.add(newToken);
         }
+
         return words;
     }
 
-    private class WordMetrics {
-        String text;
-        int width;
+    public Token getNextToken(String text, int seekPosition) {
+        if (seekPosition >= text.length()) {
+            return new Token("", 1, TOKEN_TYPE.IGNORE);
+        }
 
-        public WordMetrics(String _text, int _width) {
+        if (text.charAt(seekPosition) == ' ') {
+            return new Token(" ", 1, TOKEN_TYPE.SPACE);
+        }
+
+        if (text.charAt(seekPosition) == '\r') { // Ignore \r - part of new line on windows.
+            return new Token("", 1, TOKEN_TYPE.IGNORE);
+        }
+
+        if (text.charAt(seekPosition) == '\n') {
+            return new Token("", 1, TOKEN_TYPE.NEWLINE);
+        }
+
+        int pos = 0;
+        StringBuilder word = new StringBuilder();
+        //word.append(text.charAt(seekPosition));
+        while (!isCharSeparator(text, seekPosition + pos)) {
+            word.append(text.charAt(seekPosition + pos));
+            pos++;
+        }
+        return new Token(word.toString(), pos, TOKEN_TYPE.WORD);
+    }
+
+    public boolean isCharSeparator(String text, int seekPosition) {
+        if (seekPosition >= text.length()) return true;
+        char c = text.charAt(seekPosition);
+        if (c == ' ') return true;
+        if (c == '\r') return true;
+        return c == '\n';
+    }
+
+    enum TOKEN_TYPE {WORD, SPACE, NEWLINE, IGNORE}
+
+    private class Token {
+
+        String text;
+        int width; // Number of characters to move scanning head by.
+        TOKEN_TYPE tokenType;
+        int consumedCharacters;
+
+        public Token(String _text, int consumedCharacters, TOKEN_TYPE tokenType) {
             text = _text;
-            width = _width;
+            width = 0;
+            this.consumedCharacters = consumedCharacters;
+            this.tokenType = tokenType;
         }
     }
 }
