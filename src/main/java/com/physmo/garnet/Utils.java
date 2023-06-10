@@ -103,6 +103,13 @@ public class Utils {
         return f;
     }
 
+    public static void rgbToFloat(int rgb, float[] outFloats) {
+        outFloats[0] = ((rgb >> 24) & 0xff) / 255f;
+        outFloats[1] = ((rgb >> 16) & 0xff) / 255f;
+        outFloats[2] = ((rgb >> 8) & 0xff) / 255f;
+        outFloats[3] = ((rgb) & 0xff) / 255f;
+    }
+
     public static double lerp(double v1, double v2, double pos) {
         double span = v2 - v1;
         return (v1 + span * pos);
@@ -131,5 +138,17 @@ public class Utils {
         if (v < 0) return 0;
         if (v > 1) return 1;
         return v;
+    }
+
+    public static double remapRange(double value, double inMin, double inMax, double outMin, double outMax) {
+        if (outMax - outMin == 0) return 0;
+        value = (value - inMin) / ((inMax - inMin) / (outMax - outMin));
+        return value + outMin;
+    }
+
+    public static float remapRange(float value, float inMin, float inMax, float outMin, float outMax) {
+        if (outMax - outMin == 0) return 0;
+        value = (value - inMin) / ((inMax - inMin) / (outMax - outMin));
+        return value + outMin;
     }
 }
