@@ -5,6 +5,7 @@ import com.physmo.garnet.Utils;
 import com.physmo.garnet.drawablebatch.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -15,6 +16,7 @@ public class Graphics {
     private final Map<Integer, Texture> textures;
     private final DrawableBatch drawableBatch;
     private final Map<Integer, Integer[]> clipRects;
+    ObjectPool<Sprite2D> sprite2DObjectPool;
     private double scale;
     private int currentTextureId = 0;
     private int color;
@@ -30,6 +32,8 @@ public class Graphics {
         textures = new HashMap<>();
         clipRects = new HashMap<>();
         resetSettings();
+
+        sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, () -> new Sprite2D());
     }
 
     public void resetSettings() {
@@ -42,7 +46,16 @@ public class Graphics {
 
     public void render() {
         drawableBatch.render(this);
+        releaseBatch();
         drawableBatch.clear();
+    }
+
+    public void releaseBatch() {
+        List<DrawableElement> elements = drawableBatch.getElements();
+        for (DrawableElement element : elements) {
+            if (element.getType() == DrawableElement.SPRITE) sprite2DObjectPool.releaseObject((Sprite2D) element);
+        }
+
     }
 
     public double getScale() {
@@ -75,7 +88,9 @@ public class Graphics {
         int tx = tileX * tileWidth;
         int ty = tileY * tileHeight;
         Texture texture = tileSheet.getTexture();
-        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        //Sprite2D sprite2D = new Sprite2D();
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+        sprite2D.setValues((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
@@ -90,7 +105,9 @@ public class Graphics {
         int tx = subImage.x;
         int ty = subImage.y;
         Texture texture = subImage.texture;
-        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
+        //Sprite2D sprite2D = new Sprite2D();
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+        sprite2D.setValues((int) (x * scale), (int) (y * scale), (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
@@ -109,7 +126,10 @@ public class Graphics {
         // TODO: make font register texture
         if (!textures.containsKey(texture.getId())) this.addTexture(texture);
 
-        Sprite2D sprite2D = new Sprite2D(vertexCoords, texCoords);
+        //Sprite2D sprite2D = new Sprite2D();
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+
+        sprite2D.setValues(vertexCoords, texCoords);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
@@ -135,7 +155,10 @@ public class Graphics {
         int tx = 0;
         int ty = 0;
 
-        Sprite2D sprite2D = new Sprite2D((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        //Sprite2D sprite2D = new Sprite2D();
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+
+        sprite2D.setValues((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());

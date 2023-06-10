@@ -14,14 +14,17 @@ public class Sprite2D extends DrawableElement {
     boolean rotated = false;
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
 
+    static int creationCount = 0;
 
     public Sprite2D() {
+        creationCount++;
+        System.out.println("Sprite2D construction count: " + creationCount);
     }
 
-    public Sprite2D(float[] vertexCoords, float[] texCoords) {
+    public void setValues(float[] vertexCoords, float[] texCoords) {
         float[] v = vertexCoords;
         float[] t = texCoords;
-
+        rotated = false;
         this.x = v[0];
         this.y = v[1];
         this.w = v[2] - v[0];
@@ -34,7 +37,8 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
-    public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
+    public void setValues(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
+        rotated = false;
         this.x = x;
         this.y = y;
         this.w = w;
@@ -47,7 +51,8 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
-    public Sprite2D(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
+    public void setValues(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
+        rotated = false;
         this.x = x;
         this.y = y;
         this.w = w;

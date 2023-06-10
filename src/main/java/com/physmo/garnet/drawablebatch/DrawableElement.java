@@ -4,11 +4,11 @@ import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
 
 public abstract class DrawableElement {
-    int SPRITE = 1;
-    int LINE = 2;
-    int CIRCLE = 3;
-    int SHAPE = 4;
-    int OTHER = 0;
+    public static int SPRITE = 1;
+    public static int LINE = 2;
+    public static int CIRCLE = 3;
+    public static int SHAPE = 4;
+    public static int OTHER = 0;
 
     int drawOrder = 0;
     int clipRect = 0;
@@ -42,7 +42,7 @@ public abstract class DrawableElement {
         clipRect = id;
     }
 
-    abstract int getType();
+    public abstract int getType();
 
     public final void setColor(float[] c) {
         setColor(Utils.floatToRgb(c[0], c[1], c[2], c[3]));
@@ -50,7 +50,7 @@ public abstract class DrawableElement {
 
     public final void setColor(int rgba) {
         color = rgba;
-        colorFloats = Utils.rgbToFloat(color);
+        Utils.rgbToFloat(color, colorFloats);
     }
 
     public final void setColor(float r, float g, float b, float a) {

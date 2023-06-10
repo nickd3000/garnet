@@ -60,7 +60,7 @@ public class Shape2D extends DrawableElement {
     }
 
     @Override
-    int getType() {
+    public int getType() {
         return SHAPE;
     }
 }
