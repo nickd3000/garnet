@@ -8,13 +8,18 @@ import java.util.Map;
 
 public class Sound {
 
+    private static final float defaultClipVolume = 1.0f;
+    private static final float defaultClipPan = 0.0f;
     Map<Integer, AudioFile> audioFileMap = new HashMap<>();
     int audioFileNumberFountain = 1;
-    private static final float defaultClipVolume = 1.0f;
     float masterVolume = 1.0f;
 
     public float getMasterVolume() {
         return masterVolume;
+    }
+
+    public void setMasterVolume(float masterVolume) {
+        this.masterVolume = masterVolume;
     }
 
     public void init() {
@@ -34,19 +39,21 @@ public class Sound {
         return audioFileNumberFountain - 1;
     }
 
-    public void setMasterVolume(float masterVolume) {
-        this.masterVolume = masterVolume;
-    }
-
     public void playSound(int id) {
-        new Thread(() -> playSound2(id, defaultClipVolume)).start();
+        new Thread(() -> playSound2(id, defaultClipVolume, defaultClipPan)).start();
     }
 
-    private void playSound2(int id, float volume) {
+    /**
+     * @param id
+     * @param volume
+     * @param pan    -1.0 to 1.0 To set position between left and right speaker.
+     */
+    private void playSound2(int id, float volume, float pan) {
         Clip clip;
         AudioFile audioFile = audioFileMap.get(id);
         clip = audioFile.getFreeClip();
         setClipVolume(clip, volume);
+        setClipPan(clip, pan);
         clip.setFramePosition(0);
         clip.start();
     }
@@ -61,7 +68,22 @@ public class Sound {
         gainControl.setValue(20f * (float) Math.log10(v));
     }
 
-    public void playSound(int id, float volume) {
-        new Thread(() -> playSound2(id, volume)).start();
+    /**
+     * -1.0 left - +1.0 Right
+     * 0 = Center
+     */
+    public void setClipPan(Clip clip, float pan) {
+        if (!clip.isControlSupported(FloatControl.Type.BALANCE)) {
+            //System.out.println("pan not supported");
+            return;
+        }
+
+        FloatControl panControl = (FloatControl) clip.getControl(FloatControl.Type.BALANCE);
+        panControl.setValue(pan);
     }
+
+    public void playSound(int id, float volume, float pan) {
+        new Thread(() -> playSound2(id, volume, pan)).start();
+    }
+
 }

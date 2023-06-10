@@ -28,6 +28,11 @@ public class AudioFile {
             audioInputStream = AudioSystem.getAudioInputStream(bis);
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
+
+            // NJD
+            Line.Info lineInfo = clip.getLineInfo();
+            Control[] controls = clip.getControls();
+
             return clip;
         } catch (UnsupportedAudioFileException | IOException e) {
             throw new RuntimeException(e);
