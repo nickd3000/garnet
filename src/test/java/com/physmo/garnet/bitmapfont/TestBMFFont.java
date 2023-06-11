@@ -1,6 +1,7 @@
 package com.physmo.garnet.bitmapfont;
 
 import com.physmo.garnet.Utils;
+import com.physmo.garnet.text.BitmapFont;
 import org.junit.Ignore;
 import org.junit.Test;
 

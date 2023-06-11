@@ -25,7 +25,7 @@ Feedback is really useful at this stage, so please feel free to create a small p
 <dependency>
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
 </dependency>
 ```
 
@@ -38,67 +38,49 @@ See the [garnet-examples](https://github.com/nickd3000/garnetexamples) project f
 A [companion toolkit](https://github.com/nickd3000/garnettoolkit) is also available with lots of useful game features,
 like an entity-component system, tilemap drawer, collision system and much more.
 
-### Minimal example with sprites
+### Minimal example
+
+This small example loads and draws a texture to the display.
 
 ``` java
-package com.physmo.garnetexamples.graphics;
-
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
-import com.physmo.garnet.Texture;
-import com.physmo.garnet.drawablebatch.TileSheet;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.Texture;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class SimpleSpriteExample extends GarnetApp {
 
-    TileSheet tileSheet;
     Texture texture;
-    double xPos = 0;
-    double scale = 4;
 
     public SimpleSpriteExample(Garnet garnet, String name) {
         super(garnet, name);
     }
 
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
+        Garnet garnet = new Garnet(600, 400);
         GarnetApp app = new SimpleSpriteExample(garnet, "");
-
         garnet.setApp(app);
-
         garnet.init();
         garnet.run();
     }
 
     @Override
     public void init(Garnet garnet) {
-        texture = Texture.loadTexture("space.png");
-        tileSheet = new TileSheet(texture, 16, 16);
-        Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        texture = Texture.loadTexture("garnetCrystal.png");
+        garnet.getGraphics().addTexture(texture);
     }
 
     @Override
     public void tick(double delta) {
-        xPos += delta * 50;
-        if (xPos > 80) xPos = -16;
     }
 
     @Override
     public void draw(Graphics g) {
-        g.setScale(scale);
-
-        int[] mousePosition = garnet.getInput().getMousePositionScaled(scale);
-
-        g.setColor(0xaaff22ff);
-        g.drawImage(tileSheet, (int) xPos, 5, 2, 2);
-
-        g.setColor(0xaa22ffff);
-        g.drawImage(tileSheet, mousePosition[0], mousePosition[1], 2, 2);
+        int[] mousePosition = garnet.getInput().getMousePosition();
+        g.drawImage(texture, mousePosition[0], mousePosition[1]);
     }
 }
-
 
 ```
 

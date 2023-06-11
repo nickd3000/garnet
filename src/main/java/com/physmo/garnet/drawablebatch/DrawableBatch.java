@@ -16,6 +16,10 @@ public class DrawableBatch {
         elements = new ArrayList<>();
     }
 
+    public List<DrawableElement> getElements() {
+        return elements;
+    }
+
     public void add(DrawableElement batchElement) {
         elements.add(batchElement);
     }

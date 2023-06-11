@@ -1,9 +1,8 @@
-package com.physmo.garnet.bitmapfont;
+package com.physmo.garnet.text;
 
-import com.physmo.garnet.DrawableFont;
-import com.physmo.garnet.Texture;
 import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.Texture;
 
 import java.io.BufferedReader;
 import java.io.IOException;

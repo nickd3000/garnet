@@ -1,9 +1,7 @@
-package com.physmo.garnet.drawablebatch;
-
-import com.physmo.garnet.Texture;
+package com.physmo.garnet.graphics;
 
 /**
- * Define the layout of a regularly spaced sprite sheet.
+ * Defines the layout of a regularly spaced sprite sheet.
  */
 public class TileSheet {
     private final int tilesWide;
@@ -11,6 +9,7 @@ public class TileSheet {
     Texture texture;
     int tileWidth;
     int tileHeight;
+
 
     public TileSheet(Texture texture, int tileWidth, int tileHeight) {
         this.texture = texture;
@@ -36,6 +35,10 @@ public class TileSheet {
         int y = index / tilesHigh;
         int x = index % tilesWide;
         return new int[]{x, y};
+    }
+
+    public SubImage getSubImage(int column, int row) {
+        return new SubImage(texture, column * tileWidth, row * tileHeight, tileWidth, tileHeight);
     }
 
     public int getTileIndexFromCoords(int x, int y) {

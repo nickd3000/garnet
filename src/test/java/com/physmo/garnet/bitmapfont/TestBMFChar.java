@@ -1,5 +1,6 @@
 package com.physmo.garnet.bitmapfont;
 
+import com.physmo.garnet.text.GlyphGeometry;
 import org.junit.Test;
 
 public class TestBMFChar {
