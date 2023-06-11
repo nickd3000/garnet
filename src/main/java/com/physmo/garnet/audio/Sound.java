@@ -39,23 +39,19 @@ public class Sound {
         return audioFileNumberFountain - 1;
     }
 
-    public void playSound(int id) {
-        new Thread(() -> playSound2(id, defaultClipVolume, defaultClipPan)).start();
-    }
 
-    /**
-     * @param id
-     * @param volume
-     * @param pan    -1.0 to 1.0 To set position between left and right speaker.
-     */
-    private void playSound2(int id, float volume, float pan) {
-        Clip clip;
-        AudioFile audioFile = audioFileMap.get(id);
-        clip = audioFile.getFreeClip();
-        setClipVolume(clip, volume);
-        setClipPan(clip, pan);
-        clip.setFramePosition(0);
-        clip.start();
+    public void playSound(int id) {
+        //new Thread(() -> playSound2(id, defaultClipVolume, defaultClipPan)).start();
+        new Thread(() -> {
+            Clip clip = playSound2(id, defaultClipVolume, defaultClipPan);
+//            clip.addLineListener(event -> {
+//                if (event.getType()== LineEvent.Type.STOP) {
+//                    System.out.println("Stopping thread");
+//                    Thread.currentThread().stop();
+//                }
+//            });
+        }
+        ).start();
     }
 
     public void setClipVolume(Clip clip, float volume) {
@@ -82,8 +78,33 @@ public class Sound {
         panControl.setValue(pan);
     }
 
+    /**
+     * @param id
+     * @param volume
+     * @param pan    -1.0 to 1.0 To set position between left and right speaker.
+     */
+    private Clip playSound2(int id, float volume, float pan) {
+        Clip clip;
+        AudioFile audioFile = audioFileMap.get(id);
+        clip = audioFile.getFreeClip();
+        setClipVolume(clip, volume);
+        setClipPan(clip, pan);
+        clip.setFramePosition(0);
+        clip.start();
+        return clip;
+    }
+
     public void playSound(int id, float volume, float pan) {
-        new Thread(() -> playSound2(id, volume, pan)).start();
+        new Thread(() -> {
+            Clip clip = playSound2(id, volume, pan);
+//            clip.addLineListener(event -> {
+//                if (event.getType()== LineEvent.Type.STOP) {
+//                    System.out.println("Stopping thread");
+//                    Thread.currentThread().interrupt();
+//                }
+//            });
+        }
+        ).start();
     }
 
 }

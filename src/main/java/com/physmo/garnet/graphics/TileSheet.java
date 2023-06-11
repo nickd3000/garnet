@@ -1,7 +1,7 @@
 package com.physmo.garnet.graphics;
 
 /**
- * Define the layout of a regularly spaced sprite sheet.
+ * Defines the layout of a regularly spaced sprite sheet.
  */
 public class TileSheet {
     private final int tilesWide;
@@ -9,6 +9,7 @@ public class TileSheet {
     Texture texture;
     int tileWidth;
     int tileHeight;
+
 
     public TileSheet(Texture texture, int tileWidth, int tileHeight) {
         this.texture = texture;
