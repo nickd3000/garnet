@@ -1,6 +1,7 @@
 package com.physmo.garnet;
 
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.input.Input;
 import com.physmo.garnet.text.RegularFont;
 
 import java.util.HashMap;
@@ -9,14 +10,20 @@ import java.util.Map;
 public class DebugDrawer {
     public static String DEBUG_FONT_NAME = "drake_10x10.png";
     private final Map<String, String> userStrings = new HashMap<>();
-    private final int textColor = 0xffdd00ff;
     private final int shadowColor = 0x000000d0;
     private final int lineHeight = 10;
+    Input input;
+    private int textColor = 0xffdd00ff;
     private RegularFont regularFont;
     private double fps;
     private boolean visible = false;
     private boolean drawFps = false;
+    private boolean drawMouseCoords = false;
     private double scale = 1;
+
+    public DebugDrawer(Input input) {
+        this.input = input;
+    }
 
     public double getScale() {
         return scale;
@@ -38,6 +45,10 @@ public class DebugDrawer {
         this.drawFps = drawFps;
     }
 
+    public void setDrawMouseCoords(boolean drawMouseCoords) {
+        this.drawMouseCoords = drawMouseCoords;
+    }
+
     public void init() {
         //visible = false;
         regularFont = new RegularFont(DEBUG_FONT_NAME, 10, 10);
@@ -57,6 +68,7 @@ public class DebugDrawer {
         g.setScale(scale);
         g.disableClipRect();
         if (drawFps) y += drawString(g, "FPS: " + fps, y);
+        if (drawMouseCoords) y += drawString(g, getMouseCoordsString(), y);
         drawUserStrings(g, y);
 
         g.setColor(prevColor);
@@ -79,6 +91,11 @@ public class DebugDrawer {
         return (int) (lineHeight * scale);
     }
 
+    public String getMouseCoordsString() {
+        int[] mousePosition = input.getMousePosition();
+        return String.format("Mouse X:%d Y:%d", mousePosition[0], mousePosition[1]);
+    }
+
     private int drawUserStrings(Graphics g, int y) {
         int yy = 0;
 
@@ -99,5 +116,9 @@ public class DebugDrawer {
 
     public void setFPS(double fps) {
         this.fps = fps;
+    }
+
+    public void setColor(int i) {
+        textColor = i;
     }
 }
