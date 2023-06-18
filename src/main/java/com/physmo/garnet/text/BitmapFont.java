@@ -17,6 +17,7 @@ public class BitmapFont implements DrawableFont {
     private static final int coordsPerChar = 16;
     Map<Integer, GlyphGeometry> geometry;
     Texture texture;
+    double scale = 1;
 
     public BitmapFont(String texturePath, String definitionPath) throws IOException {
         geometry = new HashMap<>();
@@ -87,7 +88,23 @@ public class BitmapFont implements DrawableFont {
     @Override
     public int getLineHeight() {
         GlyphGeometry glyphGeometry = geometry.get((int) 'T');
-        return glyphGeometry.height;
+        return (int) (glyphGeometry.height * scale);
+    }
+
+    public int getStringWidth(String text) {
+        int stringWidth = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            GlyphGeometry bmfChar = geometry.get((int) c);
+            if (bmfChar == null) continue;
+            stringWidth += bmfChar.xadvance;
+        }
+        return (int) (stringWidth * scale);
+    }
+
+    @Override
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 
     private float[] generateCoordsForStrings(String text, int x, int y) {
@@ -100,8 +117,8 @@ public class BitmapFont implements DrawableFont {
             GlyphGeometry bmfChar = geometry.get((int) c);
             if (bmfChar == null) continue;
 
-            float[] floats = generateCoordsForCharacter(bmfChar, x + xOffset, y + bmfChar.yoffset);
-            xOffset += bmfChar.xadvance;
+            float[] floats = generateCoordsForCharacter(bmfChar, x + xOffset, y + (int) (bmfChar.yoffset * scale));
+            xOffset += (bmfChar.xadvance * scale);
 
             for (int j = 0; j < floats.length; j++) {
                 coords[cidx++] = floats[j];
@@ -109,6 +126,11 @@ public class BitmapFont implements DrawableFont {
         }
 
         return coords;
+    }
+
+    @Override
+    public int getSpaceWidth() {
+        return getStringWidth(" ");
     }
 
     // texture, vertex clockwise
@@ -125,37 +147,21 @@ public class BitmapFont implements DrawableFont {
 
         tex[i++] = bmfChar.x + bmfChar.width;
         tex[i++] = bmfChar.y;
-        coords[i++] = x + bmfChar.width;
+        coords[i++] = (float) (x + (bmfChar.width * scale));
         coords[i++] = y;
 
         tex[i++] = bmfChar.x + bmfChar.width;
         tex[i++] = bmfChar.y + bmfChar.height;
-        coords[i++] = x + bmfChar.width;
-        coords[i++] = y + bmfChar.height;
+        coords[i++] = (float) (x + (bmfChar.width * scale));
+        coords[i++] = (float) (y + (bmfChar.height * scale));
 
         tex[i++] = bmfChar.x;
         tex[i++] = bmfChar.y + bmfChar.height;
         coords[i++] = x;
-        coords[i++] = y + bmfChar.height;
+        coords[i++] = (float) (y + (bmfChar.height * scale));
 
 
         return coords;
-    }
-
-    public int getStringWidth(String text) {
-        int stringWidth = 0;
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            GlyphGeometry bmfChar = geometry.get((int) c);
-            if (bmfChar == null) continue;
-            stringWidth += bmfChar.xadvance;
-        }
-        return stringWidth;
-    }
-
-    @Override
-    public int getSpaceWidth() {
-        return getStringWidth(" ");
     }
 
 }

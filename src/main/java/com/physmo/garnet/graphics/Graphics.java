@@ -160,22 +160,9 @@ public class Graphics {
         return sprite2D;
     }
 
-    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
-        int tileWidth = tileSheet.getTileWidth();
-        int tileHeight = tileSheet.getTileHeight();
-        // texture coords
-        int tx = tileX * tileWidth;
-        int ty = tileY * tileHeight;
-        Texture texture = tileSheet.getTexture();
-        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-        sprite2D.reset();
-        sprite2D.setCoords((int) x, (int) y, tileWidth, tileHeight, tx, ty, tileWidth, tileHeight);
-        sprite2D.setTextureId(texture.getId());
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
 
-        drawableBatch.add(sprite2D);
-        return sprite2D;
+    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
+        return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
     }
 
     public Sprite2D drawImage(SubImage subImage, double x, double y) {
@@ -187,6 +174,24 @@ public class Graphics {
         Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
         sprite2D.reset();
         sprite2D.setCoords((int) x, (int) y, subImage.w, subImage.h, tx, ty, subImage.w, subImage.h);
+        sprite2D.setTextureId(texture.getId());
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+
+        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
+        drawableBatch.add(sprite2D);
+        return sprite2D;
+    }
+
+    public Sprite2D drawImageScaled(SubImage subImage, double x, double y, double scale) {
+        // texture coords
+        int tx = subImage.x;
+        int ty = subImage.y;
+        Texture texture = subImage.texture;
+
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+        sprite2D.reset();
+        sprite2D.setCoords((int) x, (int) y, (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
 

@@ -17,13 +17,12 @@ public abstract class DrawableElement {
     int color = 0xffffffff;
     float[] colorFloats = new float[4];
     Camera camera = null;
-    //double scale = 1;
 
     public void setCommonValues(Camera camera, int drawOrder, int color) {
         this.camera = camera;
         this.drawOrder = drawOrder;
         setColor(color);
-        //this.scale = scale;
+
     }
 
     public final void setColor(int rgba) {
@@ -31,26 +30,10 @@ public abstract class DrawableElement {
         Utils.rgbToFloat(color, colorFloats);
     }
 
-//    public double getScale() {
-//        return scale;
-//    }
-
-//    public void setScale(double scale) {
-//        this.scale = scale;
-//    }
 
     public Camera getCamera() {
         return camera;
     }
-
-
-//    public int getCameraId() {
-//        return cameraId;
-//    }
-//
-//    public void setCameraId(int cameraId) {
-//        this.cameraId = cameraId;
-//    }
 
     public void setCamera(Camera camera) {
         this.camera = camera;
