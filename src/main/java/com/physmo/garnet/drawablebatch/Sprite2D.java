@@ -26,7 +26,7 @@ public class Sprite2D extends DrawableElement {
         rotated = false;
     }
 
-    public void setValues(float[] vertexCoords, float[] texCoords) {
+    public void setCoords(float[] vertexCoords, float[] texCoords) {
         float[] v = vertexCoords;
         float[] t = texCoords;
         rotated = false;
@@ -42,7 +42,7 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
-    public void setValues(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
+    public void setCoords(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
         rotated = false;
         this.x = x;
         this.y = y;
@@ -56,7 +56,7 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
-    public void setValues(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
+    public void setCoords(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
         rotated = false;
         this.x = x;
         this.y = y;
@@ -106,7 +106,11 @@ public class Sprite2D extends DrawableElement {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
-
+        if (rotated) {
+            renderRotated(1.0f);
+            return;
+        }
+        applyTranslation();
 
 
         float outputScale = 1;
@@ -128,6 +132,7 @@ public class Sprite2D extends DrawableElement {
         }
         glEnd();
 
+        removeTranslation();
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.Utils;
+import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public abstract class DrawableElement {
     public static int SPRITE = 1;
@@ -11,9 +14,43 @@ public abstract class DrawableElement {
     public static int OTHER = 0;
 
     int drawOrder = 0;
-    int clipRect = 0;
     int color = 0xffffffff;
     float[] colorFloats = new float[4];
+    Camera camera = null;
+    //double scale = 1;
+
+    public void setCommonValues(Camera camera, int drawOrder, int color) {
+        this.camera = camera;
+        this.drawOrder = drawOrder;
+        setColor(color);
+        //this.scale = scale;
+    }
+
+    public final void setColor(int rgba) {
+        color = rgba;
+        Utils.rgbToFloat(color, colorFloats);
+    }
+
+//    public double getScale() {
+//        return scale;
+//    }
+
+//    public void setScale(double scale) {
+//        this.scale = scale;
+//    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+
+//    public int getCameraId() {
+//        return cameraId;
+//    }
+//
+//    public void setCameraId(int cameraId) {
+//        this.cameraId = cameraId;
+//    }
 
     public void setCamera(Camera camera) {
         this.camera = camera;
@@ -38,14 +75,6 @@ public abstract class DrawableElement {
 
     abstract boolean hasTexture();
 
-    public final int getClipRect() {
-        return clipRect;
-    }
-
-    public final void setClipRect(int id) {
-        clipRect = id;
-    }
-
     public abstract int getType();
 
     public final void setColor(float[] c) {
@@ -55,4 +84,20 @@ public abstract class DrawableElement {
     public final void setColor(float r, float g, float b, float a) {
         setColor(Utils.floatToRgb(r, g, b, a));
     }
+
+    //
+    public void applyTranslation() {
+        glPushMatrix();
+        double z = camera.getZoom();
+        float xo = (float) (camera.getWindowX() - (camera.getX() * z));
+        float yo = (float) (camera.getWindowY() - (camera.getY() * z));
+
+        glTranslatef(xo, yo, 0);
+        glScalef((float) z, (float) z, 1);
+    }
+
+    public void removeTranslation() {
+        glPopMatrix();
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.physmo.garnet;
 
+import com.physmo.garnet.graphics.CameraManager;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.text.RegularFont;
@@ -63,7 +64,7 @@ public class DebugDrawer {
         int prevColor = g.getColor();
         double prevScale = g.getZoom();
         int prevDrawOrder = g.getDrawOrder();
-        int prevClipRect = g.getActiveClipRect();
+        int prevCameraId = g.getCameraManager().getActiveCameraId();
 
         g.setZoom(scale);
         g.setActiveCamera(CameraManager.DEBUG_CAMERA);
@@ -74,7 +75,7 @@ public class DebugDrawer {
         g.setColor(prevColor);
         g.setZoom(prevScale);
         g.setDrawOrder(prevDrawOrder);
-        g.setActiveClipRect(prevClipRect);
+        g.setActiveCamera(prevCameraId);
     }
 
     public int drawString(Graphics g, String str, int y) {
