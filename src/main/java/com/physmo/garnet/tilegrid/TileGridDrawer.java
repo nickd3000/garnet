@@ -1,5 +1,6 @@
 package com.physmo.garnet.tilegrid;
 
+import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.TileSheet;
 
@@ -8,25 +9,15 @@ import com.physmo.garnet.graphics.TileSheet;
  */
 public class TileGridDrawer {
 
-    private double scrollX = 0, scrollY = 0;
     private int tileWidth, tileHeight;
     private int scale = 1;
-    private int windowWidth = 100; // Measured in unscaled pixels
-    private int windowHeight = 100;// Measured in unscaled pixels
-    private int clipRectId = -1;
-    private double screenOffsetX;
-    private double screenOffsetY;
+    private int cameraId = -1;
     private TileSheet tileSheet;
     private TileGridData tileGridData;
 
     public TileGridDrawer() {
         tileWidth = 16;
         tileHeight = 16;
-
-    }
-
-    public double[] getScrollPosition() {
-        return new double[]{scrollX, scrollY};
     }
 
     public TileGridDrawer setScale(int scale) {
@@ -50,86 +41,44 @@ public class TileGridDrawer {
         return this;
     }
 
-    public TileGridDrawer setWindowSize(int windowWidth, int windowHeight) {
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-        return this;
-    }
+    public void draw(Graphics g, int drawPosX, int drawPosY) {
+        int prevCamera = g.getCameraManager().getActiveCameraId();
+        g.setActiveCamera(cameraId);
 
-    public void draw(Graphics graphics, int drawPosX, int drawPosY) {
-        setClipRect(graphics, drawPosX, drawPosY);
-        int window_xx = ((int) scrollX) / tileWidth;
-        int window_yy = ((int) scrollY) / tileHeight;
-        int offsetX = ((int) scrollX % tileWidth);
-        int offsetY = ((int) scrollY % tileHeight);
         int[] tCoords;
 
-        graphics.setScale(scale);
+        g.setZoom(scale);
+        Camera camera = g.getCameraManager().getCamera(cameraId);
 
-        int windowHeightInTiles = windowHeight / tileHeight;
-        int windowWidthInTiles = windowWidth / tileWidth;
-        screenOffsetX = (int) (drawPosX - scrollX);
-        screenOffsetY = (int) (drawPosY - scrollY);
+        double[] visibleRect = camera.getVisibleRect();
 
-        for (int y = -1; y <= windowHeightInTiles + 1; y++) {
-            for (int x = -1; x <= windowWidthInTiles + 1; x++) {
-                int tileId = tileGridData.getTileId(window_xx + x, window_yy + y);
+        int xStart = (int) (visibleRect[0] / tileWidth) - 1;
+        int yStart = (int) (visibleRect[1] / tileHeight) - 1;
+        int xSize = (int) ((visibleRect[2]) / tileWidth) + 1;
+        int ySize = (int) ((visibleRect[3]) / tileHeight) + 1;
+
+        for (int y = yStart; y <= yStart + ySize; y++) {
+            for (int x = xStart; x <= xStart + xSize; x++) {
+                int tileId = tileGridData.getTileId(x, y);
                 if (tileId == -1) continue;
                 tCoords = tileSheet.getTileCoordsFromIndex(tileId);
-                graphics.drawImage(tileSheet,
-                        drawPosX + ((x) * (tileWidth)) - offsetX,
-                        drawPosY + ((y) * (tileHeight)) - offsetY,
-                        tCoords[0], tCoords[1]);
+                g.drawImage(tileSheet.getSubImage(tCoords[0], tCoords[1]),
+                        drawPosX + ((x) * (tileWidth)),
+                        drawPosY + ((y) * (tileHeight)));
             }
         }
 
-        graphics.disableClipRect();
-
+        g.setActiveCamera(prevCamera);
     }
 
-    private void setClipRect(Graphics graphics, int x, int y) {
-        if (clipRectId == -1) {
-            clipRectId = graphics.getAvailableClipRectId();
-            System.out.println("id " + clipRectId);
-        }
-        graphics.addClipRect(clipRectId, x * scale, y * scale, windowWidth * scale, windowHeight * scale);
-        graphics.setActiveClipRect(clipRectId);
+
+    public int getCameraId() {
+        return cameraId;
     }
 
-    public int getClipRectId() {
-        return clipRectId;
+    public TileGridDrawer setCameraId(int cameraId) {
+        this.cameraId = cameraId;
+        return this;
     }
 
-    public void setScroll(double scrollX, double scrollY) {
-        this.scrollX = scrollX;
-        this.scrollY = scrollY;
-        clampScroll();
-    }
-
-    private void clampScroll() {
-        int[] scrollExtents = getScrollExtents();
-        if (scrollX < 0) scrollX = 0;
-        if (scrollY < 0) scrollY = 0;
-        if (scrollX >= scrollExtents[0]) scrollX = scrollExtents[0];
-        if (scrollY >= scrollExtents[1]) scrollY = scrollExtents[1];
-    }
-
-    public int[] getScrollExtents() {
-        int maxX = (tileWidth * (tileGridData.width)) - windowWidth;
-        int maxY = (tileHeight * (tileGridData.height)) - windowHeight;
-//        maxX /= scale;
-//        maxY /= scale;
-        return new int[]{maxX, maxY};
-    }
-
-    public int[] getWindowSizeInTiles() {
-        return new int[]{windowWidth / tileWidth, windowHeight / tileHeight};
-    }
-
-    public int[] translateMapToScreenPosition(double x, double y) {
-        int[] translated = new int[2];
-        translated[0] = (int) (x + screenOffsetX);
-        translated[1] = (int) (y + screenOffsetY);
-        return translated;
-    }
 }

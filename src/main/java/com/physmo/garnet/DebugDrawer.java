@@ -61,18 +61,18 @@ public class DebugDrawer {
         int y = 5;
 
         int prevColor = g.getColor();
-        double prevScale = g.getScale();
+        double prevScale = g.getZoom();
         int prevDrawOrder = g.getDrawOrder();
         int prevClipRect = g.getActiveClipRect();
 
-        g.setScale(scale);
-        g.disableClipRect();
+        g.setZoom(scale);
+        g.setActiveCamera(CameraManager.DEBUG_CAMERA);
         if (drawFps) y += drawString(g, "FPS: " + fps, y);
         if (drawMouseCoords) y += drawString(g, getMouseCoordsString(), y);
         drawUserStrings(g, y);
 
         g.setColor(prevColor);
-        g.setScale(prevScale);
+        g.setZoom(prevScale);
         g.setDrawOrder(prevDrawOrder);
         g.setActiveClipRect(prevClipRect);
     }

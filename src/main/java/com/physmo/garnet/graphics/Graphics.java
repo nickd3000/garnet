@@ -17,7 +17,7 @@ public class Graphics {
     private final DrawableBatch drawableBatch;
     private final Map<Integer, Integer[]> clipRects;
     ObjectPool<Sprite2D> sprite2DObjectPool;
-    private double scale;
+    //private double zoom; // TODO: remove this
     private int currentTextureId = 0;
     private int color;
     private int currentDrawOrder;
@@ -30,14 +30,14 @@ public class Graphics {
         this.display = display;
         drawableBatch = new DrawableBatch();
         textures = new HashMap<>();
-        clipRects = new HashMap<>();
+
         resetSettings();
 
         sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, () -> new Sprite2D());
     }
 
     public void resetSettings() {
-        scale = 1;
+        //zoom = 1;
         color = Utils.rgb(0xff, 0xff, 0xff, 0xff);
         currentDrawOrder = 0;
         currentlyBoundTextureId = 0;
@@ -58,12 +58,42 @@ public class Graphics {
 
     }
 
-    public double getScale() {
-        return scale;
+    /**
+     * Get the zoom level of the currently active camera.
+     *
+     * @return
+     */
+    public double getZoom() {
+        return cameraManager.getActiveCamera().getZoom();
     }
 
-    public void setScale(double scale) {
-        this.scale = scale;
+    /**
+     * Set the zoom level of the currently active camera.
+     *
+     * @param zoom
+     */
+    public void setZoom(double zoom) {
+        cameraManager.getActiveCamera().setZoom(zoom);
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setActiveCamera(int id) {
+        if (id == activeCameraId) return;
+        activeCameraId = id;
+        cameraManager.setActiveCamera(id);
+        Camera camera = cameraManager.getActiveCamera();
+        xo = camera.getWindowX() - camera.getX();
+        yo = camera.getWindowY() - camera.getY();
+    }
+
+    public void drawRect(float x, float y, float w, float h) {
+        drawLine(x, y, x + w, y);
+        drawLine(x + w, y, x + w, y + h);
+        drawLine(x + w, y + h, x, y + h);
+        drawLine(x, y + h, x, y);
     }
 
 
@@ -238,14 +268,6 @@ public class Graphics {
         drawableBatch.add(shape2D);
     }
 
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int col) {
-        color = col;
-    }
-
     public int getBackgroundColor() {
         return backgroundColor;
     }
@@ -258,24 +280,6 @@ public class Graphics {
         return textures.containsKey(id);
     }
 
-    /**
-     * Register a clipping rectangle with Graphics.
-     * The location is in screen pixels and ignores any scaling applied to graphics.
-     *
-     * @param index
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     */
-    public void addClipRect(int index, int x, int y, int w, int h) {
-        Integer[] clipRect = new Integer[]{x, y, w, h};
-        clipRects.put(index, clipRect);
-    }
-
-    public void disableClipRect() {
-        setActiveClipRect(0);
-    }
 
     /**
      * Internal function, not for user use.

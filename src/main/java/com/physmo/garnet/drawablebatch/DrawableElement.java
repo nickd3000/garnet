@@ -15,6 +15,10 @@ public abstract class DrawableElement {
     int color = 0xffffffff;
     float[] colorFloats = new float[4];
 
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
     abstract void render(Graphics graphics);
 
     /**
@@ -46,11 +50,6 @@ public abstract class DrawableElement {
 
     public final void setColor(float[] c) {
         setColor(Utils.floatToRgb(c[0], c[1], c[2], c[3]));
-    }
-
-    public final void setColor(int rgba) {
-        color = rgba;
-        Utils.rgbToFloat(color, colorFloats);
     }
 
     public final void setColor(float r, float g, float b, float a) {

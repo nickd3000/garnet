@@ -1,8 +1,9 @@
 package com.physmo.garnet.graphics;
 
 public class Camera {
-    int[] clipRect = new int[4];
     private final int id;
+    int[] clipRect = new int[4];
+    double[] visibleRect = new double[4];
     private double x; // Scroll x
     private double y; // Scroll y
     private int width;
@@ -13,6 +14,7 @@ public class Camera {
     private int clipRectHash = 0;
     private boolean drawDebugInfo = false;
     private int debugInfoColor = 0xff00ffa0;
+    private double zoom = 1;
 
     public Camera(int id, int width, int height) {
         this.id = id;
@@ -25,13 +27,22 @@ public class Camera {
         recalculate();
     }
 
+    public double getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
+        recalculate();
+    }
+
     public void recalculate() {
         clipRect[0] = windowX;
         clipRect[1] = windowY;
         clipRect[2] = width;
         clipRect[3] = height;
         clipRectHash = (id * 123) * (width * 234) * (height * 135) * (windowX * 311) * (windowY * 212);
-        clipRectHash += id + width + height + windowX + windowY;
+        clipRectHash += (id * 123) + (width * 234) + (height * 135) + (windowX * 311) + (windowY * 212);
         clipRectHash &= 0xffffffff;
     }
 
@@ -85,6 +96,11 @@ public class Camera {
         return x;
     }
 
+    /**
+     * Set the target or scroll position of the camara.
+     *
+     * @param x
+     */
     public void setX(double x) {
         this.x = x;
     }
@@ -93,6 +109,11 @@ public class Camera {
         return y;
     }
 
+    /**
+     * Set the target or scroll position of the camara.
+     *
+     * @param y
+     */
     public void setY(double y) {
         this.y = y;
     }
@@ -122,5 +143,20 @@ public class Camera {
     public void setClipActive(boolean clipActive) {
         this.clipActive = clipActive;
         recalculate();
+    }
+
+    public double[] getVisibleRect() {
+        visibleRect[0] = x;
+        visibleRect[1] = y;
+        visibleRect[2] = width / zoom;
+        visibleRect[3] = height / zoom;
+
+        return visibleRect;
+    }
+
+    public void scroll(double x, double y) {
+        this.x += x;
+        this.y += y;
+
     }
 }
