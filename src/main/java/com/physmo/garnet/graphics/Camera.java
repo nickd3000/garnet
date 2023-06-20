@@ -31,9 +31,10 @@ public class Camera {
         return zoom;
     }
 
-    public void setZoom(double zoom) {
+    public Camera setZoom(double zoom) {
         this.zoom = zoom;
         recalculate();
+        return this;
     }
 
     public void recalculate() {
@@ -50,16 +51,18 @@ public class Camera {
         return debugInfoColor;
     }
 
-    public void setDebugInfoColor(int debugInfoColor) {
+    public Camera setDebugInfoColor(int debugInfoColor) {
         this.debugInfoColor = debugInfoColor;
+        return this;
     }
 
     public boolean isDrawDebugInfo() {
         return drawDebugInfo;
     }
 
-    public void setDrawDebugInfo(boolean drawDebugInfo) {
+    public Camera setDrawDebugInfo(boolean drawDebugInfo) {
         this.drawDebugInfo = drawDebugInfo;
+        return this;
     }
 
     public int getClipRectHash() {
@@ -74,18 +77,20 @@ public class Camera {
         return windowX;
     }
 
-    public void setWindowX(int windowX) {
+    public Camera setWindowX(int windowX) {
         this.windowX = windowX;
         recalculate();
+        return this;
     }
 
     public int getWindowY() {
         return windowY;
     }
 
-    public void setWindowY(int windowY) {
+    public Camera setWindowY(int windowY) {
         this.windowY = windowY;
         recalculate();
+        return this;
     }
 
     public int getId() {
@@ -100,9 +105,11 @@ public class Camera {
      * Set the target or scroll position of the camara.
      *
      * @param x
+     * @return
      */
-    public void setX(double x) {
+    public Camera setX(double x) {
         this.x = x;
+        return this;
     }
 
     public double getY() {
@@ -113,36 +120,41 @@ public class Camera {
      * Set the target or scroll position of the camara.
      *
      * @param y
+     * @return
      */
-    public void setY(double y) {
+    public Camera setY(double y) {
         this.y = y;
+        return this;
     }
 
     public int getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public Camera setWidth(int width) {
         this.width = width;
         recalculate();
+        return this;
     }
 
     public int getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public Camera setHeight(int height) {
         this.height = height;
         recalculate();
+        return this;
     }
 
     public boolean isClipActive() {
         return clipActive;
     }
 
-    public void setClipActive(boolean clipActive) {
+    public Camera setClipActive(boolean clipActive) {
         this.clipActive = clipActive;
         recalculate();
+        return this;
     }
 
     public double[] getVisibleRect() {
@@ -157,6 +169,5 @@ public class Camera {
     public void scroll(double x, double y) {
         this.x += x;
         this.y += y;
-
     }
 }
