@@ -325,9 +325,11 @@ public class Graphics {
      */
     public void _activateClipRect(Camera camera) {
 
-        if (!camera.isClipActive() && clipRectHash != 0) {
-            glDisable(GL_SCISSOR_TEST);
-            clipRectHash = 0;
+        if (!camera.isClipActive()) {
+            if (clipRectHash != 0) {
+                glDisable(GL_SCISSOR_TEST);
+                clipRectHash = 0;
+            }
         } else if (clipRectHash == camera.getClipRectHash()) {
             // Do nothing:
             // - clip rect hash matches the last cameras clip rect that was applied.
@@ -342,7 +344,9 @@ public class Graphics {
             int h = (int) (clipRect[3] * windowToPixelsScale[1]);
             glScissor(x, y, w, h);
             clipRectHash = camera.getClipRectHash();
+
         }
+
     }
 
 }
