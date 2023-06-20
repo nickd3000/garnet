@@ -36,6 +36,7 @@ public class Shape2D extends DrawableElement {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
+        applyTranslation();
 
         //glBegin(GL_LINES);
         glBegin(GL_TRIANGLE_FAN);
@@ -47,6 +48,7 @@ public class Shape2D extends DrawableElement {
         }
         glVertex2f(coords[0], coords[1]);
         glEnd();
+        removeTranslation();
     }
 
     @Override

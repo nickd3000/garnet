@@ -31,7 +31,7 @@ public class Garnet {
         input = new Input(this);
         graphics = new Graphics(display);
         sound = new Sound();
-        debugDrawer = new DebugDrawer();
+        debugDrawer = new DebugDrawer(input);
     }
 
     public DebugDrawer getDebugDrawer() {

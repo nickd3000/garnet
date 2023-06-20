@@ -17,6 +17,7 @@ public class RegularFont implements DrawableFont {
     private final Texture texture;
     private final int charWidth;
     private final int charHeight;
+    double scale = 1;
     private int horizontalPad = 0;
 
     public RegularFont(String path, int charWidth, int charHeight) {
@@ -31,7 +32,7 @@ public class RegularFont implements DrawableFont {
     }
 
     public int getHorizontalPad() {
-        return horizontalPad;
+        return (int) (horizontalPad * scale);
     }
 
     public void setHorizontalPad(int horizontalPad) {
@@ -48,7 +49,7 @@ public class RegularFont implements DrawableFont {
 
     @Override
     public int getLineHeight() {
-        return charHeight;
+        return (int) (charHeight * scale);
     }
 
     @Override
@@ -56,17 +57,21 @@ public class RegularFont implements DrawableFont {
         if (text == null) return 0;
 
         int textLength = text.length();
-        return textLength * (charWidth + horizontalPad);
+        return (int) (textLength * ((charWidth + horizontalPad) * scale));
 
     }
 
     @Override
     public int getSpaceWidth() {
-        return charWidth;
+        return (int) ((charWidth + horizontalPad) * scale);
+    }
+
+    @Override
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 
     private void renderText(Graphics graphics, String text, int x, int y) {
-
         if (text == null) return;
 
         int textLength = text.length();
@@ -74,7 +79,7 @@ public class RegularFont implements DrawableFont {
         for (int i = 0; i < textLength; i++) {
             char c = text.charAt(i);
             renderChar(graphics, c, xPos, yPos);
-            xPos += charWidth + horizontalPad;
+            xPos += (int) ((charWidth + horizontalPad) * scale);
         }
     }
 
@@ -83,7 +88,7 @@ public class RegularFont implements DrawableFont {
         int cy = ((int) c) / 16;
         int cx = ((int) c) % 16;
 
-        graphics.drawImage(tileSheet, x, y, cx, cy);
+        graphics.drawImageScaled(tileSheet.getSubImage(cx, cy), x, y, scale);
     }
 
 

@@ -15,39 +15,76 @@ public class Graphics {
     private final Display display;
     private final Map<Integer, Texture> textures;
     private final DrawableBatch drawableBatch;
-    private final Map<Integer, Integer[]> clipRects;
+
+    private final CameraManager cameraManager;
     ObjectPool<Sprite2D> sprite2DObjectPool;
-    private double scale;
+    //private double zoom; // TODO: remove this
     private int currentTextureId = 0;
     private int color;
     private int currentDrawOrder;
     private int currentlyBoundTextureId;
     private int backgroundColor = 0;
-    private int activeClipRect;
-    private int appliedClipRect = 0; // The clip rect set active in openGl.
+    private double xo = 0;
+    private double yo = 0;
+    private int clipRectHash = 0;
+    private int activeCameraId = 0;
 
     public Graphics(Display display) {
         this.display = display;
         drawableBatch = new DrawableBatch();
         textures = new HashMap<>();
-        clipRects = new HashMap<>();
+
         resetSettings();
 
         sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, () -> new Sprite2D());
+        cameraManager = new CameraManager(display.getWindowWidth(), display.getWindowHeight());
+
     }
 
     public void resetSettings() {
-        scale = 1;
+        //zoom = 1;
         color = Utils.rgb(0xff, 0xff, 0xff, 0xff);
         currentDrawOrder = 0;
         currentlyBoundTextureId = 0;
-        activeClipRect = 0; // 0 means none.
+    }
+
+    public CameraManager getCameraManager() {
+        return cameraManager;
     }
 
     public void render() {
+        drawCameraDebugInfo();
         drawableBatch.render(this);
         releaseBatch();
         drawableBatch.clear();
+
+    }
+
+    private void drawCameraDebugInfo() {
+        int prevCameraId = cameraManager.getActiveCamera().getId();
+        double prevScale = this.getZoom();
+        int prevColor = this.getColor();
+
+
+        setActiveCamera(CameraManager.DEBUG_CAMERA);
+        this.setZoom(1);
+
+        Camera camera;
+        int[] clipRect;
+        for (int i = 0; i < 10; i++) {
+            camera = cameraManager.getCamera(i);
+            if (!camera.isDrawDebugInfo()) continue;
+            clipRect = camera.getClipRect();
+
+            setColor(camera.getDebugInfoColor());
+            for (int j = 0; j < 5; j++) {
+                this.drawRect(clipRect[0] + j, clipRect[1] + j, clipRect[2] - (j * 2), clipRect[3] - (j * 2));
+            }
+            //this.drawRect(camera.getWindowX(), camera.getWindowY(), camera.getWidth(), camera.getHeight());
+        }
+        //this.setZoom(prevScale);
+        setActiveCamera(prevCameraId);
+        setColor(prevColor);
     }
 
     public void releaseBatch() {
@@ -58,14 +95,56 @@ public class Graphics {
 
     }
 
-    public double getScale() {
-        return scale;
+    /**
+     * Get the zoom level of the currently active camera.
+     *
+     * @return
+     */
+    public double getZoom() {
+        return cameraManager.getActiveCamera().getZoom();
     }
 
-    public void setScale(double scale) {
-        this.scale = scale;
+    /**
+     * Set the zoom level of the currently active camera.
+     *
+     * @param zoom
+     */
+    public void setZoom(double zoom) {
+        cameraManager.getActiveCamera().setZoom(zoom);
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setActiveCamera(int id) {
+        if (id == activeCameraId) return;
+        activeCameraId = id;
+        cameraManager.setActiveCamera(id);
+        Camera camera = cameraManager.getActiveCamera();
+        xo = camera.getWindowX() - camera.getX();
+        yo = camera.getWindowY() - camera.getY();
+    }
+
+    public void drawRect(float x, float y, float w, float h) {
+        drawLine(x, y, x + w, y);
+        drawLine(x + w, y, x + w, y + h);
+        drawLine(x + w, y + h, x, y + h);
+        drawLine(x, y + h, x, y);
+    }
+
+    public void setColor(int col) {
+        color = col;
+    }
+
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        Line2D line = new Line2D(x1, y1, x2, y2);
+        line.setColor(color);
+        line.setDrawOrder(currentDrawOrder);
+        line.setCamera(cameraManager.getActiveCamera());
+        //line.setScale(zoom);
+        drawableBatch.add(line);
+    }
 
     public int getCurrentTextureId() {
         return currentTextureId;
@@ -81,23 +160,9 @@ public class Graphics {
         return sprite2D;
     }
 
+
     public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
-        int tileWidth = tileSheet.getTileWidth();
-        int tileHeight = tileSheet.getTileHeight();
-        // texture coords
-        int tx = tileX * tileWidth;
-        int ty = tileY * tileHeight;
-        Texture texture = tileSheet.getTexture();
-        //Sprite2D sprite2D = new Sprite2D();
-        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-        sprite2D.setValues((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
-        sprite2D.setTextureId(texture.getId());
-        sprite2D.setColor(color);
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-        sprite2D.setDrawOrder(currentDrawOrder);
-        sprite2D.setClipRect(activeClipRect);
-        drawableBatch.add(sprite2D);
-        return sprite2D;
+        return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
     }
 
     public Sprite2D drawImage(SubImage subImage, double x, double y) {
@@ -105,36 +170,49 @@ public class Graphics {
         int tx = subImage.x;
         int ty = subImage.y;
         Texture texture = subImage.texture;
-        //Sprite2D sprite2D = new Sprite2D();
+
         Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-        sprite2D.setValues((int) (x * scale), (int) (y * scale), (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
+        sprite2D.reset();
+        sprite2D.setCoords((int) x, (int) y, subImage.w, subImage.h, tx, ty, subImage.w, subImage.h);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-        sprite2D.setDrawOrder(currentDrawOrder);
-        sprite2D.setClipRect(activeClipRect);
+
+        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
+        drawableBatch.add(sprite2D);
+        return sprite2D;
+    }
+
+    public Sprite2D drawImageScaled(SubImage subImage, double x, double y, double scale) {
+        // texture coords
+        int tx = subImage.x;
+        int ty = subImage.y;
+        Texture texture = subImage.texture;
+
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+        sprite2D.reset();
+        sprite2D.setCoords((int) x, (int) y, (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
+        sprite2D.setTextureId(texture.getId());
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+
+        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
         drawableBatch.add(sprite2D);
         return sprite2D;
     }
 
     public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
 
-        for (int i = 0; i < vertexCoords.length; i++) {
-            vertexCoords[i] = vertexCoords[i] * (float) scale;
-        }
-
         // TODO: make font register texture
         if (!textures.containsKey(texture.getId())) this.addTexture(texture);
 
-        //Sprite2D sprite2D = new Sprite2D();
         Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-
-        sprite2D.setValues(vertexCoords, texCoords);
+        sprite2D.reset();
+        sprite2D.setCoords(vertexCoords, texCoords);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.setColor(color);
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-        sprite2D.setDrawOrder(currentDrawOrder);
-        sprite2D.setClipRect(activeClipRect);
+        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
         drawableBatch.add(sprite2D);
     }
 
@@ -151,19 +229,19 @@ public class Graphics {
 
         int tileWidth = texture.getWidth();
         int tileHeight = texture.getHeight();
-        // texture coords
         int tx = 0;
         int ty = 0;
 
-        //Sprite2D sprite2D = new Sprite2D();
         Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+        sprite2D.reset();
 
-        sprite2D.setValues((int) (x * scale), (int) (y * scale), (int) (tileWidth * scale), (int) (tileHeight * scale), tx, ty, tileWidth, tileHeight);
+        sprite2D.setCoords(x, y, tileWidth, tileHeight, tx, ty, tileWidth, tileHeight);
         sprite2D.setTextureId(texture.getId());
-        sprite2D.setColor(color);
+
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-        sprite2D.setDrawOrder(currentDrawOrder);
-        sprite2D.setClipRect(activeClipRect);
+
+        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
         drawableBatch.add(sprite2D);
     }
 
@@ -180,17 +258,19 @@ public class Graphics {
     }
 
     public void drawCircle(float x, float y, float w, float h) {
-        Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
-        circle.setColor(color);
-        circle.setDrawOrder(currentDrawOrder);
+        Circle2D circle = new Circle2D(x, y, w, h);
+
+        circle.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
         drawableBatch.add(circle);
     }
 
     public void filledCircle(float x, float y, float w, float h) {
-        Circle2D circle = new Circle2D((float) (x * scale), (float) (y * scale), (float) (w * scale), (float) (h * scale));
-        circle.setColor(color);
+        Circle2D circle = new Circle2D(x, y, w, h);
         circle.setFilled(true);
-        circle.setDrawOrder(currentDrawOrder);
+
+        circle.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+
         drawableBatch.add(circle);
     }
 
@@ -202,26 +282,12 @@ public class Graphics {
         currentDrawOrder = i;
     }
 
-    public void drawRect(float x, float y, float w, float h) {
-        drawLine(x, y, x + w, y);
-        drawLine(x + w, y, x + w, y + h);
-        drawLine(x + w, y + h, x, y + h);
-        drawLine(x, y + h, x, y);
-    }
-
-    public void drawLine(float x1, float y1, float x2, float y2) {
-        Line2D line = new Line2D((float) (x1 * scale), (float) (y1 * scale), (float) (x2 * scale), (float) (y2 * scale));
-        line.setColor(color);
-        line.setDrawOrder(currentDrawOrder);
-        drawableBatch.add(line);
-    }
-
     public void filledRect(float _x, float _y, float _w, float _h) {
         float[] coords = new float[8];
-        float x = (float) (_x * scale);
-        float y = (float) (_y * scale);
-        float w = (float) (_w * scale);
-        float h = (float) (_h * scale);
+        float x = _x;
+        float y = _y;
+        float w = _w;
+        float h = _h;
 
         coords[0] = x;
         coords[1] = y;
@@ -235,15 +301,8 @@ public class Graphics {
         Shape2D shape2D = new Shape2D(coords);
         shape2D.setColor(color);
         shape2D.setDrawOrder(currentDrawOrder);
+        shape2D.setCamera(cameraManager.getActiveCamera());
         drawableBatch.add(shape2D);
-    }
-
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int col) {
-        color = col;
     }
 
     public int getBackgroundColor() {
@@ -258,71 +317,36 @@ public class Graphics {
         return textures.containsKey(id);
     }
 
-    /**
-     * Register a clipping rectangle with Graphics.
-     * The location is in screen pixels and ignores any scaling applied to graphics.
-     *
-     * @param index
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     */
-    public void addClipRect(int index, int x, int y, int w, int h) {
-        Integer[] clipRect = new Integer[]{x, y, w, h};
-        clipRects.put(index, clipRect);
-    }
-
-    public void disableClipRect() {
-        setActiveClipRect(0);
-    }
 
     /**
      * Internal function, not for user use.
      *
-     * @param clipRectId
+     * @param camera
      */
-    public void _activateClipRect(int clipRectId) {
-        // TODO: this was disabled because the rect was not being
-        // recalculated after window size change. Is doing this all
-        // the time bad for performance?
-        //if (appliedClipRect == clipRectId) return;
+    public void _activateClipRect(Camera camera) {
 
-        appliedClipRect = clipRectId;
-
-        if (clipRectId == 0) {
-            glDisable(GL_SCISSOR_TEST);
+        if (!camera.isClipActive()) {
+            if (clipRectHash != 0) {
+                glDisable(GL_SCISSOR_TEST);
+                clipRectHash = 0;
+            }
+        } else if (clipRectHash == camera.getClipRectHash()) {
+            // Do nothing:
+            // - clip rect hash matches the last cameras clip rect that was applied.
         } else {
             double[] windowToPixelsScale = display.getWindowToBufferScale();
             int[] windowSize = display.getBufferSize();
             glEnable(GL_SCISSOR_TEST);
-            Integer[] clipRect = clipRects.get(clipRectId);
+            int[] clipRect = camera.getClipRect(); //clipRects.get(clipRectId);
             int x = (int) (clipRect[0] * windowToPixelsScale[0]);
             int y = (int) ((windowSize[1] - (clipRect[3] * windowToPixelsScale[1])) - (clipRect[1] * windowToPixelsScale[1]));
             int w = (int) (clipRect[2] * windowToPixelsScale[0]);
             int h = (int) (clipRect[3] * windowToPixelsScale[1]);
             glScissor(x, y, w, h);
+            clipRectHash = camera.getClipRectHash();
 
         }
+
     }
 
-    public boolean clipRectActive() {
-        return activeClipRect != 0;
-    }
-
-    public int getActiveClipRect() {
-        return activeClipRect;
-    }
-
-    public void setActiveClipRect(int id) {
-        activeClipRect = id;
-    }
-
-    public int getAvailableClipRectId() {
-        // Start at 100 to leave space for user defined clip rects.
-        for (int i = 100; i < 5000; i++) {
-            if (!clipRects.containsKey(i)) return i;
-        }
-        throw new RuntimeException("Too many clip rects.");
-    }
 }

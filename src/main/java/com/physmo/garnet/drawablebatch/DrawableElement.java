@@ -1,7 +1,10 @@
 package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.Utils;
+import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public abstract class DrawableElement {
     public static int SPRITE = 1;
@@ -11,9 +14,30 @@ public abstract class DrawableElement {
     public static int OTHER = 0;
 
     int drawOrder = 0;
-    int clipRect = 0;
     int color = 0xffffffff;
     float[] colorFloats = new float[4];
+    Camera camera = null;
+
+    public void setCommonValues(Camera camera, int drawOrder, int color) {
+        this.camera = camera;
+        this.drawOrder = drawOrder;
+        setColor(color);
+
+    }
+
+    public final void setColor(int rgba) {
+        color = rgba;
+        Utils.rgbToFloat(color, colorFloats);
+    }
+
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
 
     abstract void render(Graphics graphics);
 
@@ -34,26 +58,29 @@ public abstract class DrawableElement {
 
     abstract boolean hasTexture();
 
-    public final int getClipRect() {
-        return clipRect;
-    }
-
-    public final void setClipRect(int id) {
-        clipRect = id;
-    }
-
     public abstract int getType();
 
     public final void setColor(float[] c) {
         setColor(Utils.floatToRgb(c[0], c[1], c[2], c[3]));
     }
 
-    public final void setColor(int rgba) {
-        color = rgba;
-        Utils.rgbToFloat(color, colorFloats);
-    }
-
     public final void setColor(float r, float g, float b, float a) {
         setColor(Utils.floatToRgb(r, g, b, a));
     }
+
+    //
+    public void applyTranslation() {
+        glPushMatrix();
+        double z = camera.getZoom();
+        float xo = (float) (camera.getWindowX() - (camera.getX() * z));
+        float yo = (float) (camera.getWindowY() - (camera.getY() * z));
+
+        glTranslatef(xo, yo, 0);
+        glScalef((float) z, (float) z, 1);
+    }
+
+    public void removeTranslation() {
+        glPopMatrix();
+    }
+
 }

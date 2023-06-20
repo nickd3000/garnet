@@ -19,9 +19,14 @@ public class Sprite2D extends DrawableElement {
     public Sprite2D() {
         creationCount++;
         System.out.println("Sprite2D construction count: " + creationCount);
+        reset();
     }
 
-    public void setValues(float[] vertexCoords, float[] texCoords) {
+    public void reset() {
+        rotated = false;
+    }
+
+    public void setCoords(float[] vertexCoords, float[] texCoords) {
         float[] v = vertexCoords;
         float[] t = texCoords;
         rotated = false;
@@ -37,7 +42,7 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
-    public void setValues(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
+    public void setCoords(int x, int y, int w, int h, int tx, int ty, int tw, int th) {
         rotated = false;
         this.x = x;
         this.y = y;
@@ -51,7 +56,7 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
-    public void setValues(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
+    public void setCoords(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
         rotated = false;
         this.x = x;
         this.y = y;
@@ -101,12 +106,12 @@ public class Sprite2D extends DrawableElement {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
-
-
         if (rotated) {
             renderRotated(1.0f);
             return;
         }
+        applyTranslation();
+
 
         float outputScale = 1;
         float txs = tx * textureScaleX;
@@ -127,6 +132,7 @@ public class Sprite2D extends DrawableElement {
         }
         glEnd();
 
+        removeTranslation();
     }
 
     @Override
@@ -148,10 +154,31 @@ public class Sprite2D extends DrawableElement {
         return SPRITE;
     }
 
+//    public void applyTranslation() {
+//        glPushMatrix();
+//        float xo = (float) (camera.getWindowX() - (camera.getX() * scale));
+//        float yo = (float) (camera.getWindowY() - (camera.getY() * scale));
+//
+//        glTranslatef(xo, yo, 0);
+//        glScalef((float) scale, (float) scale, 1);
+//    }
+
     private void renderRotated(float textureScale) {
         glPushMatrix();
+
         glTranslatef(x + _w, y + _h, 0);
+
         glRotatef(angle, 0f, 0f, 1.0f);
+
+        double z = camera.getZoom();
+
+        // new
+        float xo = (float) (camera.getWindowX() - (camera.getX() * z));
+        float yo = (float) (camera.getWindowY() - (camera.getY() * z));
+
+        glTranslatef(xo, yo, 0);
+        glScalef((float) z, (float) z, 1);
+        // new
 
         float txs = tx * textureScaleX;
         float tys = ty * textureScaleY;

@@ -14,4 +14,6 @@ public interface DrawableFont {
     int getStringWidth(String text);
 
     int getSpaceWidth();
+
+    void setScale(double scale);
 }

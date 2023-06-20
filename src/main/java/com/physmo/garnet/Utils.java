@@ -96,10 +96,7 @@ public class Utils {
 
     public static float[] rgbToFloat(int rgb) {
         float[] f = new float[4];
-        f[0] = ((rgb >> 24) & 0xff) / 255f;
-        f[1] = ((rgb >> 16) & 0xff) / 255f;
-        f[2] = ((rgb >> 8) & 0xff) / 255f;
-        f[3] = ((rgb) & 0xff) / 255f;
+        rgbToFloat(rgb, f);
         return f;
     }
 

@@ -23,10 +23,14 @@ public class Line2D extends DrawableElement {
 
         glColor4fv(colorFloats);
 
+        applyTranslation();
+
         glBegin(GL_LINES);
         glVertex2f(coords[0], coords[1]);
         glVertex2f(coords[2], coords[3]);
         glEnd();
+
+        removeTranslation();
     }
 
     @Override

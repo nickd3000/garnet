@@ -36,6 +36,7 @@ public class DrawableBatch {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         for (DrawableElement de : orderedList) {
+            //System.out.println("scale "+de.getScale());
             applyClipRectIfRequired(graphics, de);
             graphics.bindTexture(de.getTextureId());
             de.render(graphics);
@@ -44,7 +45,7 @@ public class DrawableBatch {
 
     public void applyClipRectIfRequired(Graphics graphics, DrawableElement de) {
 
-        graphics._activateClipRect(de.getClipRect());
+        graphics._activateClipRect(de.getCamera());
 
     }
 

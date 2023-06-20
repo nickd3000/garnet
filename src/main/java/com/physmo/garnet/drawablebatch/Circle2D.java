@@ -31,6 +31,7 @@ public class Circle2D extends DrawableElement {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
+        applyTranslation();
 
         float[] coords = generatePoints();
 
@@ -51,6 +52,7 @@ public class Circle2D extends DrawableElement {
             glEnd();
         }
 
+        removeTranslation();
 
     }
 
