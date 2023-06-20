@@ -10,7 +10,6 @@ import com.physmo.garnet.graphics.TileSheet;
 public class TileGridDrawer {
 
     private int tileWidth, tileHeight;
-    private int scale = 1;
     private int cameraId = -1;
     private TileSheet tileSheet;
     private TileGridData tileGridData;
@@ -18,11 +17,6 @@ public class TileGridDrawer {
     public TileGridDrawer() {
         tileWidth = 16;
         tileHeight = 16;
-    }
-
-    public TileGridDrawer setScale(int scale) {
-        this.scale = scale;
-        return this;
     }
 
     public TileGridDrawer setTileSheet(TileSheet tileSheet) {
@@ -47,15 +41,14 @@ public class TileGridDrawer {
 
         int[] tCoords;
 
-        g.setZoom(scale);
         Camera camera = g.getCameraManager().getCamera(cameraId);
 
         double[] visibleRect = camera.getVisibleRect();
 
         int xStart = (int) (visibleRect[0] / tileWidth) - 1;
         int yStart = (int) (visibleRect[1] / tileHeight) - 1;
-        int xSize = (int) ((visibleRect[2]) / tileWidth) + 1;
-        int ySize = (int) ((visibleRect[3]) / tileHeight) + 1;
+        int xSize = (int) ((visibleRect[2]) / tileWidth) + 2;
+        int ySize = (int) ((visibleRect[3]) / tileHeight) + 2;
 
         for (int y = yStart; y <= yStart + ySize; y++) {
             for (int x = xStart; x <= xStart + xSize; x++) {
