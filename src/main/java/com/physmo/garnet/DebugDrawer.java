@@ -93,7 +93,7 @@ public class DebugDrawer {
     }
 
     public String getMouseCoordsString() {
-        int[] mousePosition = input.getMousePosition();
+        int[] mousePosition = input.getMouse().getPosition();
         return String.format("Mouse X:%d Y:%d", mousePosition[0], mousePosition[1]);
     }
 
