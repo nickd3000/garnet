@@ -166,19 +166,14 @@ public class Sprite2D extends DrawableElement {
     private void renderRotated(float textureScale) {
         glPushMatrix();
 
-        glTranslatef(x + _w, y + _h, 0);
-
-        glRotatef(angle, 0f, 0f, 1.0f);
-
         double z = camera.getZoom();
 
-        // new
-        float xo = (float) (camera.getWindowX() - (camera.getX() * z));
-        float yo = (float) (camera.getWindowY() - (camera.getY() * z));
+        float xo = (float) (camera.getWindowX() - ((camera.getX() - x) * z));
+        float yo = (float) (camera.getWindowY() - ((camera.getY() - y) * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);
-        // new
+        glRotatef(angle, 0f, 0f, 1.0f);
 
         float txs = tx * textureScaleX;
         float tys = ty * textureScaleY;

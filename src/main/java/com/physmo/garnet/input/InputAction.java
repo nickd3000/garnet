@@ -13,5 +13,4 @@ public class InputAction {
     public static int FIRE1 = 5;
     public static int FIRE2 = 6;
     public static int MENU = 7;
-
 }

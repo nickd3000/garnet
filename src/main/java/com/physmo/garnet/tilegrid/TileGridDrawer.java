@@ -45,10 +45,10 @@ public class TileGridDrawer {
 
         double[] visibleRect = camera.getVisibleRect();
 
-        int xStart = (int) (visibleRect[0] / tileWidth) - 1;
-        int yStart = (int) (visibleRect[1] / tileHeight) - 1;
-        int xSize = (int) ((visibleRect[2]) / tileWidth) + 2;
-        int ySize = (int) ((visibleRect[3]) / tileHeight) + 2;
+        int xStart = (int) (visibleRect[0] / tileWidth) - 2;
+        int yStart = (int) (visibleRect[1] / tileHeight) - 2;
+        int xSize = (int) ((visibleRect[2]) / tileWidth) + 3;
+        int ySize = (int) ((visibleRect[3]) / tileHeight) + 3;
 
         for (int y = yStart; y <= yStart + ySize; y++) {
             for (int x = xStart; x <= xStart + xSize; x++) {
