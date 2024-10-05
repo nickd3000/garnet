@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 public class ObjectPool<T> {
 
     T[] pool;
-    int head = -1;
+    int head;
     Class<T> clazz;
     PoolObjectCreator poolObjectCreator;
 

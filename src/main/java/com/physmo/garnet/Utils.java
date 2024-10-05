@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 
 public class Utils {
 
+    // TODO: move to file utils?
     public static InputStream getFileFromResourceAsStream(String fileName) {
 
         // The class loader that loaded the class
