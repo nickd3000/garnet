@@ -1,7 +1,7 @@
 import com.physmo.garnet.Utils;
 import org.junit.Test;
 
-public class TestUtils {
+public class TestUtilsOld {
 
     @Test
     public void t1() {
