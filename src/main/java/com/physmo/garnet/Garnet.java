@@ -27,6 +27,11 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glIsEnabled;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
+
+/**
+ * The Garnet class manages the core application loop, initializing and
+ * coordinating subsystems such as input, graphics, sound, and debugging tools.
+ */
 public class Garnet {
 
     private final List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
@@ -40,6 +45,12 @@ public class Garnet {
     private int runningLogicDelta = 0;
     private GarnetApp garnetApp;
 
+    /**
+     * Constructs a new Garnet object initializing the key components required for the framework.
+     *
+     * @param windowWidth  the width of the window to be created
+     * @param windowHeight the height of the window to be created
+     */
     public Garnet(int windowWidth, int windowHeight) {
         display = new Display(windowWidth, windowHeight);
         input = new Input(this);
