@@ -18,6 +18,7 @@ Feedback is really useful at this stage, so please feel free to create a small p
 - Font drawing
 - Tile map support
 - Sound player
+- Game ToolKit
 
 ### Maven Dependency
 
@@ -25,18 +26,13 @@ Feedback is really useful at this stage, so please feel free to create a small p
 <dependency>
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.3.0</version>
+    <version>0.5.0</version>
 </dependency>
 ```
 
 ### Example project
 
 See the [garnet-examples](https://github.com/nickd3000/garnetexamples) project for examples.
-
-### Toolkit
-
-A [companion toolkit](https://github.com/nickd3000/garnettoolkit) is also available with lots of useful game features,
-like an entity-component system, tilemap drawer, collision system and much more.
 
 ### Minimal example
 
@@ -84,3 +80,41 @@ public class SimpleSpriteExample extends GarnetApp {
 
 ```
 
+### Changelist
+
+#### Version 0.5.0 - October 2024
+
+- Moved to Java 17
+- Added Surefire Plugin
+- Added Spock tests
+- Improved documentation
+- Brought Toolkit project into Garnet project
+- Added getAngle method to Vector3 class
+- Added Inline Texture creator
+
+#### Version 0.4.0 - May 2024
+
+- Split input system into sub systems for mouse and keyboard
+- Allow Raw access to keyboard
+- Document input systems better
+- Fix TileGridDrawer not drawing tiles past the right and bottom edges
+
+#### Version 0.3.0 - June 2023
+
+- Camera support has been added to the graphics system
+- Cameras support panning, zooming and clipping
+- TileGridDrawer updated to use new camera system
+- API add: rgbToFloat method that is passed output list to reduce new objects creation.
+- API add: Font scaling
+
+#### Version 0.2.2 - June 2023
+
+- API add: Added Animation class
+- API add: Added normalized (0..1) mouse coordinate method to Input
+- API add: Added SubImage class which describes a sub area of a texture
+- API add: Added SubImage supplier to TileSheet class
+- API add: Added volume controls for sound playback
+- API add: Allow window title to be changed - Display.setWindowTitle(String)
+- Optimized sprite drawing - added Sprite2D object pool to reuse sprite objects.
+- Package refactoring
+- Rewrote paragraph drawer and fixed new line bugs.

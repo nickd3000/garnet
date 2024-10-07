@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 
 public class Utils {
 
+    // TODO: move to file utils?
     public static InputStream getFileFromResourceAsStream(String fileName) {
 
         // The class loader that loaded the class
@@ -46,42 +47,51 @@ public class Utils {
             return null;
     }
 
+    /**
+     * Convert an array of 4 floats to an RGBA integer value.
+     *
+     * @param f Array containing 4 float components of the color: [R,G,B,A]
+     * @return An RGBA encoded integer color.
+     */
     public static int floatToRgb(float[] f) {
         int rgb = 0;
 
-        rgb += ((int) (clampFloat(f[0]) * 255f)) << 24;
-        rgb += ((int) (clampFloat(f[1]) * 255f)) << 16;
-        rgb += ((int) (clampFloat(f[2]) * 255f)) << 8;
-        rgb += ((int) (clampFloat(f[3]) * 255f));
-
-        return rgb;
-    }
-
-    public static float clampFloat(float f) {
-        if (f < 0) return 0;
-        if (f > 1) return 1;
-        return f;
-    }
-
-    public static int floatToRgb(float r, float g, float b, float a) {
-        int rgb = 0;
-
-        rgb += ((int) (clampFloat(r) * 255f)) << 24;
-        rgb += ((int) (clampFloat(g) * 255f)) << 16;
-        rgb += ((int) (clampFloat(b) * 255f)) << 8;
-        rgb += ((int) (clampFloat(a) * 255f));
+        rgb += ((int) (clampUnit(f[0]) * 255f)) << 24;
+        rgb += ((int) (clampUnit(f[1]) * 255f)) << 16;
+        rgb += ((int) (clampUnit(f[2]) * 255f)) << 8;
+        rgb += ((int) (clampUnit(f[3]) * 255f));
 
         return rgb;
     }
 
     /**
-     * Create int RGB value from int components
-     *
-     * @param r
-     * @param g
-     * @param b
-     * @param a
-     * @return
+     * Convert 4 float color components to an RGBA encoded integer color value.
+     * The range of each component is 0.0 - 1.0
+     * @param r Red component
+     * @param g Green component
+     * @param b Blue component
+     * @param a Alpha component
+     * @return An RGBA encoded integer color.
+     */
+    public static int floatToRgb(float r, float g, float b, float a) {
+        int rgb = 0;
+
+        rgb += ((int) (clampUnit(r) * 255f)) << 24;
+        rgb += ((int) (clampUnit(g) * 255f)) << 16;
+        rgb += ((int) (clampUnit(b) * 255f)) << 8;
+        rgb += ((int) (clampUnit(a) * 255f));
+
+        return rgb;
+    }
+
+    /**
+     * Convert 4 integer color components to an RGBA encoded integer color value.
+     * The range of each component is 0 - 255
+     * @param r Red component
+     * @param g Green component
+     * @param b Blue component
+     * @param a Alpha component
+     * @return An RGBA encoded integer color.
      */
     public static int rgb(int r, int g, int b, int a) {
         int rgb = 0;
@@ -94,17 +104,17 @@ public class Utils {
         return rgb;
     }
 
-    public static float[] rgbToFloat(int rgb) {
+    public static float[] rgbToFloat(int rgba) {
         float[] f = new float[4];
-        rgbToFloat(rgb, f);
+        rgbToFloat(rgba, f);
         return f;
     }
 
-    public static void rgbToFloat(int rgb, float[] outFloats) {
-        outFloats[0] = ((rgb >> 24) & 0xff) / 255f;
-        outFloats[1] = ((rgb >> 16) & 0xff) / 255f;
-        outFloats[2] = ((rgb >> 8) & 0xff) / 255f;
-        outFloats[3] = ((rgb) & 0xff) / 255f;
+    public static void rgbToFloat(int rgba, float[] outFloats) {
+        outFloats[0] = ((rgba >> 24) & 0xff) / 255f;
+        outFloats[1] = ((rgba >> 16) & 0xff) / 255f;
+        outFloats[2] = ((rgba >> 8) & 0xff) / 255f;
+        outFloats[3] = ((rgba) & 0xff) / 255f;
     }
 
     public static double lerp(double v1, double v2, double pos) {
