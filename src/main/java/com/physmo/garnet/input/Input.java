@@ -13,7 +13,6 @@ public class Input {
     Garnet garnet;
     Mouse mouse;
     Keyboard keyboard;
-    ;
     List<ButtonConfig> actionConfigList;
 
     public Input(Garnet garnet) {
