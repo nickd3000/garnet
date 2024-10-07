@@ -1,4 +1,4 @@
-package com.physmo.garnet;
+package com.physmo.garnet
 
 import spock.lang.Specification
 
