@@ -5,8 +5,9 @@ import spock.lang.Specification
 class TestUtils extends Specification {
 
     def "Test floatToRgb"(float[] floatArray) {
-        expect:
+        expect: "floatToRgb convert float array to int RGB value correctly"
             Utils.floatToRgb(floatArray) == expectedRgb
+
         where:
             floatArray   || expectedRgb
             [0, 0, 0, 0] || (int) 0x00000000
