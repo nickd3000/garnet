@@ -142,8 +142,25 @@ public class Vector3 {
         return Math.sqrt((x * x) + (y * y) + (z * z));
     }
 
+    /**
+     * Sets the vector components based on the specified angle and magnitude.
+     *
+     * @param angle     The angle in radians.
+     * @param magnitude The magnitude of the vector.
+     */
     public void setFromAngle(double angle, double magnitude) {
-        this.x = Math.cos(angle) * magnitude;
-        this.y = Math.sin(angle) * magnitude;
+        this.x = Math.sin(angle) * magnitude;
+        this.y = Math.cos(angle) * magnitude;
+    }
+
+    /**
+     * Calculates the angle of the vector from the positive Y-axis in a clockwise direction.
+     *
+     * @return The angle in radians, ranging from 0 to 2*PI.
+     */
+    public double getAngle() {
+        double a = Math.atan2(-x, -y);
+        a = a > 0 ? (Math.PI * 2) - a : 0 - a;
+        return a;
     }
 }
