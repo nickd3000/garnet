@@ -7,8 +7,31 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.GLFW_DONT_CARE;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowMonitor;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -128,5 +151,42 @@ public class Display {
 
     public void setWindowTitle(String title) {
         glfwSetWindowTitle(windowHandle, title);
+    }
+
+    int storedWindowX = 0;
+    int storedWindowY = 0;
+
+    public boolean isFullscreen() {
+        // Return value will be 0 if in windowed mode.
+        return glfwGetWindowMonitor(windowHandle) != 0;
+    }
+
+    private void storeWindowPos() {
+        int[] x = new int[1], y = new int[1];
+        glfwGetWindowPos(windowHandle, x, y);
+        storedWindowX = x[0];
+        storedWindowY = y[0];
+    }
+
+    public void setFullScreen(boolean val) {
+
+        boolean fullScreenActive = isFullscreen();
+
+        if (val && !fullScreenActive) {
+            System.out.println("Making full screen");
+
+            storeWindowPos();
+
+            long primaryMonitor = glfwGetPrimaryMonitor();
+            GLFWVidMode glfwVidMode = glfwGetVideoMode(primaryMonitor);
+            if (glfwVidMode != null) {
+                glfwSetWindowMonitor(windowHandle, primaryMonitor, 0, 0, glfwVidMode.width(), glfwVidMode.height(), GLFW_DONT_CARE);
+            }
+        } else if (!val && fullScreenActive) {
+            System.out.println("Making windowed");
+            glfwSetWindowMonitor(windowHandle, 0, storedWindowX, storedWindowY, windowWidth, windowHeight, GLFW_DONT_CARE);
+        }
+
+
     }
 }
