@@ -1,10 +1,13 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.Utils;
+import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glScalef;
+import static org.lwjgl.opengl.GL11.glTranslatef;
 
 public abstract class DrawableElement {
     public static int SPRITE = 1;
@@ -27,7 +30,7 @@ public abstract class DrawableElement {
 
     public final void setColor(int rgba) {
         color = rgba;
-        Utils.rgbToFloat(color, colorFloats);
+        ColorUtils.rgbToFloat(color, colorFloats);
     }
 
 
@@ -61,11 +64,11 @@ public abstract class DrawableElement {
     public abstract int getType();
 
     public final void setColor(float[] c) {
-        setColor(Utils.floatToRgb(c[0], c[1], c[2], c[3]));
+        setColor(ColorUtils.floatToRgb(c[0], c[1], c[2], c[3]));
     }
 
     public final void setColor(float r, float g, float b, float a) {
-        setColor(Utils.floatToRgb(r, g, b, a));
+        setColor(ColorUtils.floatToRgb(r, g, b, a));
     }
 
     //

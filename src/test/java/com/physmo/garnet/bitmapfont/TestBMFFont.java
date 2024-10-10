@@ -1,6 +1,6 @@
 package com.physmo.garnet.bitmapfont;
 
-import com.physmo.garnet.Utils;
+import com.physmo.garnet.FileUtils;
 import com.physmo.garnet.text.BitmapFont;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,8 +14,8 @@ public class TestBMFFont {
     @Ignore
     @Test
     public void test1() throws IOException {
-        String pathForDefinition = Utils.getPathForResource(this, "5x5.fnt");
-        String pathForTexture = Utils.getPathForResource(this, "5x5_0.png");
+        String pathForDefinition = FileUtils.getPathForResource(this, "5x5.fnt");
+        String pathForTexture = FileUtils.getPathForResource(this, "5x5_0.png");
 
         BitmapFont bmfFont = new BitmapFont(pathForTexture, pathForDefinition);
 

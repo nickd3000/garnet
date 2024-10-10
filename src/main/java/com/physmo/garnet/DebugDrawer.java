@@ -54,6 +54,7 @@ public class DebugDrawer {
         //visible = false;
         regularFont = new RegularFont(DEBUG_FONT_NAME, 10, 10);
         regularFont.setHorizontalPad(-1);
+        regularFont.setScale(scale);
     }
 
     public void draw(Graphics g) {
@@ -66,8 +67,8 @@ public class DebugDrawer {
         int prevDrawOrder = g.getDrawOrder();
         int prevCameraId = g.getCameraManager().getActiveCameraId();
 
-        g.setZoom(scale);
         g.setActiveCamera(CameraManager.DEBUG_CAMERA);
+        g.getCameraManager().getCamera(CameraManager.DEBUG_CAMERA).setZoom(scale);
         if (drawFps) y += drawString(g, "FPS: " + fps, y);
         if (drawMouseCoords) y += drawString(g, getMouseCoordsString(), y);
         drawUserStrings(g, y);

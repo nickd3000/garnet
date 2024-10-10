@@ -1,10 +1,10 @@
 package com.physmo.garnet.toolkit.particle;
 
 
+import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.toolkit.Vector3;
 import com.physmo.garnet.toolkit.color.ColorSupplier;
 import com.physmo.garnet.toolkit.color.ColorSupplierLinear;
-import com.physmo.garnet.toolkit.color.ColorUtils;
 import com.physmo.garnet.toolkit.curve.Curve;
 import com.physmo.garnet.toolkit.curve.CurveType;
 import com.physmo.garnet.toolkit.curve.StandardCurve;
@@ -30,7 +30,7 @@ public class ParticleTemplate {
         lifeTime = new RangedValue(0.2, 3);
         speed = new RangedValue(10, 50);
         speedCurve = new StandardCurve(CurveType.LINE_DOWN);
-        colorSupplier = new ColorSupplierLinear(ColorUtils.YELLOW, ColorUtils.asRGBA(1, 0, 0, 0));
+        colorSupplier = new ColorSupplierLinear(ColorUtils.YELLOW, com.physmo.garnet.ColorUtils.asRGBA(1, 0, 0, 0));
     }
 
     public void initExplosion() {

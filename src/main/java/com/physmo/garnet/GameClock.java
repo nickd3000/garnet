@@ -1,5 +1,10 @@
 package com.physmo.garnet;
 
+/**
+ * The GameClock class is responsible for tracking the frame count and logic updates per second.
+ * It provides methods to log logic ticks and frames, and calculates the logic updates per second (LPS)
+ * and frames per second (FPS).
+ */
 public class GameClock {
 
     int frameCount = 0;
@@ -8,22 +13,41 @@ public class GameClock {
     long logicCheckpointTime = System.nanoTime();
     double fps = 0;
     double lps = 0;
+    private static final long ONE_SECOND_IN_NANOS = 1_000_000_000L;
 
+    /**
+     * Returns the current frames per second (FPS) value.
+     *
+     * @return the current FPS value
+     */
     public double getFps() {
         return fps;
     }
 
+    /**
+     * Retrieves the current logic updates per second (LPS) value.
+     *
+     * @return the current LPS value
+     */
     public double getLps() {
         return lps;
     }
 
+    /**
+     * Logs a logic update tick and updates the logic updates per second (LPS) count.
+     * <p>
+     * This method should be called whenever a logic update occurs. It increments
+     * the logic update counter and checks if a second has passed since the last LPS
+     * checkpoint. If so, it updates the LPS value, resets the logic update counter,
+     * and sets a new checkpoint time.
+     */
     public void logLogicTick() {
         long curTime = System.nanoTime();
         logicCount++;
 
         long timeDelta = curTime - logicCheckpointTime;
 
-        if (timeDelta > 1000000000) {
+        if (timeDelta > ONE_SECOND_IN_NANOS) {
             lps = logicCount;
             logicCount = 0;
             logicCheckpointTime = curTime;
@@ -36,7 +60,7 @@ public class GameClock {
 
         long timeDelta = curTime - fpsCheckpointTime;
 
-        if (timeDelta > 1000000000) {
+        if (timeDelta > ONE_SECOND_IN_NANOS) {
             fps = frameCount;
             frameCount = 0;
             fpsCheckpointTime = curTime;

@@ -1,17 +1,17 @@
 package com.physmo.garnet.toolkit.particle;
 
 
+import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.toolkit.Vector3;
 import com.physmo.garnet.toolkit.color.ColorSupplier;
 import com.physmo.garnet.toolkit.color.ColorSupplierLinear;
-import com.physmo.garnet.toolkit.color.ColorUtils;
 import com.physmo.garnet.toolkit.curve.Curve;
 
 public class Particle {
     public Vector3 position = new Vector3();
     public double lifeTime;
     public double age;
-    public ColorSupplier colorSupplier = new ColorSupplierLinear(ColorUtils.YELLOW, ColorUtils.asRGBA(1, 0, 0, 0));
+    public ColorSupplier colorSupplier = new ColorSupplierLinear(ColorUtils.YELLOW, com.physmo.garnet.ColorUtils.asRGBA(1, 0, 0, 0));
     Vector3 direction = new Vector3();
     double speed = 5;
     Curve speedCurve;

@@ -1,7 +1,9 @@
 package com.physmo.garnet.toolkit.color;
 
 
-import static com.physmo.garnet.toolkit.Utils.lerp;
+import com.physmo.garnet.ColorUtils;
+
+import static com.physmo.garnet.Utils.lerp;
 
 /**
  * A color supplier used to blend two colors.
@@ -11,8 +13,8 @@ public class ColorSupplierLinear implements ColorSupplier {
     float[] c2;
 
     public ColorSupplierLinear(int c1, int c2) {
-        this.c1 = ColorUtils.rgbaToFloats(c1);
-        this.c2 = ColorUtils.rgbaToFloats(c2);
+        this.c1 = com.physmo.garnet.ColorUtils.rgbaToFloats(c1);
+        this.c2 = com.physmo.garnet.ColorUtils.rgbaToFloats(c2);
     }
 
     @Override

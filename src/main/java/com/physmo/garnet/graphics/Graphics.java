@@ -1,15 +1,27 @@
 package com.physmo.garnet.graphics;
 
+import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Display;
-import com.physmo.garnet.Utils;
-import com.physmo.garnet.drawablebatch.*;
+import com.physmo.garnet.drawablebatch.Circle2D;
+import com.physmo.garnet.drawablebatch.DrawableBatch;
+import com.physmo.garnet.drawablebatch.DrawableElement;
+import com.physmo.garnet.drawablebatch.Line2D;
+import com.physmo.garnet.drawablebatch.Shape2D;
+import com.physmo.garnet.drawablebatch.Sprite2D;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glScissor;
 
+/**
+ * The Graphics class is responsible for managing and rendering 2D graphics within the application,
+ * including handling texture drawing, camera management, and various rendering settings.
+ */
 public class Graphics {
 
     private final Display display;
@@ -18,7 +30,7 @@ public class Graphics {
 
     private final CameraManager cameraManager;
     ObjectPool<Sprite2D> sprite2DObjectPool;
-    //private double zoom; // TODO: remove this
+
     private int currentTextureId = 0;
     private int color;
     private int currentDrawOrder;
@@ -43,7 +55,7 @@ public class Graphics {
 
     public void resetSettings() {
         //zoom = 1;
-        color = Utils.rgb(0xff, 0xff, 0xff, 0xff);
+        color = ColorUtils.rgb(0xff, 0xff, 0xff, 0xff);
         currentDrawOrder = 0;
         currentlyBoundTextureId = 0;
     }
@@ -87,6 +99,7 @@ public class Graphics {
         setColor(prevColor);
     }
 
+
     public void releaseBatch() {
         List<DrawableElement> elements = drawableBatch.getElements();
         for (DrawableElement element : elements) {
@@ -96,9 +109,9 @@ public class Graphics {
     }
 
     /**
-     * Get the zoom level of the currently active camera.
+     * Retrieves the current zoom level of the active camera.
      *
-     * @return
+     * @return the zoom level of the active camera
      */
     public double getZoom() {
         return cameraManager.getActiveCamera().getZoom();
@@ -154,17 +167,46 @@ public class Graphics {
         this.currentTextureId = currentTextureId;
     }
 
+    /**
+     * Draws an image from a specified tile in the given TileSheet at the specified coordinates,
+     * with an additional rotation applied to the drawn image.
+     *
+     * @param tileSheet the TileSheet containing the tile to be drawn
+     * @param x         the x-coordinate where the image should be drawn
+     * @param y         the y-coordinate where the image should be drawn
+     * @param tileX     the x-coordinate of the tile in the TileSheet
+     * @param tileY     the y-coordinate of the tile in the TileSheet
+     * @param rotation  the rotation angle to apply to the drawn image
+     * @return the Sprite2D object representing the drawn image with the applied rotation
+     */
     public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY, double rotation) {
         Sprite2D sprite2D = drawImage(tileSheet, x, y, tileX, tileY);
         sprite2D.addAngle((float) rotation);
         return sprite2D;
     }
 
-
+    /**
+     * Draws an image from a specified tile in the given TileSheet at the specified coordinates.
+     *
+     * @param tileSheet the TileSheet containing the tile to be drawn
+     * @param x the x-coordinate where the image should be drawn
+     * @param y the y-coordinate where the image should be drawn
+     * @param tileX the x-coordinate of the tile in the TileSheet
+     * @param tileY the y-coordinate of the tile in the TileSheet
+     * @return the Sprite2D object representing the drawn image
+     */
     public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
         return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
     }
 
+    /**
+     * Draws an image from the specified SubImage at the given x and y coordinates.
+     *
+     * @param subImage the SubImage containing the texture and dimensions of the image to be drawn
+     * @param x the x-coordinate where the image should be rendered
+     * @param y the y-coordinate where the image should be rendered
+     * @return the Sprite2D object representing the drawn image
+     */
     public Sprite2D drawImage(SubImage subImage, double x, double y) {
         // texture coords
         int tx = subImage.x;
@@ -216,6 +258,12 @@ public class Graphics {
         drawableBatch.add(sprite2D);
     }
 
+    /**
+     * Adds a texture to the collection of textures if it is not already present.
+     * If the texture is already registered, the method does nothing.
+     *
+     * @param texture the Texture object to be added
+     */
     public void addTexture(Texture texture) {
         if (textures.containsKey(texture.getId())) {
             //System.out.println("Registered texture id: " + texture.getId());

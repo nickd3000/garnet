@@ -6,7 +6,7 @@ class TestUtils extends Specification {
 
     def "Test floatToRgb"(float[] floatArray) {
         expect: "floatToRgb convert float array to int RGB value correctly"
-            Utils.floatToRgb(floatArray) == expectedRgb
+            ColorUtils.floatToRgb(floatArray) == expectedRgb
 
         where:
             floatArray   || expectedRgb

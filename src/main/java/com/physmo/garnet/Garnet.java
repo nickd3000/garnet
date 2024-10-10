@@ -146,7 +146,7 @@ public class Garnet {
 
         // --------------- RENDER
         // Set the clear color
-        float[] bgCols = Utils.rgbToFloat(graphics.getBackgroundColor());
+        float[] bgCols = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols[0], bgCols[1], bgCols[2], bgCols[3]);
 
         boolean scissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
