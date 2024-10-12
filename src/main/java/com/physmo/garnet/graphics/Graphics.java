@@ -64,6 +64,13 @@ public class Graphics {
         return cameraManager;
     }
 
+    /**
+     * Renders the current frame by executing the following steps:
+     * 1. Draws the camera debug information.
+     * 2. Renders the drawable batch using the current graphics settings.
+     * 3. Releases the current batch of drawable elements back to the object pool.
+     * 4. Clears the drawable batch for the next frame.
+     */
     public void render() {
         drawCameraDebugInfo();
         drawableBatch.render(this);
@@ -100,6 +107,12 @@ public class Graphics {
     }
 
 
+    /**
+     * Releases all sprite objects in the current drawable batch back to the object pool.
+     * <p>
+     * This method iterates through each element in the drawable batch, checks if
+     * the element is of type SPRITE, and if so, releases it back to the Sprite2D object pool.
+     */
     public void releaseBatch() {
         List<DrawableElement> elements = drawableBatch.getElements();
         for (DrawableElement element : elements) {

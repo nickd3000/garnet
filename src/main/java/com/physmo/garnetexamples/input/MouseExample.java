@@ -43,8 +43,10 @@ public class MouseExample extends GarnetApp {
         texture = Texture.loadTexture(inputStream);
         tileSheet = new TileSheet(texture, 16, 16);
         garnet.getGraphics().addTexture(texture);
+        garnet.getGraphics().setBackgroundColor(ColorUtils.WINTER_BLACK);
         input = garnet.getInput();
         garnet.getDebugDrawer().setVisible(true);
+        garnet.getDebugDrawer().setScale(1.5);
     }
 
     @Override
