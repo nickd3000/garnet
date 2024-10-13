@@ -1,8 +1,7 @@
-package com.physmo.garnet.toolkit;
+package com.physmo.garnet.structure;
 
 /**
- * The PointInt class represents a point in a 3-dimensional
- * space with integer coordinates.
+ * Represents a point in 3D space with integer coordinates.
  */
 public class PointInt {
 

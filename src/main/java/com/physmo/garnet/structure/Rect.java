@@ -1,8 +1,8 @@
-package com.physmo.garnet.toolkit;
+package com.physmo.garnet.structure;
 
 /**
- * The Rect class represents a rectangle defined by its
- * top-left corner (x, y) and its width (w) and height (h).
+ * The Rect class represents a rectangle defined by its top-left corner (x, y)
+ * coordinates and its width (w) and height (h).
  */
 public class Rect {
 

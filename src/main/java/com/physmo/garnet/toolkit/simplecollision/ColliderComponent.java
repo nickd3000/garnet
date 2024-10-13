@@ -1,8 +1,8 @@
 package com.physmo.garnet.toolkit.simplecollision;
 
+import com.physmo.garnet.structure.Rect;
 import com.physmo.garnet.toolkit.Component;
 import com.physmo.garnet.toolkit.GameObject;
-import com.physmo.garnet.toolkit.Rect;
 
 import java.util.ArrayList;
 import java.util.List;

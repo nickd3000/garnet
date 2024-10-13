@@ -1,10 +1,10 @@
 package com.physmo.garnet.toolkit.simplecollision;
 
 
+import com.physmo.garnet.structure.Rect;
+import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.GameObject;
-import com.physmo.garnet.toolkit.Rect;
 import com.physmo.garnet.toolkit.StringIdBroker;
-import com.physmo.garnet.toolkit.Vector3;
 
 import java.util.ArrayList;
 import java.util.List;

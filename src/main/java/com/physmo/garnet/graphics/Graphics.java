@@ -343,6 +343,10 @@ public class Graphics {
         currentDrawOrder = i;
     }
 
+    public void filledRect(int _x, int _y, int _w, int _h) {
+        filledRect((float) _x, (float) _y, (float) _w, (float) _h);
+    }
+
     public void filledRect(float _x, float _y, float _w, float _h) {
         float[] coords = new float[8];
         float x = _x;

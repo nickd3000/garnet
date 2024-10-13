@@ -3,8 +3,8 @@ package com.physmo.garnetexamples.collision;
 import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.TileSheet;
+import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.Component;
-import com.physmo.garnet.toolkit.Vector3;
 import com.physmo.garnet.toolkit.simplecollision.ColliderComponent;
 import com.physmo.garnet.toolkit.simplecollision.RelativeObject;
 

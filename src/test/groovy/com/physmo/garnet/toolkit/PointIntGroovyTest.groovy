@@ -1,6 +1,6 @@
 package com.physmo.garnet.toolkit
 
-
+import com.physmo.garnet.structure.PointInt
 import spock.lang.Specification
 
 class PointIntGroovyTest extends Specification {

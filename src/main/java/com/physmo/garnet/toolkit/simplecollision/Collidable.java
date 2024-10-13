@@ -1,7 +1,7 @@
 package com.physmo.garnet.toolkit.simplecollision;
 
+import com.physmo.garnet.structure.Rect;
 import com.physmo.garnet.toolkit.GameObject;
-import com.physmo.garnet.toolkit.Rect;
 
 public interface Collidable {
     Rect collisionGetRegion();

@@ -1,5 +1,8 @@
 package com.physmo.garnet.toolkit;
 
+import com.physmo.garnet.structure.PointInt;
+import com.physmo.garnet.structure.Vector3;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

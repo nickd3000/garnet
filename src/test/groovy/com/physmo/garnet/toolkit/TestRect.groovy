@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit
 
+import com.physmo.garnet.structure.Rect
 import spock.lang.Specification
 
 

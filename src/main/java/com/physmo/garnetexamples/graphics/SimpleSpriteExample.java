@@ -40,7 +40,7 @@ public class SimpleSpriteExample extends GarnetApp {
     @Override
     public void draw(Graphics g) {
         int[] mousePosition = garnet.getInput().getMouse().getPosition();
-        g.drawImage(texture, mousePosition[0], mousePosition[1]);
+        g.drawImage(texture, mousePosition[0] - texture.getWidth() / 2, mousePosition[1] - texture.getHeight() / 2);
     }
 }
 

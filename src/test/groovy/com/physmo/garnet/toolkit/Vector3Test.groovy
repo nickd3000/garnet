@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit
 
+import com.physmo.garnet.structure.Vector3
 import spock.lang.Specification
 
 class Vector3Test extends Specification {

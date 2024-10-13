@@ -7,7 +7,7 @@ import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
-import com.physmo.garnet.toolkit.Vector3;
+import com.physmo.garnet.structure.Vector3;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class RotatedSpriteExample extends GarnetApp {

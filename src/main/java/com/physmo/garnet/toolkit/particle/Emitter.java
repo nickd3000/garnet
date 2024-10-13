@@ -1,7 +1,7 @@
 package com.physmo.garnet.toolkit.particle;
 
 
-import com.physmo.garnet.toolkit.Vector3;
+import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.curve.Curve;
 import com.physmo.garnet.toolkit.curve.CurveType;
 import com.physmo.garnet.toolkit.curve.StandardCurve;
