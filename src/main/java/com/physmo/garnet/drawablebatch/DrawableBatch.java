@@ -5,9 +5,13 @@ import com.physmo.garnet.graphics.Graphics;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 public class DrawableBatch {
     final List<DrawableElement> elements;
@@ -29,7 +33,7 @@ public class DrawableBatch {
     }
 
     public void render(Graphics graphics) {
-        List<DrawableElement> orderedList = elements.stream().sorted(Comparator.comparingInt(DrawableElement::getDrawOrder)).collect(Collectors.toList());
+        List<DrawableElement> orderedList = elements.stream().sorted(Comparator.comparingInt(DrawableElement::getDrawOrder)).toList();
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
