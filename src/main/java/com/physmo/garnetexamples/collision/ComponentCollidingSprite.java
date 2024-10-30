@@ -13,7 +13,6 @@ import java.util.List;
 
 public class ComponentCollidingSprite extends Component {
     TileSheet tileSheet;
-    Graphics graphics;
 
     int mode = 0;
 
@@ -22,7 +21,6 @@ public class ComponentCollidingSprite extends Component {
     @Override
     public void init() {
         tileSheet = parent.getContext().getObjectByType(TileSheet.class);
-        graphics = parent.getContext().getObjectByType(Graphics.class);
 
         ColliderComponent component = parent.getComponent(ColliderComponent.class);
         component.setCallbackEnter(target -> mode = 2);
@@ -56,12 +54,12 @@ public class ComponentCollidingSprite extends Component {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
         //graphics.setScale(3);
-        if (mode == 0) graphics.setColor(com.physmo.garnet.ColorUtils.SUNSET_GREEN);
-        if (mode == 1) graphics.setColor(com.physmo.garnet.ColorUtils.SUNSET_ORANGE);
-        if (mode == 2) graphics.setColor(ColorUtils.SUNSET_RED);
-        if (mode == 3) graphics.setColor(com.physmo.garnet.ColorUtils.SUNSET_BLUE);
-        graphics.drawImage(tileSheet, (int) parent.getTransform().x, (int) parent.getTransform().y, 2, 2);
+        if (mode == 0) g.setColor(com.physmo.garnet.ColorUtils.SUNSET_GREEN);
+        if (mode == 1) g.setColor(com.physmo.garnet.ColorUtils.SUNSET_ORANGE);
+        if (mode == 2) g.setColor(ColorUtils.SUNSET_RED);
+        if (mode == 3) g.setColor(com.physmo.garnet.ColorUtils.SUNSET_BLUE);
+        g.drawImage(tileSheet, (int) parent.getTransform().x, (int) parent.getTransform().y, 2, 2);
     }
 }

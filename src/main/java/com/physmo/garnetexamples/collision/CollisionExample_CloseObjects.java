@@ -99,7 +99,7 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     @Override
     public void draw(Graphics g) {
         g.setBackgroundColor(ColorUtils.asRGBA(0.3f, 0.2f, 0.3f, 1.0f));
-        context.draw();
+        context.draw(g);
 
         garnet.getDebugDrawer().setUserString("closeObjectTestCount:", String.valueOf(closeObjectTestCount));
 

@@ -1,5 +1,6 @@
 package com.physmo.garnetexamples.toolkit.support;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.toolkit.GameObject;
 
 public class DummyGameObject extends GameObject {
@@ -20,8 +21,8 @@ public class DummyGameObject extends GameObject {
     }
 
     @Override
-    public void draw() {
-        super.draw();
+    public void draw(Graphics g) {
+        super.draw(g);
         System.out.println("draw called");
     }
 }

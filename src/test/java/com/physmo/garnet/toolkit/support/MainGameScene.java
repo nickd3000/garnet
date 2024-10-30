@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit.support;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.toolkit.scene.Scene;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class MainGameScene extends Scene {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
         messageList.add("MainGameScene draw");
     }
 

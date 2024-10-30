@@ -21,7 +21,7 @@ public class ContextExample {
 
         context.init();
         context.tick(1);
-        context.draw();
+        context.draw(null);
 
     }
 

@@ -36,7 +36,7 @@ public class ColorSupplierLinearExample extends GarnetApp {
         // Create a ColorSupplierLinear object  from the color list.
         colorSupplierLinear_a = new ColorSupplierLinear(colorArray_a);
 
-        int[] colorArray_b = new int[]{ColorUtils.WINTER_BLACK, ColorUtils.SUNSET_RED};
+        int[] colorArray_b = new int[]{0xff00afff, 0xa0ff00ff, 0xffff00ff, 0x00ffafff, 0xaa00ffff};
         colorSupplierLinear_b = new ColorSupplierLinear(colorArray_b);
     }
 

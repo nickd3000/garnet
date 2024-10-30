@@ -94,7 +94,7 @@ public class CollisionExample extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
-        context.draw();
+        context.draw(g);
 
         int[] mp, mps;
 

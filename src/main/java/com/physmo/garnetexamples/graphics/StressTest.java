@@ -73,7 +73,7 @@ public class StressTest extends GarnetApp {
         g.setZoom(1);
 
         // Draw all game objects in the context
-        context.draw();
+        context.draw(g);
 
         g.setColor(0x00000070);
         g.filledRect(0, 0, 640, 80);

@@ -12,7 +12,6 @@ public class FloatingInvaderComponent extends Component {
     int width;
     int height;
     TileSheet tileSheet;
-    Graphics graphics;
     int color;
 
     public FloatingInvaderComponent(int width, int height) {
@@ -25,7 +24,6 @@ public class FloatingInvaderComponent extends Component {
     @Override
     public void init() {
         tileSheet = parent.getContext().getObjectByType(TileSheet.class);
-        graphics = parent.getContext().getObjectByType(Graphics.class);
         velocity = new Vector3();
         velocity.set(Math.random() - 0.5, Math.random() - 0.5, 0);
         parent.getTransform().set(Math.random() * 100, Math.random() * 100, 0);
@@ -46,10 +44,10 @@ public class FloatingInvaderComponent extends Component {
 
 
     @Override
-    public void draw() {
-        if (graphics == null) return;
+    public void draw(Graphics g) {
+        //if (graphics == null) return;
         Vector3 transform = parent.getTransform();
-        graphics.setColor(color);
-        graphics.drawImage(tileSheet, (int) transform.x, (int) transform.y, 2, 2);
+        g.setColor(color);
+        g.drawImage(tileSheet, (int) transform.x, (int) transform.y, 2, 2);
     }
 }

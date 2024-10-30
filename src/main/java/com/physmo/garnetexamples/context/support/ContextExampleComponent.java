@@ -1,5 +1,6 @@
 package com.physmo.garnetexamples.context.support;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.toolkit.Component;
 
 public class ContextExampleComponent extends Component {
@@ -14,7 +15,7 @@ public class ContextExampleComponent extends Component {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
 
     }
 }

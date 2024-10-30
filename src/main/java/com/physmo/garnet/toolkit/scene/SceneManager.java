@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit.scene;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.toolkit.Context;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class SceneManager {
         sharedContext.tick(delta);
 
         // Only tick main scene if there are no active sub scenes.
-        if (activeSubScenes.isEmpty() && activeScene.isInitCalled()) activeScene._tick(delta);
+        if (activeSubScenes.isEmpty() && activeScene.isInitialized()) activeScene._tick(delta);
 
         // Find the last active subscene and tick it.
         if (!activeSubScenes.isEmpty())
@@ -155,15 +156,15 @@ public class SceneManager {
      * Renders the active scene and all the active subscenes.
      * Uses the shared context for drawing.
      */
-    public static void draw() {
-        sharedContext.draw();
+    public static void draw(Graphics g) {
+        sharedContext.draw(g);
 
-        if (activeScene != null && activeScene.isInitCalled()) {
-            activeScene._draw();
+        if (activeScene != null && activeScene.isInitialized()) {
+            activeScene._draw(g);
         }
 
         for (Scene activeSubScene : activeSubScenes) {
-            activeSubScene._draw();
+            activeSubScene._draw(g);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit.simplecollision;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.structure.Rect;
 import com.physmo.garnet.toolkit.Component;
 import com.physmo.garnet.toolkit.GameObject;
@@ -119,7 +120,7 @@ public class ColliderComponent extends Component implements Collidable {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
 
     }
 
@@ -134,6 +135,7 @@ public class ColliderComponent extends Component implements Collidable {
     // and call user supplied handlers
     @Override
     public void collisionCallback(CollisionPacket collisionPacket) {
+        // TODO: debug this - out of memory
         newCollisions.add(collisionPacket.targetEntity.collisionGetGameObject());
     }
 
@@ -149,5 +151,9 @@ public class ColliderComponent extends Component implements Collidable {
         return parent;
     }
 
+    // TODO: list all resources
+    public String report() {
+        return "";
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.physmo.garnet.toolkit;
 
+import com.physmo.garnet.graphics.Graphics;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,10 +171,10 @@ public class Context {
     /**
      * Draw every game object in this context.
      */
-    public void draw() {
+    public void draw(Graphics g) {
         for (Object object : objects) {
             if (object instanceof GameObject) {
-                ((GameObject) object)._draw();
+                ((GameObject) object)._draw(g);
             }
         }
     }
