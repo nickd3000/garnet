@@ -31,6 +31,9 @@ public class SimpleSpriteExample extends GarnetApp {
         // Add texture to graphics system.
         garnet.getGraphics().addTexture(texture);
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
+
+        garnet.getDebugDrawer().setVisible(true);
+        garnet.getDebugDrawer().setDrawFps(true);
     }
 
     @Override
