@@ -123,4 +123,8 @@ public class DebugDrawer {
     public void setColor(int i) {
         textColor = i;
     }
+
+    public void drawFrameGraphs(Graphics g) {
+
+    }
 }
