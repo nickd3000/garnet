@@ -30,6 +30,7 @@ public class Graphics {
 
     private final CameraManager cameraManager;
     ObjectPool<Sprite2D> sprite2DObjectPool;
+    ObjectPool<Line2D> line2DObjectPool;
 
     private int currentTextureId = 0;
     private int color;
@@ -48,7 +49,8 @@ public class Graphics {
 
         resetSettings();
 
-        sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, () -> new Sprite2D());
+        sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, Sprite2D::new);
+        line2DObjectPool = new ObjectPool<>(Line2D.class, Line2D::new);
         cameraManager = new CameraManager(display.getWindowWidth(), display.getWindowHeight());
 
     }
@@ -117,6 +119,7 @@ public class Graphics {
         List<DrawableElement> elements = drawableBatch.getElements();
         for (DrawableElement element : elements) {
             if (element.getType() == DrawableElement.SPRITE) sprite2DObjectPool.releaseObject((Sprite2D) element);
+            if (element.getType() == DrawableElement.LINE) line2DObjectPool.releaseObject((Line2D) element);
         }
 
     }
@@ -164,7 +167,9 @@ public class Graphics {
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {
-        Line2D line = new Line2D(x1, y1, x2, y2);
+        //Line2D line = new Line2D(x1, y1, x2, y2);
+        Line2D line = line2DObjectPool.getFreeObject();
+        line.set(x1, y1, x2, y2);
         line.setColor(color);
         line.setDrawOrder(currentDrawOrder);
         line.setCamera(cameraManager.getActiveCamera());
