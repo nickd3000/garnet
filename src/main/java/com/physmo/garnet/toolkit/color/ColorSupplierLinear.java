@@ -25,8 +25,9 @@ public class ColorSupplierLinear implements ColorSupplier {
     public int getColor(double t) {
         double span = (double) 1 / (numColors - 1);
 
-        t = t % 1;
+        t = t % 1.0;
         int i1 = (int) (t / span);
+        if (i1 < 0) i1 = 0;
         int i2 = i1 + 1;
         if (i2 >= numColors) i2 -= numColors;
 
