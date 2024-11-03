@@ -130,7 +130,7 @@ public class GameObject {
     public void tick(double t) {
     }
 
-    public void _draw(Graphics g) {
+    protected void _draw(Graphics g) {
         this.draw(g);
         for (Component component : components) {
             component.draw(g);
