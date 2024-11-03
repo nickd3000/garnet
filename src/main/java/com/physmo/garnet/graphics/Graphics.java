@@ -8,9 +8,9 @@ import com.physmo.garnet.drawablebatch.DrawableElement;
 import com.physmo.garnet.drawablebatch.Line2D;
 import com.physmo.garnet.drawablebatch.Shape2D;
 import com.physmo.garnet.drawablebatch.Sprite2D;
+import com.physmo.garnet.structure.Array;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
@@ -116,7 +116,9 @@ public class Graphics {
      * the element is of type SPRITE, and if so, releases it back to the Sprite2D object pool.
      */
     public void releaseBatch() {
-        List<DrawableElement> elements = drawableBatch.getElements();
+
+        Array<DrawableElement> elements = drawableBatch.getElements();
+
         for (DrawableElement element : elements) {
             if (element.getType() == DrawableElement.SPRITE) sprite2DObjectPool.releaseObject((Sprite2D) element);
             if (element.getType() == DrawableElement.LINE) line2DObjectPool.releaseObject((Line2D) element);
