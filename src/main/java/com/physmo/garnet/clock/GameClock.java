@@ -1,4 +1,4 @@
-package com.physmo.garnet;
+package com.physmo.garnet.clock;
 
 /**
  * The GameClock class is responsible for tracking the frame count and logic updates per second.
@@ -7,13 +7,31 @@ package com.physmo.garnet;
  */
 public class GameClock {
 
+    private static final long ONE_SECOND_IN_NANOS = 1_000_000_000L;
+    public static int TIMER_RENDER = 0;
+    public static int TIMER_LOGIC_AND_RENDER = 1;
+    public static int TIMER_DEBUG = 2;
     int frameCount = 0;
     int logicCount = 0;
     long fpsCheckpointTime = System.nanoTime();
     long logicCheckpointTime = System.nanoTime();
     double fps = 0;
     double lps = 0;
-    private static final long ONE_SECOND_IN_NANOS = 1_000_000_000L;
+    long[] logicTicksPerFrame = new long[256];
+    Timer[] timers = new Timer[10];
+    int logicTicksPerFrameIndex = 0;
+
+
+    public GameClock() {
+        for (int i = 0; i < timers.length; i++) {
+            timers[i] = new Timer();
+        }
+    }
+
+    public Timer getTimer(int index) {
+        return timers[index];
+    }
+
 
     /**
      * Returns the current frames per second (FPS) value.
@@ -32,6 +50,7 @@ public class GameClock {
     public double getLps() {
         return lps;
     }
+
 
     /**
      * Logs a logic update tick and updates the logic updates per second (LPS) count.
@@ -52,6 +71,8 @@ public class GameClock {
             logicCount = 0;
             logicCheckpointTime = curTime;
         }
+
+        logicTicksPerFrame[logicTicksPerFrameIndex]++;
     }
 
     public void logFrame() {
