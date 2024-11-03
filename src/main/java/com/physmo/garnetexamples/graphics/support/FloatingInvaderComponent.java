@@ -18,7 +18,7 @@ public class FloatingInvaderComponent extends Component {
         this.width = width;
         this.height = height;
 
-        color = ColorUtils.asRGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1f);
+        color = ColorUtils.asRGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 0.5f);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class FloatingInvaderComponent extends Component {
 
     @Override
     public void draw(Graphics g) {
-        //if (graphics == null) return;
+        if (g == null) return;
         Vector3 transform = parent.getTransform();
         g.setColor(color);
         g.drawImage(tileSheet, (int) transform.x, (int) transform.y, 2, 2);
