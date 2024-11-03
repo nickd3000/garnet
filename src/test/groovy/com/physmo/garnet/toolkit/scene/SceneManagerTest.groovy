@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit.scene
 
+import com.physmo.garnet.graphics.Graphics
 import spock.lang.Specification
 
 class SceneManagerTest extends Specification {
@@ -78,7 +79,7 @@ class SceneManagerTest extends Specification {
             }
 
             @Override
-            void draw() {
+            void draw(Graphics g) {
 
             }
 
