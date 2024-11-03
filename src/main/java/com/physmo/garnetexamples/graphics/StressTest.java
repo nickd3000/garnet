@@ -59,6 +59,8 @@ public class StressTest extends GarnetApp {
         garnet.getDebugDrawer().setUserString("Sprite count:", String.valueOf(numSprites));
         garnet.getDebugDrawer().setDrawFps(true);
         garnet.getDebugDrawer().setVisible(true);
+
+        context.init();
     }
 
     @Override
