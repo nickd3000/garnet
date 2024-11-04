@@ -1,6 +1,6 @@
 package com.physmo.garnet.text;
 
-import com.physmo.garnet.Utils;
+import com.physmo.garnet.FileUtils;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.Texture;
 
@@ -30,7 +30,7 @@ public class BitmapFont implements DrawableFont {
     }
 
     public String loadDefinitionData(String definitionPath) throws IOException {
-        InputStream inputStream = Utils.getFileFromResourceAsStream(definitionPath);
+        InputStream inputStream = FileUtils.getFileFromResourceAsStream(definitionPath);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
         String outString = "";

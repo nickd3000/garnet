@@ -1,5 +1,6 @@
 package com.physmo.garnet.toolkit.support;
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.toolkit.Component;
 
 public class MoveRightComponent extends Component {
@@ -14,7 +15,7 @@ public class MoveRightComponent extends Component {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
 
     }
 }

@@ -1,6 +1,6 @@
 package com.physmo.garnet.text;
 
-import com.physmo.garnet.Utils;
+import com.physmo.garnet.FileUtils;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
@@ -21,7 +21,7 @@ public class RegularFont implements DrawableFont {
     private int horizontalPad = 0;
 
     public RegularFont(String path, int charWidth, int charHeight) {
-        this(Utils.getFileFromResourceAsStream(path), charWidth, charHeight);
+        this(FileUtils.getFileFromResourceAsStream(path), charWidth, charHeight);
     }
 
     public RegularFont(InputStream inputStream, int charWidth, int charHeight) {

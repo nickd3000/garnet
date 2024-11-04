@@ -1,4 +1,4 @@
-package com.physmo.garnet.toolkit;
+package com.physmo.garnet.structure;
 
 /**
  * Represents a three-dimensional vector with double precision.
@@ -51,7 +51,12 @@ public class Vector3 {
         return this;
     }
 
-
+    /**
+     * Computes the normalized direction vector from this vector to the specified other vector.
+     *
+     * @param other The target vector to which direction is calculated.
+     * @return A new Vector3 instance representing the unit direction vector from this vector to the other vector.
+     */
     public Vector3 getDirectionTo(Vector3 other) {
         Vector3 v = new Vector3(this);
         v.sub(other);

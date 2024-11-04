@@ -1,9 +1,11 @@
 package com.physmo.garnet;
 
 import com.physmo.garnet.audio.Sound;
+import com.physmo.garnet.clock.GameClock;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.KeyboardCallback;
+import com.physmo.garnet.toolkit.GraphDrawer;
 import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
@@ -42,9 +44,9 @@ public class Garnet {
     private final Graphics graphics;
     private final Sound sound;
     private final DebugDrawer debugDrawer;
-    private int runningLogicDelta = 0;
+    private final boolean drawFrameGraph = false;
     private GarnetApp garnetApp;
-
+    private double runningLogicDelta = 0;
     /**
      * Constructs a new Garnet object initializing the key components required for the framework.
      *
@@ -57,6 +59,10 @@ public class Garnet {
         graphics = new Graphics(display);
         sound = new Sound();
         debugDrawer = new DebugDrawer(input);
+    }
+
+    public void setGarnetApp(GarnetApp garnetApp) {
+        this.garnetApp = garnetApp;
     }
 
     public DebugDrawer getDebugDrawer() {
@@ -97,47 +103,44 @@ public class Garnet {
         GL.createCapabilities();
 
         long newTime = System.nanoTime();
-        long currentTime = newTime;
+        long prevTime = newTime;
 
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while (!glfwWindowShouldClose(display.getWindowHandle())) {
 
-            // todo: create class for this - track fps too
             newTime = System.nanoTime();
-            long frameTime = newTime - currentTime;
-            currentTime = newTime;
+            long elapsedTime = newTime - prevTime;
+            prevTime = newTime;
 
             try {
-                Thread.sleep(5);
+                Thread.sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            updateLogicAndRender((int) frameTime);
-
-
+            gameClock.getTimer(GameClock.TIMER_LOGIC_AND_RENDER).start();
+            updateLogicAndRender(elapsedTime / 1_000_000_000.0);
+            gameClock.getTimer(GameClock.TIMER_LOGIC_AND_RENDER).stop();
 
         }
     }
 
-    public void updateLogicAndRender(int delta) {
+    public void updateLogicAndRender(double delta) {
 
-        long nanoSecondsPerSecond = 1_000_000_000;
-        int logicUpdatesPerSecond = 60 * 5;
-        double secondsPerLogicUpdate = 1.0 / (double) logicUpdatesPerSecond;
+        int logicUpdatesPerSecond = 60 * 8;
 
-        long logicTime = nanoSecondsPerSecond / logicUpdatesPerSecond;
+        double logicTime = 1.0 / logicUpdatesPerSecond;
 
         runningLogicDelta += delta;
 
         // --------------- LOGIC
-        while (runningLogicDelta > logicTime) {
+        while (runningLogicDelta >= logicTime) {
 
             runningLogicDelta -= logicTime;
 
-            garnetApp.tick(secondsPerLogicUpdate * tickRate);
+            garnetApp.tick(logicTime * tickRate);
 
             gameClock.logLogicTick();
 
@@ -146,7 +149,10 @@ public class Garnet {
 
         // --------------- RENDER
         // Set the clear color
-        float[] bgCols = Utils.rgbToFloat(graphics.getBackgroundColor());
+
+        gameClock.getTimer(GameClock.TIMER_RENDER).start();
+
+        float[] bgCols = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols[0], bgCols[1], bgCols[2], bgCols[3]);
 
         boolean scissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
@@ -162,14 +168,27 @@ public class Garnet {
         debugDrawer.setFPS(gameClock.getFps());
         debugDrawer.draw(graphics);
 
+        if (drawFrameGraph) {
+            double MAX_TIME_NANOS_120_FPS = (double) 1_000_000_000 / (60);
+            graphics.setColor(0xff00ffff);
+            GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_RENDER).getTimes(), 10, 50, 250, 100, 1.0 / 60, 256);
+            graphics.setColor(0x00ffffff);
+            GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_LOGIC_AND_RENDER).getTimes(), 270, 50, 250, 100, 1.0 / 60, 256);
+            graphics.setColor(0xffff00ff);
+            GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_DEBUG).getTimes(), 10, 50 + 100 + 10, 250, 100, 1.0 / 60, 256);
+        }
+
         gameClock.logFrame();
 
         glfwSwapBuffers(display.getWindowHandle()); // swap the color buffers
 
         // Poll for window events. The key callback above will only be
         // invoked during this call.
+        gameClock.getTimer(GameClock.TIMER_DEBUG).start();
         glfwPollEvents();
+        gameClock.getTimer(GameClock.TIMER_DEBUG).stop();
 
+        gameClock.getTimer(GameClock.TIMER_RENDER).stop();
     }
 
     public void addKeyboardCallback(KeyboardCallback keyboardCallback) {

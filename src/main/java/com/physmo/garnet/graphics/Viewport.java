@@ -1,6 +1,6 @@
 package com.physmo.garnet.graphics;
 
-public class Camera {
+public class Viewport {
     private final int id;
     int[] clipRect = new int[4];
     double[] visibleRect = new double[4];
@@ -16,7 +16,7 @@ public class Camera {
     private int debugInfoColor = 0xff00ffa0;
     private double zoom = 1;
 
-    public Camera(int id, int width, int height) {
+    public Viewport(int id, int width, int height) {
         this.id = id;
         this.width = width;
         this.height = height;
@@ -31,7 +31,7 @@ public class Camera {
         return zoom;
     }
 
-    public Camera setZoom(double zoom) {
+    public Viewport setZoom(double zoom) {
         this.zoom = zoom;
         recalculate();
         return this;
@@ -51,7 +51,7 @@ public class Camera {
         return debugInfoColor;
     }
 
-    public Camera setDebugInfoColor(int debugInfoColor) {
+    public Viewport setDebugInfoColor(int debugInfoColor) {
         this.debugInfoColor = debugInfoColor;
         return this;
     }
@@ -60,7 +60,7 @@ public class Camera {
         return drawDebugInfo;
     }
 
-    public Camera setDrawDebugInfo(boolean drawDebugInfo) {
+    public Viewport setDrawDebugInfo(boolean drawDebugInfo) {
         this.drawDebugInfo = drawDebugInfo;
         return this;
     }
@@ -77,7 +77,7 @@ public class Camera {
         return windowX;
     }
 
-    public Camera setWindowX(int windowX) {
+    public Viewport setWindowX(int windowX) {
         this.windowX = windowX;
         recalculate();
         return this;
@@ -87,7 +87,7 @@ public class Camera {
         return windowY;
     }
 
-    public Camera setWindowY(int windowY) {
+    public Viewport setWindowY(int windowY) {
         this.windowY = windowY;
         recalculate();
         return this;
@@ -107,7 +107,7 @@ public class Camera {
      * @param x
      * @return
      */
-    public Camera setX(double x) {
+    public Viewport setX(double x) {
         this.x = x;
         return this;
     }
@@ -122,7 +122,7 @@ public class Camera {
      * @param y
      * @return
      */
-    public Camera setY(double y) {
+    public Viewport setY(double y) {
         this.y = y;
         return this;
     }
@@ -131,7 +131,7 @@ public class Camera {
         return width;
     }
 
-    public Camera setWidth(int width) {
+    public Viewport setWidth(int width) {
         this.width = width;
         recalculate();
         return this;
@@ -141,7 +141,7 @@ public class Camera {
         return height;
     }
 
-    public Camera setHeight(int height) {
+    public Viewport setHeight(int height) {
         this.height = height;
         recalculate();
         return this;
@@ -151,7 +151,7 @@ public class Camera {
         return clipActive;
     }
 
-    public Camera setClipActive(boolean clipActive) {
+    public Viewport setClipActive(boolean clipActive) {
         this.clipActive = clipActive;
         recalculate();
         return this;

@@ -1,8 +1,8 @@
 package com.physmo.garnet.tilegrid;
 
-import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.TileSheet;
+import com.physmo.garnet.graphics.Viewport;
 
 /**
  * Note: window position and size will be scaled by the scale value.
@@ -10,7 +10,7 @@ import com.physmo.garnet.graphics.TileSheet;
 public class TileGridDrawer {
 
     private int tileWidth, tileHeight;
-    private int cameraId = -1;
+    private int viewportId = -1;
     private TileSheet tileSheet;
     private TileGridData tileGridData;
 
@@ -36,14 +36,14 @@ public class TileGridDrawer {
     }
 
     public void draw(Graphics g, int drawPosX, int drawPosY) {
-        int prevCamera = g.getCameraManager().getActiveCameraId();
-        g.setActiveCamera(cameraId);
+        int prevViewport = g.getViewportManager().getActiveViewportId();
+        g.setActiveViewport(viewportId);
 
         int[] tCoords;
 
-        Camera camera = g.getCameraManager().getCamera(cameraId);
+        Viewport viewport = g.getViewportManager().getViewport(viewportId);
 
-        double[] visibleRect = camera.getVisibleRect();
+        double[] visibleRect = viewport.getVisibleRect();
 
         int xStart = (int) (visibleRect[0] / tileWidth) - 2;
         int yStart = (int) (visibleRect[1] / tileHeight) - 2;
@@ -61,16 +61,16 @@ public class TileGridDrawer {
             }
         }
 
-        g.setActiveCamera(prevCamera);
+        g.setActiveViewport(prevViewport);
     }
 
 
-    public int getCameraId() {
-        return cameraId;
+    public int getViewportId() {
+        return viewportId;
     }
 
-    public TileGridDrawer setCameraId(int cameraId) {
-        this.cameraId = cameraId;
+    public TileGridDrawer setViewportId(int viewportId) {
+        this.viewportId = viewportId;
         return this;
     }
 

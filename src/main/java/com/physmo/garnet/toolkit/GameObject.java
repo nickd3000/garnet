@@ -1,5 +1,9 @@
 package com.physmo.garnet.toolkit;
 
+import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.structure.PointInt;
+import com.physmo.garnet.structure.Vector3;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -126,14 +130,14 @@ public class GameObject {
     public void tick(double t) {
     }
 
-    public void _draw() {
-        this.draw();
+    protected void _draw(Graphics g) {
+        this.draw(g);
         for (Component component : components) {
-            component.draw();
+            component.draw(g);
         }
     }
 
-    public void draw() {
+    public void draw(Graphics g) {
     }
 
     public GameObject setVisible(boolean b) {

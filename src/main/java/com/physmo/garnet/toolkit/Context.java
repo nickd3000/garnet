@@ -1,5 +1,7 @@
 package com.physmo.garnet.toolkit;
 
+import com.physmo.garnet.graphics.Graphics;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,12 @@ public class Context {
     private final List<Object> uninitialisedObjects = new ArrayList<>();
     private List<Object> objects = new ArrayList<>();
     private boolean duringTick = false;
+
+    public boolean isInitialised() {
+        return initialised;
+    }
+
+    boolean initialised = false;
 
     public Context() {
     }
@@ -97,10 +105,6 @@ public class Context {
         return list;
     }
 
-    public void init() {
-        addNewObjects();
-        initialiseNewObjects();
-    }
 
     private void addNewObjects() {
         if (newObjects.isEmpty()) return;
@@ -118,25 +122,10 @@ public class Context {
         uninitialisedObjects.clear();
     }
 
-    /**
-     * Tick every game object in this context by the supplied amount of time
-     *
-     * @param t Time in seconds sent to each objects tick method.
-     */
-    public void tick(double t) {
+    public void init() {
+        initialised = true;
         addNewObjects();
         initialiseNewObjects();
-        processDestruction();
-
-        duringTick = true;
-        for (Object object : objects) {
-            if (object instanceof GameObject) {
-                if (!((GameObject) object).isActive()) continue;
-                ((GameObject) object)._tick(t);
-            }
-        }
-        duringTick = false;
-
     }
 
     private void processDestruction() {
@@ -154,9 +143,6 @@ public class Context {
             if (object instanceof GameObject) {
                 if (!((GameObject) object).isDestroy()) {
                     keep.add(object);
-                } else {
-                    System.out.println("removing object");
-                    //System.out.println("skipping");
                 }
             } else {
                 keep.add(object);
@@ -167,12 +153,36 @@ public class Context {
     }
 
     /**
-     * Draw every game object in this context.
+     * Tick every game object in this context by the supplied amount of time
+     *
+     * @param t Time in seconds sent to each objects tick method.
      */
-    public void draw() {
+    public void tick(double t) {
+        if (!initialised) throw new RuntimeException("Context: not initialised");
+
+        addNewObjects();
+        initialiseNewObjects();
+        processDestruction();
+
+        duringTick = true;
         for (Object object : objects) {
             if (object instanceof GameObject) {
-                ((GameObject) object)._draw();
+                if (!((GameObject) object).isActive()) continue;
+                ((GameObject) object)._tick(t);
+            }
+        }
+        duringTick = false;
+
+    }
+
+    /**
+     * Draw every game object in this context.
+     */
+    public void draw(Graphics g) {
+        if (!initialised) throw new RuntimeException("Context: not initialised");
+        for (Object object : objects) {
+            if (object instanceof GameObject) {
+                ((GameObject) object)._draw(g);
             }
         }
     }
@@ -191,8 +201,8 @@ public class Context {
     /**
      * Retrieve the first GameObject found that matches the supplied tag.
      *
-     * @param tag
-     * @return
+     * @param tag The string based tag to search for.
+     * @return The first GameObject that matches the supplied tag.
      */
     public GameObject getObjectByTag(String tag) {
         List<GameObject> objectsByTag = getObjectsByTag(tag);

@@ -1,10 +1,11 @@
 package com.physmo.garnet.toolkit.simplecollision;
 
 
+import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.structure.Rect;
+import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.GameObject;
-import com.physmo.garnet.toolkit.Rect;
 import com.physmo.garnet.toolkit.StringIdBroker;
-import com.physmo.garnet.toolkit.Vector3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +176,7 @@ public class CollisionSystem extends GameObject {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
 
         if (collisionDrawingCallback == null) return;
         List<Collidable> activeCollidables = getListOfActiveCollidables();
@@ -185,6 +186,13 @@ public class CollisionSystem extends GameObject {
 
     }
 
+
+    /**
+     * Adds a collidable object to the collision system.
+     * NOTE: Collidable must be removed when parent object is destroyed.
+     *
+     * @param collidable The collidable object to add.
+     */
     public void addCollidable(Collidable collidable) {
         collidables.add(collidable);
     }
@@ -262,4 +270,20 @@ public class CollisionSystem extends GameObject {
         }
         return activeCollidables;
     }
+
+    /**
+     * Adds a new {@code ColliderComponent} to the given {@code GameObject}.
+     * The method creates a new ColliderComponent, adds it to the specified GameObject,
+     * and registers the component with the collision system.
+     *
+     * @param gameObject The GameObject to which the ColliderComponent will be added.
+     * @return The newly created and added ColliderComponent.
+     */
+    public ColliderComponent addNewColliderToGameObject(GameObject gameObject) {
+        ColliderComponent colliderComponent = new ColliderComponent();
+        gameObject.addComponent(colliderComponent);
+        addCollidable(colliderComponent);
+        return colliderComponent;
+    }
+
 }

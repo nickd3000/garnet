@@ -6,7 +6,7 @@
 
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1_SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/nickd3000/garnet</url>
@@ -59,6 +59,14 @@
         <sourceDirectory>src/main/java</sourceDirectory>
 
         <testSourceDirectory>src/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources_examples</directory>
+            </resource>
+        </resources>
 
         <plugins>
             <plugin>

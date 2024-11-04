@@ -1,6 +1,7 @@
 package com.physmo.garnet.toolkit.particle;
 
 
+import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.toolkit.GameObject;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class ParticleManager extends GameObject {
     }
 
     @Override
-    public void draw() {
+    public void draw(Graphics g) {
         for (Particle particle : particles) {
             if (particle.active) particleDrawer.draw(particle);
         }

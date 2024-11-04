@@ -21,7 +21,7 @@ public class SceneManagerTest {
 
         for (int i = 0; i < 3; i++) SceneManager.tick(1);
 
-        messageList.forEach(str -> System.out.println(str));
+        messageList.forEach(System.out::println);
     }
 
     @Test

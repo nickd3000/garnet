@@ -1,7 +1,7 @@
 package com.physmo.garnet;
 
-import com.physmo.garnet.graphics.CameraManager;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.ViewportManager;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.text.RegularFont;
 
@@ -54,6 +54,7 @@ public class DebugDrawer {
         //visible = false;
         regularFont = new RegularFont(DEBUG_FONT_NAME, 10, 10);
         regularFont.setHorizontalPad(-1);
+        regularFont.setScale(scale);
     }
 
     public void draw(Graphics g) {
@@ -64,10 +65,10 @@ public class DebugDrawer {
         int prevColor = g.getColor();
         double prevScale = g.getZoom();
         int prevDrawOrder = g.getDrawOrder();
-        int prevCameraId = g.getCameraManager().getActiveCameraId();
+        int prevViewportId = g.getViewportManager().getActiveViewportId();
 
-        g.setZoom(scale);
-        g.setActiveCamera(CameraManager.DEBUG_CAMERA);
+        g.setActiveViewport(ViewportManager.DEBUG_VIEWPORT);
+        g.getViewportManager().getViewport(ViewportManager.DEBUG_VIEWPORT).setZoom(scale);
         if (drawFps) y += drawString(g, "FPS: " + fps, y);
         if (drawMouseCoords) y += drawString(g, getMouseCoordsString(), y);
         drawUserStrings(g, y);
@@ -75,7 +76,7 @@ public class DebugDrawer {
         g.setColor(prevColor);
         g.setZoom(prevScale);
         g.setDrawOrder(prevDrawOrder);
-        g.setActiveCamera(prevCameraId);
+        g.setActiveViewport(prevViewportId);
     }
 
     public int drawString(Graphics g, String str, int y) {
@@ -121,5 +122,9 @@ public class DebugDrawer {
 
     public void setColor(int i) {
         textColor = i;
+    }
+
+    public void drawFrameGraphs(Graphics g) {
+
     }
 }

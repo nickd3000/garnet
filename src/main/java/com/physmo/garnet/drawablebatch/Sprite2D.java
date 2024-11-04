@@ -3,7 +3,23 @@ package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glColor4fv;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glRotatef;
+import static org.lwjgl.opengl.GL11.glScalef;
+import static org.lwjgl.opengl.GL11.glTexCoord2f;
+import static org.lwjgl.opengl.GL11.glTranslatef;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
 // TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
 public class Sprite2D extends DrawableElement {
@@ -27,17 +43,15 @@ public class Sprite2D extends DrawableElement {
     }
 
     public void setCoords(float[] vertexCoords, float[] texCoords) {
-        float[] v = vertexCoords;
-        float[] t = texCoords;
         rotated = false;
-        this.x = v[0];
-        this.y = v[1];
-        this.w = v[2] - v[0];
-        this.h = v[7] - v[1];
-        this.tx = t[0];
-        this.ty = t[1];
-        this.tw = t[2] - t[0];
-        this.th = t[7] - t[1];
+        this.x = vertexCoords[0];
+        this.y = vertexCoords[1];
+        this.w = vertexCoords[2] - vertexCoords[0];
+        this.h = vertexCoords[7] - vertexCoords[1];
+        this.tx = texCoords[0];
+        this.ty = texCoords[1];
+        this.tw = texCoords[2] - texCoords[0];
+        this.th = texCoords[7] - texCoords[1];
         this._w = this.w / 2;
         this._h = this.h / 2;
     }
@@ -166,10 +180,10 @@ public class Sprite2D extends DrawableElement {
     private void renderRotated(float textureScale) {
         glPushMatrix();
 
-        double z = camera.getZoom();
+        double z = viewport.getZoom();
 
-        float xo = (float) (camera.getWindowX() - ((camera.getX() - x) * z));
-        float yo = (float) (camera.getWindowY() - ((camera.getY() - y) * z));
+        float xo = (float) (viewport.getWindowX() - ((viewport.getX() - x) * z));
+        float yo = (float) (viewport.getWindowY() - ((viewport.getY() - y) * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);
