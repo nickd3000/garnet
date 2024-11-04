@@ -220,6 +220,8 @@ public class Display {
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
         setupWindowResizeHandlers();
+
+        placeGlViewport();
     }
 
     public void setupWindowResizeHandlers() {
