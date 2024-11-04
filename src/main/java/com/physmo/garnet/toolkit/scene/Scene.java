@@ -32,6 +32,7 @@ public abstract class Scene {
     public abstract void init();
 
     public void _tick(double delta) {
+        if (!isInitialized) _init();
         context.tick(delta);
         tick(delta);
     }
