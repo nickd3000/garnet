@@ -18,17 +18,17 @@ public class GameClock {
     double fps = 0;
     double lps = 0;
     long[] logicTicksPerFrame = new long[256];
-    Timer[] timers = new Timer[10];
+    TimeIntervalTracker[] timers = new TimeIntervalTracker[10];
     int logicTicksPerFrameIndex = 0;
 
 
     public GameClock() {
         for (int i = 0; i < timers.length; i++) {
-            timers[i] = new Timer();
+            timers[i] = new TimeIntervalTracker();
         }
     }
 
-    public Timer getTimer(int index) {
+    public TimeIntervalTracker getTimer(int index) {
         return timers[index];
     }
 
