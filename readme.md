@@ -26,7 +26,7 @@ Feedback is really useful at this stage, so please feel free to create a small p
 <dependency>
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.2</version>
 </dependency>
 ```
 
@@ -81,6 +81,14 @@ public class SimpleSpriteExample extends GarnetApp {
 ```
 
 ### Changelist
+
+#### Version 0.5.1 - November 2024
+
+- Improvements to the window scaling code.
+- Added full screen toggle to Display
+- Timer and monitoring changes
+- Added Array class to reduce heap use.
+- Renamed camera system to viewport
 
 #### Version 0.5.0 - October 2024
 
