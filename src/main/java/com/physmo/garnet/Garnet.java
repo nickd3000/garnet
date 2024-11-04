@@ -44,10 +44,9 @@ public class Garnet {
     private final Graphics graphics;
     private final Sound sound;
     private final DebugDrawer debugDrawer;
-    private final boolean drawFrameGraph = true;
+    private final boolean drawFrameGraph = false;
     private GarnetApp garnetApp;
     private double runningLogicDelta = 0;
-
     /**
      * Constructs a new Garnet object initializing the key components required for the framework.
      *
@@ -60,6 +59,10 @@ public class Garnet {
         graphics = new Graphics(display);
         sound = new Sound();
         debugDrawer = new DebugDrawer(input);
+    }
+
+    public void setGarnetApp(GarnetApp garnetApp) {
+        this.garnetApp = garnetApp;
     }
 
     public DebugDrawer getDebugDrawer() {

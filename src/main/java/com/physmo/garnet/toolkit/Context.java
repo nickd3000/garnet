@@ -143,9 +143,6 @@ public class Context {
             if (object instanceof GameObject) {
                 if (!((GameObject) object).isDestroy()) {
                     keep.add(object);
-                } else {
-                    System.out.println("removing object");
-                    //System.out.println("skipping");
                 }
             } else {
                 keep.add(object);
