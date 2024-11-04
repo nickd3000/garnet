@@ -2,6 +2,8 @@ package com.physmo.garnet;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowPosCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
@@ -24,7 +26,9 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowMonitor;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -33,6 +37,7 @@ import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -42,20 +47,17 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Display {
 
     private long windowHandle;
-    private final int windowWidth;
-    private final int windowHeight;
+    public double[] glViewportScale = new double[2];
+    public int[] glViewportOffsets = new int[2];
     int primaryMonitorWidth;
     int primaryMonitorHeight;
 
     double windowScale = 1;
     int storedWindowX = 0;
     int storedWindowY = 0;
-
-
-    public Display(int windowWidth, int windowHeight) {
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-    }
+    int canvasWidth = 0; // Canvas refers to the internal game width and height.
+    int canvasHeight = 0;
+    int stretchMode = 2;
 
     public int getWindowWidth() {
         return windowWidth;
@@ -84,13 +86,7 @@ public class Display {
 
         return new int[]{w2[0], h2[0]};
     }
-
-    public double[] getWindowToBufferScale() {
-        int[] bufferSize = getBufferSize();
-        double w = (double) bufferSize[0] / (double) windowWidth;
-        double h = (double) bufferSize[1] / (double) windowHeight;
-        return new double[]{w, h};
-    }
+    private int windowWidth;
 
     public int[] getBufferSize() {
         int[] w = new int[1], h = new int[1];
@@ -132,6 +128,34 @@ public class Display {
         } else if (!val && fullScreenActive) {
             System.out.println("Making windowed");
             glfwSetWindowMonitor(windowHandle, 0, storedWindowX, storedWindowY, windowWidth, windowHeight, GLFW_DONT_CARE);
+        }
+    }
+    private int windowHeight;
+
+    public Display(int windowWidth, int windowHeight) {
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
+        canvasWidth = windowWidth;
+        canvasHeight = windowHeight;
+    }
+
+    public double[] getWindowToBufferScale() {
+        int[] bufferSize = getBufferSize();
+        double w = (double) bufferSize[0] / (double) windowWidth;
+        double h = (double) bufferSize[1] / (double) windowHeight;
+        return new double[]{w, h};
+
+//        int[] bufferSize = getBufferSize();
+//        double w = (double) canvasWidth / (double) windowWidth;
+//        double h = (double) canvasHeight / (double) windowHeight;
+//        return new double[]{w, h};
+    }
+
+    public void setWindowScale(double windowScale, boolean centerWindow) {
+        this.windowScale = windowScale;
+        glfwSetWindowSize(windowHandle, (int) (windowWidth * windowScale), (int) (windowHeight * windowScale));
+        if (centerWindow) {
+            glfwSetWindowPos(windowHandle, primaryMonitorWidth / 2 - (int) (windowWidth * windowScale / 2), primaryMonitorHeight / 2 - (int) (windowHeight * windowScale / 2));
         }
     }
 
@@ -195,13 +219,67 @@ public class Display {
         glLoadIdentity();
         glOrtho(0.0f, windowWidth, windowHeight, 0.0f, 0.0f, 1.0f);
 
+        setupWindowResizeHandlers();
     }
 
-    public void setWindowScale(double windowScale, boolean centerWindow) {
-        this.windowScale = windowScale;
-        glfwSetWindowSize(windowHandle, (int) (windowWidth * windowScale), (int) (windowHeight * windowScale));
-        if (centerWindow) {
-            glfwSetWindowPos(windowHandle, primaryMonitorWidth / 2 - (int) (windowWidth * windowScale / 2), primaryMonitorHeight / 2 - (int) (windowHeight * windowScale / 2));
+    public void setupWindowResizeHandlers() {
+        glfwSetWindowSizeCallback(windowHandle, new GLFWWindowSizeCallback() {
+            @Override
+            public void invoke(long window, int width, int height) {
+                windowWidth = width;
+                windowHeight = height;
+                placeGlViewport();
+            }
+        });
+
+        glfwSetWindowPosCallback(windowHandle, new GLFWWindowPosCallback() {
+            @Override
+            public void invoke(long window, int xPos, int yPos) {
+                placeGlViewport();
+            }
+        });
+    }
+
+    public void placeGlViewport() {
+        int[] bufferSize = getBufferSize();
+
+
+        // Stretch to fit.
+        if (stretchMode == 1) {
+            glViewport(0, 0, bufferSize[0], bufferSize[1]);
+            glViewportOffsets[0] = 0;
+            glViewportOffsets[1] = 0;
+            glViewportScale[0] = (double) canvasWidth / bufferSize[0];
+            glViewportScale[1] = (double) canvasHeight / bufferSize[1];
         }
+
+        // Scale and keep aspect.
+        if (stretchMode == 2) {
+            double aspect = (double) canvasWidth / (double) canvasHeight;
+            double windowAspect = (double) bufferSize[0] / (double) bufferSize[1];
+
+            int newWidth, newHeight;
+            double scale;
+
+            if (aspect > windowAspect) {
+                scale = (double) canvasWidth / bufferSize[0];
+            } else {
+                scale = (double) canvasHeight / bufferSize[1];
+            }
+
+            newWidth = (int) (canvasWidth / scale);
+            newHeight = (int) (canvasHeight / scale);
+            int xOffset = (bufferSize[0] - newWidth) / 2;
+            int yOffset = (bufferSize[1] - newHeight) / 2;
+
+            glViewport(xOffset, yOffset, newWidth, newHeight);
+            glViewportOffsets[0] = xOffset;
+            glViewportOffsets[1] = yOffset;
+            glViewportScale[0] = scale;
+            glViewportScale[1] = scale;
+        }
+
+
+
     }
 }

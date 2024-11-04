@@ -406,18 +406,24 @@ public class Graphics {
             // Do nothing:
             // - clip rect hash matches the last viewport clip rect that was applied.
         } else {
-            double[] windowToPixelsScale = display.getWindowToBufferScale();
+
             int[] windowSize = display.getBufferSize();
+
             glEnable(GL_SCISSOR_TEST);
-            int[] clipRect = vp.getClipRect(); //clipRects.get(clipRectId);
-            int x = (int) (clipRect[0] * windowToPixelsScale[0]);
-            int y = (int) ((windowSize[1] - (clipRect[3] * windowToPixelsScale[1])) - (clipRect[1] * windowToPixelsScale[1]));
-            int w = (int) (clipRect[2] * windowToPixelsScale[0]);
-            int h = (int) (clipRect[3] * windowToPixelsScale[1]);
-            glScissor(x, y, w, h);
+            int[] clipRect = vp.getClipRect();
+            int w = (int) (clipRect[2] / display.glViewportScale[0]);
+            int h = (int) (clipRect[3] / display.glViewportScale[1]);
+            int x = (int) (clipRect[0] / display.glViewportScale[0]);
+            int y = (int) (clipRect[1] / display.glViewportScale[1]);
+
+            x += display.glViewportOffsets[0];
+            y += display.glViewportOffsets[1];
+
+            glScissor(x, windowSize[1] - h - y, w, h);
             clipRectHash = vp.getClipRectHash();
 
         }
+
 
     }
 
