@@ -1,12 +1,14 @@
 # Garnet
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.nickd3000/garnet)
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.nickd3000/garnet)
 ![GitHub](https://img.shields.io/github/license/nickd3000/garnet)
 
 A cross-platform 2D game engine for Java, built on LWJGL.
 
 Garnet is still in development but the main functionality is all working.
 Feedback is really useful at this stage, so please feel free to create a small project and let me know how you get on.
+
+![Dog Matrix](docs/dogMatrix.png)
 
 ### Main features
 
