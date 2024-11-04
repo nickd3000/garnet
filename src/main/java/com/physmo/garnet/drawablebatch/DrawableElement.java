@@ -1,8 +1,8 @@
 package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.ColorUtils;
-import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.Viewport;
 
 import static org.lwjgl.opengl.GL11.glPopMatrix;
 import static org.lwjgl.opengl.GL11.glPushMatrix;
@@ -19,10 +19,10 @@ public abstract class DrawableElement {
     int drawOrder = 0;
     int color = 0xffffffff;
     float[] colorFloats = new float[4];
-    Camera camera = null;
+    Viewport viewport = null;
 
-    public void setCommonValues(Camera camera, int drawOrder, int color) {
-        this.camera = camera;
+    public void setCommonValues(Viewport viewport, int drawOrder, int color) {
+        this.viewport = viewport;
         this.drawOrder = drawOrder;
         setColor(color);
 
@@ -34,12 +34,12 @@ public abstract class DrawableElement {
     }
 
 
-    public Camera getCamera() {
-        return camera;
+    public Viewport getViewport() {
+        return viewport;
     }
 
-    public void setCamera(Camera camera) {
-        this.camera = camera;
+    public void setViewport(Viewport viewport) {
+        this.viewport = viewport;
     }
 
     abstract void render(Graphics graphics);
@@ -74,9 +74,9 @@ public abstract class DrawableElement {
     //
     public void applyTranslation() {
         glPushMatrix();
-        double z = camera.getZoom();
-        float xo = (float) (camera.getWindowX() - (camera.getX() * z));
-        float yo = (float) (camera.getWindowY() - (camera.getY() * z));
+        double z = viewport.getZoom();
+        float xo = (float) (viewport.getWindowX() - (viewport.getX() * z));
+        float yo = (float) (viewport.getWindowY() - (viewport.getY() * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);

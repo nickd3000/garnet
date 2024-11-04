@@ -48,7 +48,7 @@ public class DrawableBatch {
     }
 
     public void applyClipRectIfRequired(Graphics graphics, DrawableElement de) {
-        graphics._activateClipRect(de.getCamera());
+        graphics._activateClipRect(de.getViewport());
     }
 
     public void clear() {

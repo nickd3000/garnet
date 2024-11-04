@@ -2,10 +2,10 @@ package com.physmo.garnetexamples.graphics;
 
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
-import com.physmo.garnet.graphics.Camera;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
+import com.physmo.garnet.graphics.Viewport;
 import com.physmo.garnet.input.Mouse;
 import com.physmo.garnet.tilegrid.TileGridData;
 import com.physmo.garnet.tilegrid.TileGridDrawer;
@@ -13,7 +13,7 @@ import com.physmo.garnet.tilegrid.TileGridDrawer;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class TileGridExample extends GarnetApp {
 
-    static int tileGridCameraId = 1;
+    static int tileGridViewportId = 1;
     String imageFileName = "prototypeArt.png";
     TileSheet tileSheet;
     Texture texture;
@@ -25,7 +25,7 @@ public class TileGridExample extends GarnetApp {
 
     int wallTileID;
     int grassTileID;
-    Camera camera;
+    Viewport viewport;
 
     public TileGridExample(Garnet garnet, String name) {
         super(garnet, name);
@@ -62,10 +62,10 @@ public class TileGridExample extends GarnetApp {
                 .setData(tileGridData)
                 .setTileSize(16, 16)
                 .setTileSheet(tileSheet)
-                .setCameraId(tileGridCameraId);
+                .setViewportId(tileGridViewportId);
 
-        camera = graphics.getCameraManager().getCamera(tileGridCameraId);
-        camera.setWidth(400 - 20)
+        viewport = graphics.getViewportManager().getViewport(tileGridViewportId);
+        viewport.setWidth(400 - 20)
                 .setHeight(400 - 20)
                 .setWindowX(10)
                 .setWindowY(10)
@@ -73,7 +73,7 @@ public class TileGridExample extends GarnetApp {
                 .setDrawDebugInfo(true)
                 .setZoom(4);
 
-        graphics.setActiveCamera(tileGridCameraId);
+        graphics.setActiveViewport(tileGridViewportId);
 
         // Fill the tile map with grass and walls
         for (int y = 0; y < mapHeight; y++) {
@@ -97,21 +97,21 @@ public class TileGridExample extends GarnetApp {
             scrollY = mousePosition[1];
         }
 
-        camera.setX(scrollX);
-        camera.setY(scrollY);
+        viewport.setX(scrollX);
+        viewport.setY(scrollY);
 
         // Resize window with mouse.
         if (garnet.getInput().getMouse().isButtonPressed(Mouse.BUTTON_LEFT)) {
             int[] mousePosition = garnet.getInput().getMouse().getPosition();
-            camera.setWidth(mousePosition[0]);
-            camera.setHeight(mousePosition[1]);
+            viewport.setWidth(mousePosition[0]);
+            viewport.setHeight(mousePosition[1]);
         }
 
         // Move window with mouse (Right button)
         if (garnet.getInput().getMouse().isButtonPressed(Mouse.BUTTON_RIGHT)) {
             int[] mousePosition = garnet.getInput().getMouse().getPosition();
-            camera.setWindowX(mousePosition[0]);
-            camera.setWindowY(mousePosition[1]);
+            viewport.setWindowX(mousePosition[0]);
+            viewport.setWindowY(mousePosition[1]);
         }
     }
 

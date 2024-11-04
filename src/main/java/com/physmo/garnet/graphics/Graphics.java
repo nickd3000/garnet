@@ -20,7 +20,7 @@ import static org.lwjgl.opengl.GL11.glScissor;
 
 /**
  * The Graphics class is responsible for managing and rendering 2D graphics within the application,
- * including handling texture drawing, camera management, and various rendering settings.
+ * including handling texture drawing, viewport management, and various rendering settings.
  */
 public class Graphics {
 
@@ -28,7 +28,7 @@ public class Graphics {
     private final Map<Integer, Texture> textures;
     private final DrawableBatch drawableBatch;
 
-    private final CameraManager cameraManager;
+    private final ViewportManager viewportManager;
     ObjectPool<Sprite2D> sprite2DObjectPool;
     ObjectPool<Line2D> line2DObjectPool;
 
@@ -40,7 +40,7 @@ public class Graphics {
     private double xo = 0;
     private double yo = 0;
     private int clipRectHash = 0;
-    private int activeCameraId = 0;
+    private int activeViewportId = 0;
 
     public Graphics(Display display) {
         this.display = display;
@@ -51,7 +51,7 @@ public class Graphics {
 
         sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, Sprite2D::new);
         line2DObjectPool = new ObjectPool<>(Line2D.class, Line2D::new);
-        cameraManager = new CameraManager(display.getWindowWidth(), display.getWindowHeight());
+        viewportManager = new ViewportManager(display.getWindowWidth(), display.getWindowHeight());
 
     }
 
@@ -62,49 +62,49 @@ public class Graphics {
         currentlyBoundTextureId = 0;
     }
 
-    public CameraManager getCameraManager() {
-        return cameraManager;
+    public ViewportManager getViewportManager() {
+        return viewportManager;
     }
 
     /**
      * Renders the current frame by executing the following steps:
-     * 1. Draws the camera debug information.
+     * 1. Draws the viewport debug information.
      * 2. Renders the drawable batch using the current graphics settings.
      * 3. Releases the current batch of drawable elements back to the object pool.
      * 4. Clears the drawable batch for the next frame.
      */
     public void render() {
-        drawCameraDebugInfo();
+        drawViewportDebugInfo();
         drawableBatch.render(this);
         releaseBatch();
         drawableBatch.clear();
 
     }
 
-    private void drawCameraDebugInfo() {
-        int prevCameraId = cameraManager.getActiveCamera().getId();
+    private void drawViewportDebugInfo() {
+        int prevViewportId = viewportManager.getActiveViewport().getId();
         double prevScale = this.getZoom();
         int prevColor = this.getColor();
 
 
-        setActiveCamera(CameraManager.DEBUG_CAMERA);
+        setActiveViewport(ViewportManager.DEBUG_VIEWPORT);
         this.setZoom(1);
 
-        Camera camera;
+        Viewport viewport;
         int[] clipRect;
         for (int i = 0; i < 10; i++) {
-            camera = cameraManager.getCamera(i);
-            if (!camera.isDrawDebugInfo()) continue;
-            clipRect = camera.getClipRect();
+            viewport = viewportManager.getViewport(i);
+            if (!viewport.isDrawDebugInfo()) continue;
+            clipRect = viewport.getClipRect();
 
-            setColor(camera.getDebugInfoColor());
+            setColor(viewport.getDebugInfoColor());
             for (int j = 0; j < 5; j++) {
                 this.drawRect(clipRect[0] + j, clipRect[1] + j, clipRect[2] - (j * 2), clipRect[3] - (j * 2));
             }
             //this.drawRect(camera.getWindowX(), camera.getWindowY(), camera.getWidth(), camera.getHeight());
         }
         //this.setZoom(prevScale);
-        setActiveCamera(prevCameraId);
+        setActiveViewport(prevViewportId);
         setColor(prevColor);
     }
 
@@ -127,34 +127,34 @@ public class Graphics {
     }
 
     /**
-     * Retrieves the current zoom level of the active camera.
+     * Retrieves the current zoom level of the active viewport.
      *
-     * @return the zoom level of the active camera
+     * @return the zoom level of the active viewport
      */
     public double getZoom() {
-        return cameraManager.getActiveCamera().getZoom();
+        return viewportManager.getActiveViewport().getZoom();
     }
 
     /**
-     * Set the zoom level of the currently active camera.
+     * Set the zoom level of the currently active viewport.
      *
      * @param zoom
      */
     public void setZoom(double zoom) {
-        cameraManager.getActiveCamera().setZoom(zoom);
+        viewportManager.getActiveViewport().setZoom(zoom);
     }
 
     public int getColor() {
         return color;
     }
 
-    public void setActiveCamera(int id) {
-        if (id == activeCameraId) return;
-        activeCameraId = id;
-        cameraManager.setActiveCamera(id);
-        Camera camera = cameraManager.getActiveCamera();
-        xo = camera.getWindowX() - camera.getX();
-        yo = camera.getWindowY() - camera.getY();
+    public void setActiveViewport(int id) {
+        if (id == activeViewportId) return;
+        activeViewportId = id;
+        viewportManager.setActiveViewport(id);
+        Viewport viewport = viewportManager.getActiveViewport();
+        xo = viewport.getWindowX() - viewport.getX();
+        yo = viewport.getWindowY() - viewport.getY();
     }
 
     public void drawRect(float x, float y, float w, float h) {
@@ -174,7 +174,7 @@ public class Graphics {
         line.set(x1, y1, x2, y2);
         line.setColor(color);
         line.setDrawOrder(currentDrawOrder);
-        line.setCamera(cameraManager.getActiveCamera());
+        line.setViewport(viewportManager.getActiveViewport());
         //line.setScale(zoom);
         drawableBatch.add(line);
     }
@@ -239,7 +239,7 @@ public class Graphics {
         sprite2D.setTextureId(texture.getId());
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
 
-        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
         return sprite2D;
@@ -257,7 +257,7 @@ public class Graphics {
         sprite2D.setTextureId(texture.getId());
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
 
-        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
         return sprite2D;
@@ -273,7 +273,7 @@ public class Graphics {
         sprite2D.setCoords(vertexCoords, texCoords);
         sprite2D.setTextureId(texture.getId());
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
     }
@@ -308,7 +308,7 @@ public class Graphics {
 
         sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
 
-        sprite2D.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
     }
@@ -328,7 +328,7 @@ public class Graphics {
     public void drawCircle(float x, float y, float w, float h) {
         Circle2D circle = new Circle2D(x, y, w, h);
 
-        circle.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+        circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(circle);
     }
@@ -337,7 +337,7 @@ public class Graphics {
         Circle2D circle = new Circle2D(x, y, w, h);
         circle.setFilled(true);
 
-        circle.setCommonValues(cameraManager.getActiveCamera(), currentDrawOrder, color);
+        circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(circle);
     }
@@ -373,7 +373,7 @@ public class Graphics {
         Shape2D shape2D = new Shape2D(coords);
         shape2D.setColor(color);
         shape2D.setDrawOrder(currentDrawOrder);
-        shape2D.setCamera(cameraManager.getActiveCamera());
+        shape2D.setViewport(viewportManager.getActiveViewport());
         drawableBatch.add(shape2D);
     }
 
@@ -393,29 +393,29 @@ public class Graphics {
     /**
      * Internal function, not for user use.
      *
-     * @param camera
+     * @param vp
      */
-    public void _activateClipRect(Camera camera) {
+    public void _activateClipRect(Viewport vp) {
 
-        if (!camera.isClipActive()) {
+        if (!vp.isClipActive()) {
             if (clipRectHash != 0) {
                 glDisable(GL_SCISSOR_TEST);
                 clipRectHash = 0;
             }
-        } else if (clipRectHash == camera.getClipRectHash()) {
+        } else if (clipRectHash == vp.getClipRectHash()) {
             // Do nothing:
-            // - clip rect hash matches the last cameras clip rect that was applied.
+            // - clip rect hash matches the last viewport clip rect that was applied.
         } else {
             double[] windowToPixelsScale = display.getWindowToBufferScale();
             int[] windowSize = display.getBufferSize();
             glEnable(GL_SCISSOR_TEST);
-            int[] clipRect = camera.getClipRect(); //clipRects.get(clipRectId);
+            int[] clipRect = vp.getClipRect(); //clipRects.get(clipRectId);
             int x = (int) (clipRect[0] * windowToPixelsScale[0]);
             int y = (int) ((windowSize[1] - (clipRect[3] * windowToPixelsScale[1])) - (clipRect[1] * windowToPixelsScale[1]));
             int w = (int) (clipRect[2] * windowToPixelsScale[0]);
             int h = (int) (clipRect[3] * windowToPixelsScale[1]);
             glScissor(x, y, w, h);
-            clipRectHash = camera.getClipRectHash();
+            clipRectHash = vp.getClipRectHash();
 
         }
 
