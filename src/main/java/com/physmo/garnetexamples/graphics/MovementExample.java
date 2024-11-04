@@ -39,8 +39,10 @@ public class MovementExample extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
+
         g.filledRect((float) (x1 + 50), 50, 20, 20);
         g.filledRect((float) (x2 + 50), 150, 20, 20);
         g.filledRect((float) (x3 + 50), 250, 20, 20);
+        g.drawRect(1, 1, 600 - 2, 400 - 2);
     }
 }

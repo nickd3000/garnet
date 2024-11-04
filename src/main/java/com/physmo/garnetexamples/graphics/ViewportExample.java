@@ -67,6 +67,8 @@ public class ViewportExample extends GarnetApp {
     @Override
     public void tick(double delta) {
         angle += delta * 60.0;
+
+        //garnet.getGraphics().getViewportManager().getViewport(viewportId1).recalculate();
     }
 
     @Override
