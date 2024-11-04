@@ -20,6 +20,11 @@ public class Context {
     private final List<Object> uninitialisedObjects = new ArrayList<>();
     private List<Object> objects = new ArrayList<>();
     private boolean duringTick = false;
+
+    public boolean isInitialised() {
+        return initialised;
+    }
+
     boolean initialised = false;
 
     public Context() {
