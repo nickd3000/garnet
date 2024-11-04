@@ -21,6 +21,7 @@ public class SceneManager {
     private static Scene activeScene;
     private static Scene targetScene;
     private static List<Scene> activeSubScenes;
+    private static long tickCount = 0;
 
     static {
         scenes = new HashMap<>();
@@ -60,6 +61,9 @@ public class SceneManager {
     public static void tick(double delta) {
         update();
 
+        tickCount++;
+
+        if (!sharedContext.isInitialised()) sharedContext.init();
         sharedContext.tick(delta);
 
         // Only tick main scene if there are no active sub scenes.
@@ -76,7 +80,6 @@ public class SceneManager {
      * This ensures safe addition, removal, or changes to scenes.
      */
     public static void update() {
-
         handleSceneChange();
         handleSubscenePop();
         handleSubscenePush();
@@ -157,6 +160,8 @@ public class SceneManager {
      * Uses the shared context for drawing.
      */
     public static void draw(Graphics g) {
+        if (tickCount == 0) return;
+
         sharedContext.draw(g);
 
         if (activeScene != null && activeScene.isInitialized()) {
