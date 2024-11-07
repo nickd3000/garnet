@@ -8,8 +8,7 @@ A cross-platform 2D game engine for Java, built on LWJGL.
 Garnet is still in development but the main functionality is all working.
 Feedback is really useful at this stage, so please feel free to create a small project and let me know how you get on.
 
-![Survivor](
-`https://github.com/nickd3000/assets/blob/3458e3af098fbcc0868cd642f330cb2bfc2a6f1a/garnet/survivor_01_highfr.gif`)
+![Survivor](https://github.com/nickd3000/assets/blob/3458e3af098fbcc0868cd642f330cb2bfc2a6f1a/garnet/survivor_01_highfr.gif)
 
 ### Main features
 
@@ -80,7 +79,6 @@ public class SimpleSpriteExample extends GarnetApp {
         g.drawImage(texture, mousePosition[0], mousePosition[1]);
     }
 }
-
 ```
 
 ### Changelist
@@ -129,3 +127,4 @@ public class SimpleSpriteExample extends GarnetApp {
 - Optimized sprite drawing - added Sprite2D object pool to reuse sprite objects.
 - Package refactoring
 - Rewrote paragraph drawer and fixed new line bugs.
+
