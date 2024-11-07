@@ -10,8 +10,7 @@ public class GameObjectBucketGrid {
     int cellWidth;
     int cellHeight;
     int maxObjectsPerCell = 10;
-    int shiftX = 100;
-    int shiftY = 100;
+    int gridSize = 1024; // Grid goes from -gridSize to +gridSize
 
     public GameObjectBucketGrid(int cellWidth, int cellHeight) {
         this.cellWidth = cellWidth;
@@ -51,13 +50,13 @@ public class GameObjectBucketGrid {
     }
 
     public int encoder(int x, int y) {
-        if (x < -shiftX) x = -shiftX;
-        if (y < -shiftY) y = -shiftY;
-        if (x > 100) x = 100;
-        if (y > 100) y = 100;
+        if (x < -gridSize) x = -gridSize;
+        if (y < -gridSize) y = -gridSize;
+        if (x > gridSize) x = gridSize;
+        if (y > gridSize) y = gridSize;
 
-        x += shiftX;
-        y += shiftY;
+        x += gridSize;
+        y += gridSize;
 
         return ((x & 0b1111_1111_1111) << 12) + (y & 0b1111_1111_1111);
     }
@@ -65,7 +64,7 @@ public class GameObjectBucketGrid {
     public Integer[] decoder(int v) {
         int x = (v >> 12) & 0b1111_1111_1111;
         int y = (v) & 0b1111_1111_1111;
-        return new Integer[]{x - shiftX, y - shiftY};
+        return new Integer[]{x - gridSize, y - gridSize};
     }
 
     public List<Integer[]> getListOfActiveCells() {
