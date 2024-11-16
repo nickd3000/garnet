@@ -346,6 +346,12 @@ public class Graphics {
         return currentDrawOrder;
     }
 
+    /**
+     * Sets the current draw order for rendering operations.
+     * Graphics are painted from lower to higher.
+     *
+     * @param i the draw order value to set
+     */
     public void setDrawOrder(int i) {
         currentDrawOrder = i;
     }
