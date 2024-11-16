@@ -182,6 +182,19 @@ public class SceneManager {
         return Optional.ofNullable(activeScene);
     }
 
+    public static Optional<Scene> getSceneByName(String name) {
+        throwExceptionIfSceneNameNotFound(name);
+
+        for (String scene : scenes.keySet()) {
+            if (scene.equalsIgnoreCase(name)) {
+                return Optional.of(scenes.get(name));
+            }
+        }
+
+        return Optional.empty();
+    }
+
+
     /**
      * Sets the scene with the given name as the active scene.
      * Throws an exception if the scene name is not found.
