@@ -18,6 +18,16 @@ public class Particle {
     Vector3 force = new Vector3();
     boolean active = false;
 
+    ParticleDrawer particleDrawer;
+
+    public ParticleDrawer getParticleDrawer() {
+        return particleDrawer;
+    }
+
+    public void setParticleDrawer(ParticleDrawer particleDrawer) {
+        this.particleDrawer = particleDrawer;
+    }
+
     public void tick(double delta) {
         double pAge = age / lifeTime;
         double _speed = speed * delta * speedCurve.value(pAge);
@@ -30,4 +40,7 @@ public class Particle {
         if (age > lifeTime) active = false;
     }
 
+    public double getTime() {
+        return age / lifeTime;
+    }
 }

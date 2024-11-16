@@ -20,6 +20,16 @@ public class ParticleTemplate {
     Curve speedCurve;
     ColorSupplier colorSupplier;
 
+    ParticleDrawer particleDrawer;
+
+    public ParticleDrawer getParticleDrawer() {
+        return particleDrawer;
+    }
+
+    public void setParticleDrawer(ParticleDrawer particleDrawer) {
+        this.particleDrawer = particleDrawer;
+    }
+
     public ParticleTemplate() {
         positionJitter = 2.1;
         position = new Vector3();
@@ -75,6 +85,7 @@ public class ParticleTemplate {
         p.speed = speed.getValue();
         p.speedCurve = speedCurve;
         p.colorSupplier = colorSupplier;
+        p.particleDrawer = particleDrawer;
     }
 
     public Vector3 getVectorWithJitter(Vector3 v, double jitter) {

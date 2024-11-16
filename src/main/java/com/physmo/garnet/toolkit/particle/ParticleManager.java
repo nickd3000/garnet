@@ -58,7 +58,12 @@ public class ParticleManager extends GameObject {
     @Override
     public void draw(Graphics g) {
         for (Particle particle : particles) {
-            if (particle.active) particleDrawer.draw(particle);
+            if (!particle.active) continue;
+            if (particle.particleDrawer != null) {
+                particle.particleDrawer.draw(particle);
+            } else {
+                particleDrawer.draw(particle);
+            }
         }
     }
 
