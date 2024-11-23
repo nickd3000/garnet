@@ -15,6 +15,10 @@ import java.util.Set;
  */
 public class GameObject {
 
+    public List<Component> getComponents() {
+        return components;
+    }
+
     protected final List<Component> components = new ArrayList<>();
     private final PointInt position = new PointInt(0, 0, 0);
 

@@ -34,7 +34,7 @@ public class Sprite2D extends DrawableElement {
 
     public Sprite2D() {
         creationCount++;
-        System.out.println("Sprite2D construction count: " + creationCount);
+        //System.out.println("Sprite2D construction count: " + creationCount);
         reset();
     }
 
