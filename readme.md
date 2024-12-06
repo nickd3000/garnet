@@ -28,7 +28,7 @@ Feedback is really useful at this stage, so please feel free to create a small p
 <dependency>
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
 </dependency>
 ```
 
@@ -83,6 +83,11 @@ public class SimpleSpriteExample extends GarnetApp {
 
 ### Changelist
 
+#### Version 0.5.2 - December 2024
+
+- GameObject method to retrieve all components.
+- SceneManager method to retrieve a scene by Name
+
 #### Version 0.5.1 - November 2024
 
 - Improvements to the window scaling code.
@@ -127,4 +132,3 @@ public class SimpleSpriteExample extends GarnetApp {
 - Optimized sprite drawing - added Sprite2D object pool to reuse sprite objects.
 - Package refactoring
 - Rewrote paragraph drawer and fixed new line bugs.
-

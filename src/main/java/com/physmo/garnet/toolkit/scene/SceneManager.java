@@ -9,8 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 /**
- * The single global scene manager.
+ * The SceneManager class is responsible for managing scenes and sub-scenes
+ * within an application or game. It handles lifecycle events such as
+ * transitioning between scenes, updating and ticking scenes, and rendering scenes.
+ * This class uses a shared context for data and objects that persist across scenes.
+ *
+ * The SceneManager maintains lists of scenes, sub-scenes, and handles requests
+ * to push and pop sub-scenes, ensuring that operations are safe across game state ticks.
  */
 public class SceneManager {
 
@@ -182,6 +189,12 @@ public class SceneManager {
         return Optional.ofNullable(activeScene);
     }
 
+    /**
+     * Retrieves a scene with the specified name if present.
+     *
+     * @param name The name of the scene to be retrieved.
+     * @return An Optional containing the Scene if found, otherwise an empty Optional.
+     */
     public static Optional<Scene> getSceneByName(String name) {
         throwExceptionIfSceneNameNotFound(name);
 
