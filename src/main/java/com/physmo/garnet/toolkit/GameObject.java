@@ -9,28 +9,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/*
-    An object that can be added to a Context and ticked.
-    Contains a list of components and properties.
+/**
+ * The GameObject class represents a generic entity in a game that contains
+ * various components and properties. It provides foundational behavior for
+ * game objects such as managing components, transformation, velocity,
+ * visibility, activity status, and tagging functionality.
  */
 public class GameObject {
 
     protected final List<Component> components = new ArrayList<>();
     private final PointInt position = new PointInt(0, 0, 0);
-
     protected Vector3 transform = new Vector3(0, 0, 0);
     protected Vector3 velocity = new Vector3(0, 0, 0);
-
     protected Context context;
     String name;
     Set<Integer> tags = new HashSet<>();
     boolean active = true;
     boolean visible = true;
     boolean destroy = false;
-
     public GameObject(String name) {
         this.name = name;
     }
+
 
     public String getName() {
         return name;
@@ -67,6 +67,23 @@ public class GameObject {
         this.velocity = velocity;
     }
 
+
+    /**
+     * Returns a list of components associated with this game object.
+     *
+     * @return a list of components.
+     */
+    public List<Component> getComponents() {
+        return components;
+    }
+
+    /**
+     * Retrieves a component of the specified class type from the list of components.
+     *
+     * @param <T>   the type of the component to be retrieved
+     * @param clazz the class object representing the type of the component
+     * @return the component instance if found; otherwise, null
+     */
     public <T> T getComponent(Class<T> clazz) {
         for (Object component : components) {
             if (component.getClass() == clazz) return (T) component;
@@ -93,12 +110,25 @@ public class GameObject {
         this.context = context;
     }
 
+    /**
+     * Adds a component to the game object and sets the component's parent as this game object.
+     *
+     * @param component the component to be added to this game object
+     * @return the game object to which the component has been added
+     */
     public GameObject addComponent(Component component) {
         component.setParent(this);
         components.add(component);
         return this;
     }
 
+    /**
+     * Retrieves a component of the specified class type from the list of components.
+     *
+     * @param <T>   the type of the component to be retrieved
+     * @param clazz the class object representing the type of the component
+     * @return the component instance if found; otherwise, null
+     */
     public <T> T getComponentByType(Class<T> clazz) {
         for (Object object : components) {
             if (object.getClass() == clazz) return (T) object;
@@ -119,9 +149,7 @@ public class GameObject {
 
     public void _tick(double t) {
         this.tick(t);
-//        for (Component c : components) {
-//            c.tick(t);
-//        }
+
         for (Component component : components) {
             component.tick(t);
         }

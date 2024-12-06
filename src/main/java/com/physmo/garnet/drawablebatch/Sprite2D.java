@@ -34,7 +34,6 @@ public class Sprite2D extends DrawableElement {
 
     public Sprite2D() {
         creationCount++;
-        System.out.println("Sprite2D construction count: " + creationCount);
         reset();
     }
 
@@ -92,26 +91,7 @@ public class Sprite2D extends DrawableElement {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "Sprite2D{" +
-                "textureId=" + textureId +
-                ", textureScaleX=" + textureScaleX +
-                ", textureScaleY=" + textureScaleY +
-                ", x=" + x +
-                ", y=" + y +
-                ", w=" + w +
-                ", h=" + h +
-                ", tx=" + tx +
-                ", ty=" + ty +
-                ", tw=" + tw +
-                ", th=" + th +
-                ", angle=" + angle +
-                ", _w=" + _w +
-                ", _h=" + _h +
-                ", color=" + color +
-                '}';
-    }
+
 
     @Override
     public void render(Graphics graphics) {
@@ -168,14 +148,6 @@ public class Sprite2D extends DrawableElement {
         return SPRITE;
     }
 
-//    public void applyTranslation() {
-//        glPushMatrix();
-//        float xo = (float) (camera.getWindowX() - (camera.getX() * scale));
-//        float yo = (float) (camera.getWindowY() - (camera.getY() * scale));
-//
-//        glTranslatef(xo, yo, 0);
-//        glScalef((float) scale, (float) scale, 1);
-//    }
 
     private void renderRotated(float textureScale) {
         glPushMatrix();
@@ -214,5 +186,26 @@ public class Sprite2D extends DrawableElement {
     public void setTextureScale(float x, float y) {
         textureScaleX = x;
         textureScaleY = y;
+    }
+
+    @Override
+    public String toString() {
+        return "Sprite2D{" +
+                "textureId=" + textureId +
+                ", textureScaleX=" + textureScaleX +
+                ", textureScaleY=" + textureScaleY +
+                ", x=" + x +
+                ", y=" + y +
+                ", w=" + w +
+                ", h=" + h +
+                ", tx=" + tx +
+                ", ty=" + ty +
+                ", tw=" + tw +
+                ", th=" + th +
+                ", angle=" + angle +
+                ", _w=" + _w +
+                ", _h=" + _h +
+                ", color=" + color +
+                '}';
     }
 }

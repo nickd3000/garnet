@@ -41,7 +41,33 @@ public class Keyboard {
         return keyboardStatePrev;
     }
 
+    /**
+     * Sets whether to print key codes when a key event is detected.
+     *
+     * @param printKeyCodes if true, key codes will be printed to the console;
+     *                      if false, key codes will not be printed
+     */
     public void setPrintKeyCodes(boolean printKeyCodes) {
         this.printKeyCodes = printKeyCodes;
+    }
+
+    /**
+     * Checks if a specific key is currently pressed.
+     *
+     * @param key the key code of the key to check
+     * @return true if the key is pressed, false otherwise
+     */
+    public boolean isKeyPressed(int key) {
+        return keyboardState[key];
+    }
+
+    /**
+     * Checks if a key is being pressed for the first time in the current cycle.
+     *
+     * @param key the key code of the key being checked
+     * @return true if the key is pressed in the current cycle and was not pressed in the previous cycle, otherwise false
+     */
+    public boolean isKeyFirstPress(int key) {
+        return keyboardState[key] && !keyboardStatePrev[key];
     }
 }
