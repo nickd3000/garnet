@@ -2,6 +2,13 @@ package com.physmo.garnet.graphics;
 
 import java.lang.reflect.Array;
 
+/**
+ * A generic object pool implementation that allows for efficient reuse of objects.
+ * The ObjectPool class maintains a pool of reusable objects to minimize object creation
+ * overhead by recycling objects instead of creating new ones each time.
+ *
+ * @param <T> the type of object to be pooled in this ObjectPool instance
+ */
 public class ObjectPool<T> {
 
     T[] pool;
