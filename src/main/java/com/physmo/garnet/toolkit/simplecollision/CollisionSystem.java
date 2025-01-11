@@ -4,6 +4,7 @@ package com.physmo.garnet.toolkit.simplecollision;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.structure.Rect;
 import com.physmo.garnet.structure.Vector3;
+import com.physmo.garnet.toolkit.Component;
 import com.physmo.garnet.toolkit.GameObject;
 import com.physmo.garnet.toolkit.StringIdBroker;
 
@@ -31,10 +32,6 @@ public class CollisionSystem extends GameObject {
 
     }
 
-    public int getTestsPerFrame() {
-        return testsPerFrame;
-    }
-
     @Override
     public void tick(double t) {
         testsPerFrame = 0;
@@ -52,7 +49,7 @@ public class CollisionSystem extends GameObject {
     }
 
     private void removePendingCollidables() {
-        if (collidablesPendingRemoval.size() == 0) return;
+        if (collidablesPendingRemoval.isEmpty()) return;
 
         List<Collidable> keepList = new ArrayList<>();
 
@@ -96,6 +93,37 @@ public class CollisionSystem extends GameObject {
         return collisions;
     }
 
+    @Override
+    public void draw(Graphics g) {
+
+        if (collisionDrawingCallback == null) return;
+        List<Collidable> activeCollidables = getListOfActiveCollidables();
+        for (Collidable collidable : activeCollidables) {
+            collisionDrawingCallback.draw(collidable);
+        }
+
+    }
+
+    /**
+     * Retrieves a list of all active collidable objects currently present in the collision system.
+     * A collidable object is considered active if its associated game object is active.
+     *
+     * @return A list of active Collidable objects.
+     */
+    public List<Collidable> getListOfActiveCollidables() {
+        List<Collidable> activeCollidables = new ArrayList<>();
+        for (Collidable collidable : collidables) {
+            if (!collidable.collisionGetGameObject().isActive()) continue;
+            activeCollidables.add(collidable);
+        }
+        return activeCollidables;
+    }
+
+    public int getTestsPerFrame() {
+        return testsPerFrame;
+    }
+
+    // TODO: don't create a list here, pass it in.
     public List<Collidable> getListOfCollidablesWithTag(String tag) {
         int tagId = StringIdBroker.INSTANCE.getId(tag);
 
@@ -105,6 +133,29 @@ public class CollisionSystem extends GameObject {
             collidableList.add(collidable);
         }
         return collidableList;
+    }
+
+    /**
+     * Calculates all collisions between active collidable objects in the system.
+     * The method retrieves the list of active collidables, identifies pairs of objects
+     * that are colliding, and stores these interactions as {@code CollisionPacket} instances.
+     *
+     * @return A list of {@code CollisionPacket} objects representing detected collisions
+     * between pairs of collidable objects.
+     */
+    private List<CollisionPacket> calculateCollisions() {
+        List<CollisionPacket> collisions = new ArrayList<>();
+        List<Collidable> activeCollidables = getListOfActiveCollidables();
+
+        for (Collidable c1 : activeCollidables) {
+            for (Collidable c2 : activeCollidables) {
+                if (c1 == c2) continue;
+                boolean collided = testCollision(c1, c2);
+                if (collided) collisions.add(new CollisionPacket(c1, c2));
+            }
+        }
+
+        return collisions;
     }
 
     /**
@@ -160,49 +211,8 @@ public class CollisionSystem extends GameObject {
         return rect1.intersect(rect2);
     }
 
-    private List<CollisionPacket> calculateCollisions() {
-        List<CollisionPacket> collisions = new ArrayList<>();
-        List<Collidable> activeCollidables = getListOfActiveCollidables();
-
-        for (Collidable c1 : activeCollidables) {
-            for (Collidable c2 : activeCollidables) {
-                if (c1 == c2) continue;
-                boolean collided = testCollision(c1, c2);
-                if (collided) collisions.add(new CollisionPacket(c1, c2));
-            }
-        }
-
-        return collisions;
-    }
-
-    @Override
-    public void draw(Graphics g) {
-
-        if (collisionDrawingCallback == null) return;
-        List<Collidable> activeCollidables = getListOfActiveCollidables();
-        for (Collidable collidable : activeCollidables) {
-            collisionDrawingCallback.draw(collidable);
-        }
-
-    }
-
-
-    /**
-     * Adds a collidable object to the collision system.
-     * NOTE: Collidable must be removed when parent object is destroyed.
-     *
-     * @param collidable The collidable object to add.
-     */
-    public void addCollidable(Collidable collidable) {
-        collidables.add(collidable);
-    }
-
     public int getSize() {
         return collidables.size();
-    }
-
-    public void removeCollidable(Collidable collidable) {
-        collidablesPendingRemoval.add(collidable);
     }
 
     /**
@@ -262,13 +272,26 @@ public class CollisionSystem extends GameObject {
         return count;
     }
 
-    public List<Collidable> getListOfActiveCollidables() {
-        List<Collidable> activeCollidables = new ArrayList<>();
-        for (Collidable collidable : collidables) {
-            if (!collidable.collisionGetGameObject().isActive()) continue;
-            activeCollidables.add(collidable);
+    /**
+     * Removes all collider components from the specified GameObject.
+     * A collider component is identified as an instance of a class
+     * implementing the {@code Collidable} interface. This method iterates
+     * through all components of the GameObject and removes the ones
+     * that are collidable from the associated collision system.
+     *
+     * @param gameObject The GameObject from which collider components will be removed.
+     */
+    public void removeColliderFromGameObject(GameObject gameObject) {
+        for (Component component : gameObject.getComponents()) {
+            if (component instanceof Collidable c) {
+                removeCollidable(c);
+            }
         }
-        return activeCollidables;
+    }
+
+    public void removeCollidable(Collidable collidable) {
+        if (collidable == null) throw new RuntimeException("collidable is null");
+        collidablesPendingRemoval.add(collidable);
     }
 
     /**
@@ -284,6 +307,16 @@ public class CollisionSystem extends GameObject {
         gameObject.addComponent(colliderComponent);
         addCollidable(colliderComponent);
         return colliderComponent;
+    }
+
+    /**
+     * Adds a collidable object to the collision system.
+     * NOTE: Collidable must be removed when parent object is destroyed.
+     *
+     * @param collidable The collidable object to add.
+     */
+    public void addCollidable(Collidable collidable) {
+        collidables.add(collidable);
     }
 
 }
