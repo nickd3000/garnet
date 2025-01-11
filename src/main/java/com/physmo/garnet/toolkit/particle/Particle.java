@@ -18,6 +18,25 @@ public class Particle {
     Vector3 force = new Vector3();
     boolean active = false;
 
+    Vector3 gravityDirection;
+    double gravityForce;
+
+    public Vector3 getGravityDirection() {
+        return gravityDirection;
+    }
+
+    public void setGravityDirection(Vector3 gravityDirection) {
+        this.gravityDirection = gravityDirection;
+    }
+
+    public double getGravityForce() {
+        return gravityForce;
+    }
+
+    public void setGravityForce(double gravityForce) {
+        this.gravityForce = gravityForce;
+    }
+
     ParticleDrawer particleDrawer;
 
     public ParticleDrawer getParticleDrawer() {
