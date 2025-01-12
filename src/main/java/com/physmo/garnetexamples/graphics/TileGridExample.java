@@ -3,6 +3,7 @@ package com.physmo.garnetexamples.graphics;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.SubImage;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.graphics.Viewport;
@@ -26,6 +27,7 @@ public class TileGridExample extends GarnetApp {
     int wallTileID;
     int grassTileID;
     Viewport viewport;
+    SubImage subImage = new SubImage();
 
     public TileGridExample(Garnet garnet, String name) {
         super(garnet, name);
@@ -84,7 +86,7 @@ public class TileGridExample extends GarnetApp {
             }
         }
 
-
+        tileSheet.getSubImage(0, 0, subImage);
     }
 
     @Override
@@ -118,7 +120,7 @@ public class TileGridExample extends GarnetApp {
     @Override
     public void draw(Graphics g) {
         tileGridDrawer.draw(g, 0, 0);
-        g.drawImage(tileSheet.getSubImage(0, 0), 64, 86);
+        g.drawImage(subImage, 64, 86);
     }
 
 }

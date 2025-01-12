@@ -37,8 +37,18 @@ public class TileSheet {
         return new int[]{x, y};
     }
 
-    public SubImage getSubImage(int column, int row) {
-        return new SubImage(texture, column * tileWidth, row * tileHeight, tileWidth, tileHeight);
+    /**
+     * Retrieves a portion of the texture based on the specified tile column and row,
+     * and configures the provided SubImage object with the resulting subimage's properties.
+     * <p>
+     * NOTE: To avoid allocating many new subImage objects, an output parameter is used.
+     *
+     * @param column      the column index of the desired tile.
+     * @param row         the row index of the desired tile.
+     * @param outSubImage the SubImage object to configure with the properties of the designated tile.
+     */
+    public void getSubImage(int column, int row, SubImage outSubImage) {
+        outSubImage.configure(texture, column * tileWidth, row * tileHeight, tileWidth, tileHeight);
     }
 
     public int getTileIndexFromCoords(int x, int y) {

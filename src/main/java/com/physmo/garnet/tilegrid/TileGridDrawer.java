@@ -1,11 +1,15 @@
 package com.physmo.garnet.tilegrid;
 
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.SubImage;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.graphics.Viewport;
 
 /**
- * Note: window position and size will be scaled by the scale value.
+ * The TileGridDrawer class is responsible for rendering a grid of tiles
+ * based on a defined TileSheet and TileGridData configuration. It allows
+ * setting the tile properties, viewport configuration, and drawing the
+ * visible portion of the grid onto a Graphics object.
  */
 public class TileGridDrawer {
 
@@ -13,6 +17,7 @@ public class TileGridDrawer {
     private int viewportId = -1;
     private TileSheet tileSheet;
     private TileGridData tileGridData;
+    SubImage tileSubImage = new SubImage();
 
     public TileGridDrawer() {
         tileWidth = 16;
@@ -50,12 +55,14 @@ public class TileGridDrawer {
         int xSize = (int) ((visibleRect[2]) / tileWidth) + 3;
         int ySize = (int) ((visibleRect[3]) / tileHeight) + 3;
 
+
         for (int y = yStart; y <= yStart + ySize; y++) {
             for (int x = xStart; x <= xStart + xSize; x++) {
                 int tileId = tileGridData.getTileId(x, y);
                 if (tileId == -1) continue;
                 tCoords = tileSheet.getTileCoordsFromIndex(tileId);
-                g.drawImage(tileSheet.getSubImage(tCoords[0], tCoords[1]),
+                tileSheet.getSubImage(tCoords[0], tCoords[1], tileSubImage);
+                g.drawImage(tileSubImage,
                         drawPosX + ((x) * (tileWidth)),
                         drawPosY + ((y) * (tileHeight)));
             }
