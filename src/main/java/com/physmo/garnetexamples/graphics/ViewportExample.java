@@ -3,6 +3,7 @@ package com.physmo.garnetexamples.graphics;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.SubImage;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.graphics.Viewport;
@@ -93,12 +94,16 @@ public class ViewportExample extends GarnetApp {
 
     }
 
+    SubImage subImage = new SubImage();
+
     public void drawSomeThings(Graphics g) {
         g.drawCircle(50, 50, 50, 50);
         g.filledCircle(50, 50 + 100, 50, 50);
         g.drawRect(0, 0, 100, 100);
+        tileSheet.getSubImage(2, 2, subImage);
+
         for (int i = 0; i < 8; i++) {
-            g.drawImage(tileSheet.getSubImage(2, 2), i * 16, i * 16);
+            g.drawImage(subImage, i * 16, i * 16);
         }
 
         g.drawImage(tileSheet, 16 * 3, 16, 2, 2, angle);
@@ -106,7 +111,7 @@ public class ViewportExample extends GarnetApp {
         // Draw a sprite at the lower right corner of the viewport's visible window.
         Viewport activeViewport = g.getViewportManager().getActiveViewport();
         double[] visibleRect = activeViewport.getVisibleRect();
-        g.drawImage(tileSheet.getSubImage(2, 2),
+        g.drawImage(subImage,
                 visibleRect[0] + visibleRect[2] - 16, visibleRect[1] + visibleRect[3] - 16);
     }
 }
