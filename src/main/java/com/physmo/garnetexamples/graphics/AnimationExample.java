@@ -5,6 +5,7 @@ import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Animation;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.SubImage;
 import com.physmo.garnet.graphics.Texture;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
@@ -15,6 +16,9 @@ public class AnimationExample extends GarnetApp {
     Animation animation1;
     Animation animation2;
     Animation animation3;
+    SubImage subImage1 = new SubImage();
+    SubImage subImage2 = new SubImage();
+    SubImage subImage3 = new SubImage();
     private Texture texture1;
 
 
@@ -78,9 +82,14 @@ public class AnimationExample extends GarnetApp {
 
         // Draw unscaled sprites using sprite sheet
         graphics.setZoom(3);
-        graphics.drawImage(animation1.getImage(), 0, 10);
-        graphics.drawImage(animation2.getImage(), 0, 10 + 30);
-        graphics.drawImage(animation3.getImage(), 0, 10 + 60);
+
+        animation1.getImage(subImage1);
+        animation2.getImage(subImage2);
+        animation3.getImage(subImage3);
+
+        graphics.drawImage(subImage1, 0, 10);
+        graphics.drawImage(subImage2, 0, 10 + 30);
+        graphics.drawImage(subImage3, 0, 10 + 60);
     }
 
 
