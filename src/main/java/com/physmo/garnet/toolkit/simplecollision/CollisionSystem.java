@@ -2,6 +2,7 @@ package com.physmo.garnet.toolkit.simplecollision;
 
 
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.structure.Array;
 import com.physmo.garnet.structure.Rect;
 import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.Component;
@@ -48,18 +49,13 @@ public class CollisionSystem extends GameObject {
 
     }
 
+
     private void removePendingCollidables() {
         if (collidablesPendingRemoval.isEmpty()) return;
 
-        List<Collidable> keepList = new ArrayList<>();
-
-        for (Collidable collidable : collidables) {
-            if (collidablesPendingRemoval.contains(collidable)) continue;
-            keepList.add(collidable);
-        }
+        collidables.removeIf(collidable -> collidablesPendingRemoval.contains(collidable));
 
         collidablesPendingRemoval.clear();
-        collidables = keepList;
     }
 
     private List<CollisionPacket> calculateCollisions2() {
@@ -71,10 +67,11 @@ public class CollisionSystem extends GameObject {
 
 
         List<Integer[]> listOfActiveCells = bucketGrid.getListOfActiveCells();
+        Array<Object> surroundingObjects = new Array<>(10);
         for (Integer[] cellCoords : listOfActiveCells) {
 
             List<Object> cellObjects = bucketGrid.getCellObjects(cellCoords[0], cellCoords[1]);
-            List<Object> surroundingObjects = bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1);
+            bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1, surroundingObjects);
 
             for (Object cellObject : cellObjects) {
                 for (Object surroundingObject : surroundingObjects) {
@@ -174,7 +171,8 @@ public class CollisionSystem extends GameObject {
 
         int tileRadius = (int) ((withinRadius / bucketGrid.getCellWidth()) + 1);
 
-        List<Object> surroundingObjects = bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], tileRadius);
+        Array<Object> surroundingObjects = new Array<>(50);
+        bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], tileRadius, surroundingObjects);
         List<Object> filteredObjects = new ArrayList<>();
 
         for (Object surroundingObject : surroundingObjects) {
@@ -228,13 +226,16 @@ public class CollisionSystem extends GameObject {
 
             coBucketGrid.addObject(collidable, (int) collidable.collisionGetRegion().x, (int) collidable.collisionGetRegion().y);
         }
+
         int count = 0;
         List<RelativeObject> nearObjects = new ArrayList<>();
         List<Integer[]> listOfActiveCells = coBucketGrid.getListOfActiveCells();
+        Array<Object> surroundingObjects = new Array<>(50);
+
         for (Integer[] cellCoords : listOfActiveCells) {
 
             List<Object> cellObjects = coBucketGrid.getCellObjects(cellCoords[0], cellCoords[1]);
-            List<Object> surroundingObjects = coBucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1);
+            coBucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1, surroundingObjects);
 
 
             for (Object cellObject : cellObjects) {
