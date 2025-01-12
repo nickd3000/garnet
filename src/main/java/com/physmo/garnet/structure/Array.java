@@ -3,6 +3,9 @@ package com.physmo.garnet.structure;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * A generic dynamic array that supports adding elements, resizing, sorting,
@@ -17,14 +20,25 @@ public class Array<T> implements Iterable<T> {
     public T[] array;
     public int size;
 
+    /**
+     * Constructs an Array with a specified initial capacity. The array is initialized
+     * to hold elements of type T, and the initial size of the array is set to 0.
+     *
+     * @param capacity the initial capacity of the array
+     *                 (i.e., the maximum number of elements it can hold before resizing).
+     */
     public Array(int capacity) {
         array = (T[]) new Object[capacity];
         size = 0;
     }
 
-    public void add(T element) {
-        if (size == array.length) doubleArrayCapacity();
-        array[size++] = element;
+    /**
+     * Returns the current capacity of the underlying array.
+     *
+     * @return the total number of elements the array can hold.
+     */
+    public int getCapacity() {
+        return array.length;
     }
 
     private void doubleArrayCapacity() {
@@ -33,10 +47,11 @@ public class Array<T> implements Iterable<T> {
         array = newArray;
     }
 
-    public int getCapacity() {
-        return array.length;
-    }
-
+    /**
+     * Removes all elements from the array. After calling this method, the array will
+     * be empty, and its size will be reset to zero. The elements in the array will
+     * be set to null.
+     */
     public void clear() {
         for (int i = 0; i < size; i++) {
             array[i] = null;
@@ -44,18 +59,99 @@ public class Array<T> implements Iterable<T> {
         size = 0;
     }
 
+    /**
+     * Removes all elements from the array that satisfy the given predicate.
+     *
+     * @param filter a predicate used to determine which elements should be removed.
+     *               The predicate is applied to each element, and elements for which
+     *               the predicate returns true are removed.
+     * @return true if any elements were removed as a result of the operation,
+     * false otherwise.
+     */
+    public boolean removeIf(Predicate<? super T> filter) {
+        Objects.requireNonNull(filter);
+        boolean removed = false;
+
+        int readPos = 0;
+        int writePos = 0;
+        for (int i = 0; i < size; i++) {
+            if (filter.test(array[i])) {
+                readPos++;
+                removed = true;
+                continue;
+            }
+            array[writePos++] = array[readPos++];
+        }
+        size = writePos;
+        return removed;
+    }
+
+    /**
+     * Adds all elements from the specified list to the array.
+     *
+     * @param list the list containing elements to be added to this array
+     * @throws NullPointerException if the specified list is null
+     */
+    public void addAll(List<T> list) {
+        for (T t : list) {
+            add(t);
+        }
+    }
+
+    /**
+     * Adds the specified element to the array. If the underlying array's capacity
+     * is reached, it is automatically doubled before adding the element.
+     *
+     * @param element the element to be added to the array
+     */
+    public void add(T element) {
+        if (size == array.length) doubleArrayCapacity();
+        array[size++] = element;
+    }
+
+    /**
+     * Returns the current number of elements stored in the array.
+     *
+     * @return the number of elements currently present in the array.
+     */
     public int size() {
         return size;
     }
 
+    /**
+     * Sorts the elements in the array using the specified comparator.
+     * The sorting is performed on the internal array from the beginning
+     * of the array up to the current size of the array.
+     *
+     * @param comparator the comparator to determine the order of the array.
+     *                   A {@code null} comparator indicates that the elements'
+     *                   natural ordering should be used.
+     */
     public void sort(Comparator<T> comparator) {
         Arrays.sort(array, 0, size, comparator);
     }
 
+    /**
+     * Retrieves the element at the specified index from the array.
+     *
+     * @param index the position of the element to retrieve, zero-based.
+     *              Must be within the range `0` to `size - 1`, where `size` is
+     *              the number of elements currently stored in the array.
+     * @return the element of type T stored at the specified index.
+     * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
+     *                                        (i.e., less than 0 or greater than or equal to the current size
+     *                                        of the array).
+     */
     public T get(int index) {
         return array[index];
     }
 
+    /**
+     * Returns an iterator over elements of type T in the array.
+     * The iterator allows sequential access to the elements stored in the array.
+     *
+     * @return an Iterator of type T that allows traversal of the array's elements.
+     */
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
