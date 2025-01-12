@@ -77,4 +77,54 @@ class ArrayTest extends Specification {
 
     }
 
+    def "Test removeIf"() {
+        given:
+            Array<String> array = new Array<>(5);
+
+        and:
+            array.add("A")
+            array.add("X")
+            array.add("B")
+            array.add("X")
+            array.add("C")
+
+        when:
+            int startingSize = array.size()
+            array.removeIf { s -> return (s == "X") }
+
+        then:
+            array.get(0) == "A"
+            array.get(1) == "B"
+            array.get(2) == "C"
+            startingSize == 5
+            array.size() == 3
+    }
+
+    def "Test addAll"() {
+        given:
+            Array<String> array = new Array<>(5);
+            List<String> list = new ArrayList<>()
+
+        and:
+            array.add("A")
+            array.add("B")
+            array.add("C")
+            list.add("D")
+            list.add("E")
+            list.add("F")
+
+        when:
+            int startingSize = array.size()
+            array.addAll(list)
+
+        then:
+            array.get(0) == "A"
+            array.get(1) == "B"
+            array.get(2) == "C"
+            array.get(3) == "D"
+            array.get(4) == "E"
+            array.get(5) == "F"
+            startingSize == 3
+            array.size() == 6
+    }
 }
