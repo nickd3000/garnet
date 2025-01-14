@@ -51,6 +51,14 @@ public class TileSheet {
         outSubImage.configure(texture, column * tileWidth, row * tileHeight, tileWidth, tileHeight);
     }
 
+    /**
+     * Calculates the index of a tile in a 1D array representation of the tile map
+     * based on its 2D coordinates within the tile sheet.
+     *
+     * @param x the x-coordinate (column) of the tile.
+     * @param y the y-coordinate (row) of the tile.
+     * @return the index of the tile in the 1D array representation.
+     */
     public int getTileIndexFromCoords(int x, int y) {
         return x + (y * tilesWide);
     }
