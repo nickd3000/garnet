@@ -30,10 +30,20 @@ public class Input {
         keyboard.update();
     }
 
+    /**
+     * Retrieves the Mouse instance used for handling mouse input.
+     *
+     * @return the Mouse instance associated with this input manager
+     */
     public Mouse getMouse() {
         return mouse;
     }
 
+    /**
+     * Retrieves the Keyboard instance used for handling keyboard input.
+     *
+     * @return the Keyboard instance associated with this input manager
+     */
     public Keyboard getKeyboard() {
         return keyboard;
     }
