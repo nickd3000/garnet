@@ -5,6 +5,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
+import com.physmo.garnet.structure.Array;
 import com.physmo.garnet.toolkit.Context;
 import com.physmo.garnet.toolkit.GameObject;
 import com.physmo.garnet.toolkit.simplecollision.ColliderComponent;
@@ -26,7 +27,7 @@ public class CollisionExample extends GarnetApp {
     double scale = 1;
     Random random = new Random(12345);
     CollisionSystem collisionSystem;
-    List<RelativeObject> nearestObjects;
+    Array<RelativeObject> nearestObjects = new Array<>(100);
 
     public CollisionExample(Garnet garnet, String name) {
         super(garnet, name);
@@ -87,9 +88,10 @@ public class CollisionExample extends GarnetApp {
         List<GameObject> objectsByTag = context.getObjectsByTag("testobject");
         objectsByTag.get(0).getTransform().set(mps[0] - 8, mps[1] - 8, 0);
 
-        nearestObjects = collisionSystem.getNearestObjects("testobject", mps[0] - 8, mps[1] - 8, 150);
+        nearestObjects.clear();
+        collisionSystem.getNearestObjects(0, mps[0] - 8, mps[1] - 8, 150, nearestObjects);
 
-        collisionSystem.processCloseObjects("testobject", 20);
+        collisionSystem.processCloseObjects(0, 20);
     }
 
     @Override
