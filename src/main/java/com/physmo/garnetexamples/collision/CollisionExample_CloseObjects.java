@@ -93,7 +93,7 @@ public class CollisionExample_CloseObjects extends GarnetApp {
         List<GameObject> objectsByTag = context.getObjectsByTag("testobject");
         objectsByTag.get(0).getTransform().set(mps[0] - 8, mps[1] - 8, 0);
 
-        closeObjectTestCount = collisionSystem.processCloseObjects("testobject", 20);
+        closeObjectTestCount = collisionSystem.processCloseObjects(0, 20);
     }
 
     @Override
