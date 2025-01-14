@@ -13,8 +13,8 @@
     <description>LWJGL Based game engine</description>
 
     <properties>
-        <lwjgl.version>3.3.0</lwjgl.version>
-        <lwjgl.natives>natives-macos</lwjgl.natives>
+        <lwjgl.version>3.3.1</lwjgl.version>
+        <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
     </properties>
@@ -90,16 +90,16 @@
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
                 <executions>
-                    <!--                    <execution>-->
-                    <!--                        <id>attach-javadoc</id>-->
-                    <!--                        <goals>-->
-                    <!--                            <goal>jar</goal>-->
-                    <!--                        </goals>-->
-                    <!--                        <configuration>-->
-                    <!--                            <release>17</release>-->
-                    <!--                            <encoding>UTF-8</encoding>-->
-                    <!--                        </configuration>-->
-                    <!--                    </execution>-->
+                    <execution>
+                        <id>attach-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <release>17</release>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
