@@ -37,10 +37,9 @@ public class Graphics {
     private int currentDrawOrder;
     private int currentlyBoundTextureId;
     private int backgroundColor = 0;
-    private double xo = 0;
-    private double yo = 0;
     private int clipRectHash = 0;
     private int activeViewportId = 0;
+    SubImage subImage = new SubImage();
 
     public Graphics(Display display) {
         this.display = display;
@@ -152,9 +151,9 @@ public class Graphics {
         if (id == activeViewportId) return;
         activeViewportId = id;
         viewportManager.setActiveViewport(id);
-        Viewport viewport = viewportManager.getActiveViewport();
-        xo = viewport.getWindowX() - viewport.getX();
-        yo = viewport.getWindowY() - viewport.getY();
+//        Viewport viewport = viewportManager.getActiveViewport();
+//        xo = viewport.getWindowX() - viewport.getX();
+//        yo = viewport.getWindowY() - viewport.getY();
     }
 
     public void drawRect(float x, float y, float w, float h) {
@@ -205,6 +204,7 @@ public class Graphics {
         return sprite2D;
     }
 
+
     /**
      * Draws an image from a specified tile in the given TileSheet at the specified coordinates.
      *
@@ -216,7 +216,8 @@ public class Graphics {
      * @return the Sprite2D object representing the drawn image
      */
     public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
-        return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
+        tileSheet.getSubImage(tileX, tileY, subImage);
+        return drawImage(subImage, x, y);
     }
 
     /**

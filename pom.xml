@@ -6,15 +6,15 @@
 
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.2</version>
+    <version>0.5.3</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/nickd3000/garnet</url>
     <description>LWJGL Based game engine</description>
 
     <properties>
-        <lwjgl.version>3.3.0</lwjgl.version>
-        <lwjgl.natives>natives-macos</lwjgl.natives>
+        <lwjgl.version>3.3.1</lwjgl.version>
+        <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
     </properties>
@@ -60,12 +60,14 @@
 
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
+
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
                 <directory>src/main/resources_examples</directory>
             </resource>
+
         </resources>
 
         <plugins>
@@ -75,15 +77,18 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
+                <version>3.13.0</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.1.0</version>
                 <configuration>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                    <additionalOptions>-Xdoclint:none</additionalOptions> <!-- this prevents failed build -->
                 </configuration>
                 <executions>
                     <execution>
@@ -91,6 +96,10 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <release>17</release>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -105,6 +114,7 @@
                         </goals>
                     </execution>
                 </executions>
+                <version>3.3.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

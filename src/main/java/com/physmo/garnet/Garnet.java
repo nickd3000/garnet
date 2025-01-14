@@ -38,13 +38,13 @@ public class Garnet {
 
     private final List<KeyboardCallback> keyboardCallbacks = new ArrayList<>();
     private final GameClock gameClock = new GameClock();
-    private final double tickRate = 1;
     private final Input input;
     private final Display display;
     private final Graphics graphics;
     private final Sound sound;
     private final DebugDrawer debugDrawer;
     private final boolean drawFrameGraph = false;
+    private double tickRate = 1;
     private GarnetApp garnetApp;
     private double runningLogicDelta = 0;
     /**
@@ -59,6 +59,14 @@ public class Garnet {
         graphics = new Graphics(display);
         sound = new Sound();
         debugDrawer = new DebugDrawer(input);
+    }
+
+    public double getTickRate() {
+        return tickRate;
+    }
+
+    public void setTickRate(double tickRate) {
+        this.tickRate = tickRate;
     }
 
     public void setGarnetApp(GarnetApp garnetApp) {

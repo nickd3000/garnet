@@ -1,12 +1,10 @@
 package com.physmo.garnet.toolkit.simplecollision;
 
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.structure.Array;
 import com.physmo.garnet.structure.Rect;
 import com.physmo.garnet.toolkit.Component;
 import com.physmo.garnet.toolkit.GameObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A helper component that encapsulates a collidable and offers a place to add callback methods
@@ -16,14 +14,16 @@ import java.util.List;
 public class ColliderComponent extends Component implements Collidable {
 
     int ox, oy, width, height;
+    int collisionGroup = 0;
     Rect collisionRegion = new Rect();
     CollisionCallback callbackEnter = null;
     CollisionCallback callbackLeave = null;
     CollisionCallback callbackContinue = null;
     ProximityCallback callbackProximity = null;
 
-    List<GameObject> newCollisions = new ArrayList<>();
-    List<GameObject> existingCollisions = new ArrayList<>();
+
+    Array<GameObject> newCollisions = new Array<>(20);
+    Array<GameObject> existingCollisions = new Array<>(20);
 
     public ColliderComponent() {
         setCallbackEnter(a -> {
@@ -88,9 +88,12 @@ public class ColliderComponent extends Component implements Collidable {
         this.height = height;
     }
 
+    Array<GameObject> keepList = new Array<>(50);
+
     @Override
     public void tick(double t) {
-        List<GameObject> keepList = new ArrayList<>();
+
+        keepList.clear();
 
         // First handle collisions leaving
         for (GameObject other : existingCollisions) {
@@ -118,6 +121,7 @@ public class ColliderComponent extends Component implements Collidable {
         newCollisions.clear();
         existingCollisions.addAll(keepList);
     }
+
 
     @Override
     public void draw(Graphics g) {
@@ -149,6 +153,16 @@ public class ColliderComponent extends Component implements Collidable {
     @Override
     public GameObject collisionGetGameObject() {
         return parent;
+    }
+
+    @Override
+    public int getCollisionGroup() {
+        return collisionGroup;
+    }
+
+    @Override
+    public void setCollisionGroup(int collisionGroup) {
+        this.collisionGroup = collisionGroup;
     }
 
     // TODO: list all resources

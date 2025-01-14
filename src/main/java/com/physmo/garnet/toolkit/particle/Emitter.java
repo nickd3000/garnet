@@ -17,7 +17,7 @@ public class Emitter {
     ParticleTemplate particleTemplate;
 
     double emitPerSecond = 1500;
-    Curve emissionRateCurve;
+    Curve emissionRateCurve = new StandardCurve(CurveType.LINE_DOWN);
 
     public Emitter(Vector3 position, double duration, ParticleTemplate particleTemplate) {
         this.particleTemplate = particleTemplate;

@@ -18,7 +18,7 @@ public class GameObjectBucketGridTest {
 
     public void testEncodeDecode(int cellX, int cellY) {
         int encodedValue = gameObjectBucketGrid.encoder(cellX, cellY);
-        Integer[] decodedPosition = gameObjectBucketGrid.decoder(encodedValue);
+        int[] decodedPosition = gameObjectBucketGrid.decoder(encodedValue);
         Assertions.assertEquals(cellX, decodedPosition[0]);
         Assertions.assertEquals(cellY, decodedPosition[1]);
     }

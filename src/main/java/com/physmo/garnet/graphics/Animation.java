@@ -81,20 +81,20 @@ public class Animation {
     /**
      * The current frame of the animation as an index of the total number of frames.
      *
-     * @return
+     * @return the current frame index
      */
     public int getCurrentFrameIndex() {
         return currentFrame;
     }
 
     /**
-     * Returns the current from as a SubImage object compatible with image drawing methods.
+     * Returns the current frame as a SubImage object compatible with image drawing methods.
      *
      * @return A SubImage object representing the image area of the frame.
      */
-    public SubImage getImage() {
+    public void getImage(SubImage outSubImage) {
         FrameInfo frameInfo = frameList.get(currentFrame);
-        return tileSheet.getSubImage(frameInfo.col, frameInfo.row);
+        tileSheet.getSubImage(frameInfo.col, frameInfo.row, outSubImage);
     }
 
     private class FrameInfo {

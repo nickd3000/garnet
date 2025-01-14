@@ -176,7 +176,11 @@ public class Context {
     }
 
     /**
-     * Draw every game object in this context.
+     * Renders all drawable objects in this context using the specified graphics object.
+     * Throws an exception if the context is not initialized.
+     *
+     * @param g The {@code Graphics} object used to draw the game objects.
+     * @throws RuntimeException If the context is not initialized.
      */
     public void draw(Graphics g) {
         if (!initialised) throw new RuntimeException("Context: not initialised");
@@ -188,7 +192,11 @@ public class Context {
     }
 
     /**
-     * Erase all objects contained within this context.
+     * Resets the context by clearing all objects currently stored.
+     *
+     * This method removes all objects from the internal list, effectively resetting
+     * the state of the context. Typically used to restart or clean up the context
+     * before reinitializing or reloading new data.
      */
     public void reset() {
         objects.clear();

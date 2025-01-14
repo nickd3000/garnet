@@ -34,11 +34,7 @@ public class ParticleManager extends GameObject {
             emitter.tick(delta);
         }
 
-        List<Emitter> emitterList2 = new ArrayList<>();
-        for (Emitter emitter : emitterList) {
-            if (!emitter.remove) emitterList2.add(emitter);
-        }
-        emitterList = emitterList2;
+        emitterList.removeIf(e -> e.remove);
 
         for (Particle particle : particles) {
             if (particle.active)
@@ -46,6 +42,7 @@ public class ParticleManager extends GameObject {
         }
 
     }
+
 
     // TODO: we'll optimise this later.
     public Particle getFreeParticle() {
