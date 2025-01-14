@@ -13,15 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionSystem extends GameObject {
-
+    // TODO: we could have multiple lists based on collision group
     List<Collidable> collidables = new ArrayList<>();
     List<Collidable> collidablesPendingRemoval = new ArrayList<>();
     CollisionDrawingCallback collisionDrawingCallback = null;
     int testsPerFrame = 0;
     GameObjectBucketGrid bucketGrid;
+    Array<Object> surroundingObjectsTemp = new Array<>(100);
+    Array<CollisionPacket> collisions = new Array<>(100);
+    int[] collisionGroupMatrix = new int[0xff];
 
     public CollisionSystem(String name) {
         super(name);
+        setCollisionGroupMatrix(0, 0, true);
     }
 
     public void setCollisionDrawingCallback(CollisionDrawingCallback collisionDrawingCallback) {
@@ -33,14 +37,28 @@ public class CollisionSystem extends GameObject {
 
     }
 
+    /**
+     * Configures the collision detection behavior between two specified collision groups.
+     * This method determines whether objects in the provided groups are allowed to interact
+     * during collision detection.
+     *
+     * @param group1     The first collision group identifier (0-15).
+     * @param group2     The second collision group identifier (0-15).
+     * @param canCollide A boolean indicating whether objects in the two groups can collide;
+     *                   {@code true} enables collisions, {@code false} disables collisions.
+     */
+    public void setCollisionGroupMatrix(int group1, int group2, boolean canCollide) {
+        int index = ((group1 & 0b1111) << 4) | group2 & 0b1111;
+        collisionGroupMatrix[index] = canCollide ?1:0;
+    }
+
     @Override
     public void tick(double t) {
         testsPerFrame = 0;
         removePendingCollidables();
 
-
-//        List<CollisionPacket> collisions = calculateCollisions();
-        List<CollisionPacket> collisions = calculateCollisions2();
+        collisions.clear();
+        calculateCollisions2(collisions);
 
         // Notify collider of collision.
         for (CollisionPacket collision : collisions) {
@@ -49,7 +67,26 @@ public class CollisionSystem extends GameObject {
 
     }
 
-
+    /**
+     * Removes all pending collidable objects from the collision system.
+     * <p>
+     * This method processes the collection of collidables marked for removal
+     * (`collidablesPendingRemoval`) and eliminates any corresponding objects
+     * from the main `collidables` list. After all pending removals are processed,
+     * the temporary storage used for tracking objects to be removed is cleared.
+     * <p>
+     * The purpose of this method is to ensure the collision system's data structure
+     * remains synchronized by removing collidables that are no longer active or
+     * required for collision detection.
+     * <p>
+     * Implementation Notes:
+     * - If the `collidablesPendingRemoval` list is empty, the method exits early,
+     * avoiding unnecessary processing.
+     * - The `removeIf` method is used to efficiently filter `collidables` based
+     * on membership in the `collidablesPendingRemoval` list.
+     * - After processing, `collidablesPendingRemoval` is cleared to prepare for
+     * the next update cycle.
+     */
     private void removePendingCollidables() {
         if (collidablesPendingRemoval.isEmpty()) return;
 
@@ -58,27 +95,29 @@ public class CollisionSystem extends GameObject {
         collidablesPendingRemoval.clear();
     }
 
-    private List<CollisionPacket> calculateCollisions2() {
-        List<CollisionPacket> collisions = new ArrayList<>();
+    private void calculateCollisions2(Array<CollisionPacket> outCollisions) {
+
         bucketGrid = new GameObjectBucketGrid(32, 32);
         for (Collidable collidable : getListOfActiveCollidables()) {
             bucketGrid.addObject(collidable, (int) collidable.collisionGetRegion().x, (int) collidable.collisionGetRegion().y);
         }
 
+        int[] listOfActiveCellsEncoded = bucketGrid.getListOfActiveCellsEncoded();
+        int[] cellCoords = new int[2];
 
-        List<Integer[]> listOfActiveCells = bucketGrid.getListOfActiveCells();
-        Array<Object> surroundingObjects = new Array<>(10);
-        for (Integer[] cellCoords : listOfActiveCells) {
-
+        for (int cellCoordsEncoded : listOfActiveCellsEncoded) {
+            bucketGrid.decoder(cellCoordsEncoded, cellCoords);
             List<Object> cellObjects = bucketGrid.getCellObjects(cellCoords[0], cellCoords[1]);
-            bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1, surroundingObjects);
+            surroundingObjectsTemp.clear();
+            bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1, surroundingObjectsTemp);
 
             for (Object cellObject : cellObjects) {
-                for (Object surroundingObject : surroundingObjects) {
+                for (Object surroundingObject : surroundingObjectsTemp) {
                     if (cellObject == surroundingObject) continue;
+                    if (!canGroupsCollide((Collidable) cellObject, (Collidable) surroundingObject)) continue;
 
                     boolean collided = testCollision((Collidable) cellObject, (Collidable) surroundingObject);
-                    if (collided) collisions.add(
+                    if (collided) outCollisions.add(
                             new CollisionPacket((Collidable) cellObject, (Collidable) surroundingObject));
                 }
 
@@ -86,8 +125,11 @@ public class CollisionSystem extends GameObject {
 
         }
 
+    }
 
-        return collisions;
+    private boolean canGroupsCollide(Collidable collidable1, Collidable collidable2) {
+        int index = ((collidable1.getCollisionGroup() & 0b1111) << 4) | collidable2.getCollisionGroup() & 0b1111;
+        return collisionGroupMatrix[index] == 1;
     }
 
     @Override
@@ -116,6 +158,11 @@ public class CollisionSystem extends GameObject {
         return activeCollidables;
     }
 
+    /**
+     * Retrieves the number of collision tests performed per frame.
+     *
+     * @return The number of collision tests conducted during a single frame.
+     */
     public int getTestsPerFrame() {
         return testsPerFrame;
     }
@@ -132,56 +179,32 @@ public class CollisionSystem extends GameObject {
         return collidableList;
     }
 
-    /**
-     * Calculates all collisions between active collidable objects in the system.
-     * The method retrieves the list of active collidables, identifies pairs of objects
-     * that are colliding, and stores these interactions as {@code CollisionPacket} instances.
-     *
-     * @return A list of {@code CollisionPacket} objects representing detected collisions
-     * between pairs of collidable objects.
-     */
-    private List<CollisionPacket> calculateCollisions() {
-        List<CollisionPacket> collisions = new ArrayList<>();
-        List<Collidable> activeCollidables = getListOfActiveCollidables();
-
-        for (Collidable c1 : activeCollidables) {
-            for (Collidable c2 : activeCollidables) {
-                if (c1 == c2) continue;
-                boolean collided = testCollision(c1, c2);
-                if (collided) collisions.add(new CollisionPacket(c1, c2));
-            }
-        }
-
-        return collisions;
-    }
 
     /**
-     * Search system for objects that are close to a supplied coordinate.
+     * Populates a list of objects that are nearest to a given point within a specified radius,
+     * filtered by collision group. The method identifies all nearby objects that match the collision group
+     * and calculates their distance, direction, and relative properties before adding them to the output list.
      *
-     * @param x
-     * @param y
-     * @param withinRadius
-     * @return
+     * @param collisionGroup The collision group to filter objects by. Only objects belonging to this group are considered.
+     * @param x The x-coordinate of the origin point to search from.
+     * @param y The y-coordinate of the origin point to search from.
+     * @param withinRadius The radius within which to search for objects.
+     * @param outNearObjects A list of RelativeObject instances that will be populated with nearby objects and their relative properties.
      */
-    public List<RelativeObject> getNearestObjects(String tag, int x, int y, double withinRadius) {
-        int tagId = StringIdBroker.INSTANCE.getId(tag);
-        int cellWidth = bucketGrid.getCellWidth();
+    public void getNearestObjects(int collisionGroup, int x, int y, double withinRadius, Array<RelativeObject> outNearObjects) {
 
         int[] cellCoords = bucketGrid.getCellCoordsForPoint(x, y);
 
         int tileRadius = (int) ((withinRadius / bucketGrid.getCellWidth()) + 1);
 
-        Array<Object> surroundingObjects = new Array<>(50);
-        bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], tileRadius, surroundingObjects);
+        surroundingObjectsTemp.clear();
+        bucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], tileRadius, surroundingObjectsTemp);
         List<Object> filteredObjects = new ArrayList<>();
 
-        for (Object surroundingObject : surroundingObjects) {
-            if (((Collidable) surroundingObject).collisionGetGameObject().hasTag(tagId))
+        for (Object surroundingObject : surroundingObjectsTemp) {
+            if (((Collidable) surroundingObject).getCollisionGroup() == collisionGroup)
                 filteredObjects.add(surroundingObject);
         }
-
-
-        List<RelativeObject> nearObjects = new ArrayList<>();
 
         for (Object surroundingObject : filteredObjects) {
             Vector3 transform1 = ((Collidable) surroundingObject).collisionGetGameObject().getTransform();
@@ -194,11 +217,10 @@ public class CollisionSystem extends GameObject {
                 relativeObject.dx = (transform1.x - x) / distance;
                 relativeObject.dy = (transform1.y - y) / distance;
                 relativeObject.otherObject = (Collidable) surroundingObject;
-                nearObjects.add(relativeObject);
+                outNearObjects.add(relativeObject);
 
             }
         }
-        return nearObjects;
 
     }
 
@@ -209,6 +231,11 @@ public class CollisionSystem extends GameObject {
         return rect1.intersect(rect2);
     }
 
+    /**
+     * Retrieves the total number of collidable objects currently present in the collision system.
+     *
+     * @return The number of collidable objects in the system.
+     */
     public int getSize() {
         return collidables.size();
     }
@@ -217,31 +244,32 @@ public class CollisionSystem extends GameObject {
      * Check for objects that are close to each other and call their
      * processing functions
      */
-    public int processCloseObjects(String tag, double distanceThreshold) {
-        int tagId = StringIdBroker.INSTANCE.getId(tag);
+    public int processCloseObjects(int collisionGroup, double distanceThreshold) {
 
         GameObjectBucketGrid coBucketGrid = new GameObjectBucketGrid(32, 32);
         for (Collidable collidable : getListOfActiveCollidables()) {
-            if (!collidable.collisionGetGameObject().hasTag(tagId)) continue;
+            if (collidable.getCollisionGroup() != collisionGroup) continue;
 
             coBucketGrid.addObject(collidable, (int) collidable.collisionGetRegion().x, (int) collidable.collisionGetRegion().y);
         }
 
         int count = 0;
         List<RelativeObject> nearObjects = new ArrayList<>();
-        List<Integer[]> listOfActiveCells = coBucketGrid.getListOfActiveCells();
-        Array<Object> surroundingObjects = new Array<>(50);
 
-        for (Integer[] cellCoords : listOfActiveCells) {
+        int[] listOfActiveCellsEncoded = coBucketGrid.getListOfActiveCellsEncoded();
+        int[] cellCoords = new int[2];
 
+        for (int cellCoordsEncoded : listOfActiveCellsEncoded) {
+            coBucketGrid.decoder(cellCoordsEncoded, cellCoords);
             List<Object> cellObjects = coBucketGrid.getCellObjects(cellCoords[0], cellCoords[1]);
-            coBucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1, surroundingObjects);
+            surroundingObjectsTemp.clear();
+            coBucketGrid.getSurroundingObjects(cellCoords[0], cellCoords[1], 1, surroundingObjectsTemp);
 
 
             for (Object cellObject : cellObjects) {
                 GameObject gameObject1 = ((Collidable) cellObject).collisionGetGameObject();
 
-                for (Object surroundingObject : surroundingObjects) {
+                for (Object surroundingObject : surroundingObjectsTemp) {
                     GameObject gameObject2 = ((Collidable) surroundingObject).collisionGetGameObject();
                     if (gameObject1 == gameObject2) continue;
                     count++;
@@ -290,6 +318,15 @@ public class CollisionSystem extends GameObject {
         }
     }
 
+    /**
+     * Marks a specific collidable object for removal from the collision system.
+     * The collidable object will be added to a pending removal list and will
+     * be removed from the system during the next update cycle.
+     *
+     * @param collidable The collidable object to mark for removal. This parameter
+     *                   cannot be null. If a null value is provided, a runtime
+     *                   exception will be thrown.
+     */
     public void removeCollidable(Collidable collidable) {
         if (collidable == null) throw new RuntimeException("collidable is null");
         collidablesPendingRemoval.add(collidable);
