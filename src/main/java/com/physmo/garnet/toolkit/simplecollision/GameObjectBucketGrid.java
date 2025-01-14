@@ -3,12 +3,12 @@ package com.physmo.garnet.toolkit.simplecollision;
 import com.physmo.garnet.structure.Array;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GameObjectBucketGrid {
-    Map<Integer, List<Object>> objects = new HashMap<>();
+    //Map<Integer, List<Object>> objects = new HashMap<>();
+    BucketGridMap objects = new BucketGridMap();
+
     int cellWidth;
     int cellHeight;
     int maxObjectsPerCell = 10;
@@ -32,7 +32,7 @@ public class GameObjectBucketGrid {
     }
 
     public void clear() {
-        objects = new HashMap<>();
+        objects.clear();
     }
 
     public int[] getCellCoordsForPoint(int x, int y) {
@@ -72,12 +72,12 @@ public class GameObjectBucketGrid {
         return ((x & 0b1111_1111_1111) << 12) + (y & 0b1111_1111_1111);
     }
 
-    public Integer[] decoder(int v) {
+    public void decoder(int v, int[] coords) {
         int x = (v >> 12) & 0b1111_1111_1111;
         int y = (v) & 0b1111_1111_1111;
-        return new Integer[]{x - gridSize, y - gridSize};
+        coords[0] = x - gridSize;
+        coords[1] = y - gridSize;
     }
-
 
     /**
      * Retrieves a list of active cells from the grid. Each cell is represented
@@ -86,14 +86,24 @@ public class GameObjectBucketGrid {
      *
      * @return a list of active cells, where each cell is represented as an Integer array [x, y]
      */
-    public List<Integer[]> getListOfActiveCells() {
-        List<Integer[]> activeCells = new ArrayList<>();
+    public List<int[]> getListOfActiveCells() {
+        List<int[]> activeCells = new ArrayList<>();
         for (Integer integer : objects.keySet()) {
             activeCells.add(decoder(integer));
         }
         return activeCells;
     }
 
+    public int[] decoder(int v) {
+        int x = (v >> 12) & 0b1111_1111_1111;
+        int y = (v) & 0b1111_1111_1111;
+        return new int[]{x - gridSize, y - gridSize};
+    }
+
+    // Faster version
+    public int[] getListOfActiveCellsEncoded() {
+        return objects.keySet();
+    }
 
     /**
      * Return a list of objects contained in the cell referred to by the supplied coordinate.
