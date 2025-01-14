@@ -93,9 +93,11 @@ public class Array<T> implements Iterable<T> {
      * @throws NullPointerException if the specified list is null
      */
     public void addAll(List<T> list) {
-        for (T t : list) {
-            add(t);
-        }
+        for (int i = 0; i < list.size(); i++) add(list.get(i));
+    }
+
+    public void addAll(Array<T> list) {
+        for (int i = 0; i < list.size(); i++) add(list.get(i));
     }
 
     /**
@@ -119,6 +121,15 @@ public class Array<T> implements Iterable<T> {
     }
 
     /**
+     * Checks if the array is empty.
+     *
+     * @return true if the array contains no elements, false otherwise.
+     */
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    /**
      * Sorts the elements in the array using the specified comparator.
      * The sorting is performed on the internal array from the beginning
      * of the array up to the current size of the array.
@@ -130,6 +141,33 @@ public class Array<T> implements Iterable<T> {
     public void sort(Comparator<T> comparator) {
         Arrays.sort(array, 0, size, comparator);
     }
+
+    /**
+     * Checks whether the specified element is present in the array.
+     *
+     * @param element the element to check for presence in the array. Must be of type T.
+     * @return true if the element is found in the array, false otherwise.
+     */
+    public boolean contains(T element) {
+        for (int i = 0; i < size; i++) {
+            if (array[i].equals(element)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Retrieves the index of the specified element in the array.
+     *
+     * @param element the element to search for in the array. Must be of type T.
+     * @return the zero-based index of the element if found; -1 otherwise.
+     */
+    public int indexOf(T element) {
+        for (int i = 0; i < size; i++) {
+            if (array[i].equals(element)) return i;
+        }
+        return -1;
+    }
+
 
     /**
      * Retrieves the element at the specified index from the array.
@@ -144,6 +182,25 @@ public class Array<T> implements Iterable<T> {
      */
     public T get(int index) {
         return array[index];
+    }
+
+    /**
+     * Sets the specified element at the given index in the array.
+     *
+     * @param index   the zero-based index where the element should be set.
+     *                Must be within the range `0` to `size - 1`.
+     * @param element the element of type T to set at the specified index.
+     * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
+     *                                        (i.e., less than 0 or greater than or equal to the current size
+     *                                        of the array).
+     * @throws NullPointerException           if the provided element is null.
+     */
+    public void setAt(int index, T element) {
+        if (index < 0 || index >= size) {
+            throw new ArrayIndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+        Objects.requireNonNull(element, "Element cannot be null");
+        array[index] = element;
     }
 
     /**
