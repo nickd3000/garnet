@@ -83,6 +83,15 @@ public class SimpleSpriteExample extends GarnetApp {
 
 ### Changelist
 
+### Version 0.5.3 - January 2025
+
+- Allow tick rate control in core Garnet class
+- CollisionSystem - added removeColliderFromGameObject()Add gravity support to particles
+- Convert some graphics classes that use SubImage to use an output parameter to help avoid allocations.
+- Improvements to collision - Reduce memory allocations by reusing structures
+- Moved examples to reference folder
+- Added additional functionality to Array class
+
 #### Version 0.5.2 - December 2024
 
 - GameObject method to retrieve all components.
