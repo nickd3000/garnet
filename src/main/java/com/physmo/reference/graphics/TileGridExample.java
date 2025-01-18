@@ -86,7 +86,7 @@ public class TileGridExample extends GarnetApp {
             }
         }
 
-        tileSheet.getSubImage(0, 0, subImage);
+        subImage = tileSheet.getSubImage(0, 0);
     }
 
     @Override

@@ -216,8 +216,7 @@ public class Graphics {
      * @return the Sprite2D object representing the drawn image
      */
     public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
-        tileSheet.getSubImage(tileX, tileY, subImage);
-        return drawImage(subImage, x, y);
+        return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
     }
 
     /**
