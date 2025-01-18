@@ -1,7 +1,9 @@
 package com.physmo.garnet.graphics;
 
 /**
- * Defines the layout of a regularly spaced sprite sheet.
+ * The TileSheet class represents a collection of tiles extracted from a
+ * single texture. It divides the texture into smaller rectangles (tiles)
+ * based on the specified tile width and height.
  */
 public class TileSheet {
     private final int tilesWide;
@@ -9,7 +11,7 @@ public class TileSheet {
     Texture texture;
     int tileWidth;
     int tileHeight;
-
+    SubImage[][] subImages;
 
     public TileSheet(Texture texture, int tileWidth, int tileHeight) {
         this.texture = texture;
@@ -17,6 +19,17 @@ public class TileSheet {
         this.tileHeight = tileHeight;
         this.tilesWide = texture.getWidth() / tileWidth;
         this.tilesHigh = texture.getHeight() / tileHeight;
+
+        setUpSubImages(texture, tileWidth, tileHeight);
+    }
+
+    private void setUpSubImages(Texture texture, int tileWidth, int tileHeight) {
+        subImages = new SubImage[tilesWide][tilesHigh];
+        for (int x = 0; x < tilesWide; x++) {
+            for (int y = 0; y < tilesHigh; y++) {
+                subImages[x][y] = new SubImage(texture, x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+            }
+        }
     }
 
     public Texture getTexture() {
@@ -38,17 +51,30 @@ public class TileSheet {
     }
 
     /**
-     * Retrieves a portion of the texture based on the specified tile column and row,
-     * and configures the provided SubImage object with the resulting subimage's properties.
-     * <p>
-     * NOTE: To avoid allocating many new subImage objects, an output parameter is used.
+     * Retrieves the {@link SubImage} located at the specified column and row
+     * within the tile sheet.
      *
-     * @param column      the column index of the desired tile.
-     * @param row         the row index of the desired tile.
-     * @param outSubImage the SubImage object to configure with the properties of the designated tile.
+     * @param column the column index of the desired sub-image (0-based).
+     * @param row the row index of the desired sub-image (0-based).
+     * @return the {@link SubImage} located at the specified column and row.
+     *         Returns null if the specified indices are out of bounds.
      */
-    public void getSubImage(int column, int row, SubImage outSubImage) {
-        outSubImage.configure(texture, column * tileWidth, row * tileHeight, tileWidth, tileHeight);
+    public SubImage getSubImage(int column, int row) {
+        return subImages[column][row];
+    }
+
+    /**
+     * Retrieves a {@link SubImage} from the tile sheet based on a 1D index.
+     * The index is translated into 2D coordinates within the tile sheet, using
+     * the tile sheet's width and height.
+     *
+     * @param index the 1D index of the desired tile in the sheet.
+     *              Uses a 0-based index and converts it to 2D coordinates for lookup.
+     * @return the {@link SubImage} corresponding to the specified index.
+     * Returns null if the index is out of bounds.
+     */
+    public SubImage getSubImage(int index) {
+        return subImages[index % tilesWide][index / tilesHigh];
     }
 
     /**
