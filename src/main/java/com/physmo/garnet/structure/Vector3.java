@@ -164,7 +164,7 @@ public class Vector3 {
      * @return The angle in radians, ranging from 0 to 2*PI.
      */
     public double getAngle() {
-        double a = Math.atan2(-x, -y);
+        double a = Math.atan2(-x, y);
         a = a > 0 ? (Math.PI * 2) - a : 0 - a;
         return a;
     }

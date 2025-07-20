@@ -89,8 +89,7 @@ public class RegularFont implements DrawableFont {
     public void renderChar(Graphics graphics, char c, int x, int y) {
         int cy = ((int) c) / 16;
         int cx = ((int) c) % 16;
-        tileSheet.getSubImage(cx, cy, characterSubImage);
-        graphics.drawImageScaled(characterSubImage, x, y, scale);
+        graphics.drawImageScaled(tileSheet.getSubImage(cx, cy), x, y, scale);
     }
 
 

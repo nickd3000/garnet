@@ -100,7 +100,7 @@ public class ViewportExample extends GarnetApp {
         g.drawCircle(50, 50, 50, 50);
         g.filledCircle(50, 50 + 100, 50, 50);
         g.drawRect(0, 0, 100, 100);
-        tileSheet.getSubImage(2, 2, subImage);
+        subImage = tileSheet.getSubImage(2, 2);
 
         for (int i = 0; i < 8; i++) {
             g.drawImage(subImage, i * 16, i * 16);

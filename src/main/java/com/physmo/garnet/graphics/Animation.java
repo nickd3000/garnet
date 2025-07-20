@@ -94,7 +94,7 @@ public class Animation {
      */
     public void getImage(SubImage outSubImage) {
         FrameInfo frameInfo = frameList.get(currentFrame);
-        tileSheet.getSubImage(frameInfo.col, frameInfo.row, outSubImage);
+        outSubImage = tileSheet.getSubImage(frameInfo.col, frameInfo.row);
     }
 
     private class FrameInfo {

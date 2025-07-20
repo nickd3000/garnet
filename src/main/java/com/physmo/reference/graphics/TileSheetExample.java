@@ -3,7 +3,6 @@ package com.physmo.reference.graphics;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.SubImage;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 
@@ -66,9 +65,7 @@ public class TileSheetExample extends GarnetApp {
 
         // Draw sprite using the getSubImage helper function.
         g.setColor(GREEN);
-        SubImage subImage = new SubImage();
-        tileSheet.getSubImage(2, 2, subImage);
-        g.drawImage(subImage, (int) xPos + 20, 5);
+        g.drawImage(tileSheet.getSubImage(2, 2), (int) xPos + 20, 5);
 
         g.setColor(BLUE);
         g.drawImage(tileSheet, mp[0], mp[1], 2, 2);

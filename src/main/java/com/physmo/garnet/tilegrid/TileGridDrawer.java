@@ -61,8 +61,7 @@ public class TileGridDrawer {
                 int tileId = tileGridData.getTileId(x, y);
                 if (tileId == -1) continue;
                 tCoords = tileSheet.getTileCoordsFromIndex(tileId);
-                tileSheet.getSubImage(tCoords[0], tCoords[1], tileSubImage);
-                g.drawImage(tileSubImage,
+                g.drawImage(tileSheet.getSubImage(tCoords[0], tCoords[1]),
                         drawPosX + ((x) * (tileWidth)),
                         drawPosY + ((y) * (tileHeight)));
             }

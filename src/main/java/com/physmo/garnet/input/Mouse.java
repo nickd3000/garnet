@@ -18,6 +18,9 @@ public class Mouse {
     private final int[] positionPrev = new int[2];
     private final boolean[] buttonState = new boolean[3];
     private final boolean[] buttonStatePrev = new boolean[3];
+    private final double[] cx = new double[1];
+    private final double[] cy = new double[1];
+
     Garnet garnet;
     long windowHandle;
 
@@ -29,21 +32,19 @@ public class Mouse {
         windowHandle = garnet.getDisplay().getWindowHandle();
     }
 
+
     void update() {
         positionPrev[0] = position[0];
         positionPrev[1] = position[1];
 
-        double[] x = new double[1];
-        double[] y = new double[1];
-
-        glfwGetCursorPos(windowHandle, x, y);
+        glfwGetCursorPos(windowHandle, cx, cy);
         double[] windowToPixelsScale = garnet.getDisplay().getWindowToPixelsScale();
 
-        x[0] /= windowToPixelsScale[0];
-        y[0] /= windowToPixelsScale[1];
+        cx[0] /= windowToPixelsScale[0];
+        cy[0] /= windowToPixelsScale[1];
 
-        position[0] = (int) x[0];
-        position[1] = (int) y[0];
+        position[0] = (int) cx[0];
+        position[1] = (int) cy[0];
 
         System.arraycopy(buttonState, 0, buttonStatePrev, 0, buttonState.length);
         buttonState[BUTTON_LEFT] = glfwGetMouseButton(windowHandle, BUTTON_LEFT) > 0;
