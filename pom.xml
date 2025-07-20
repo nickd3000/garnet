@@ -13,7 +13,7 @@
     <description>LWJGL Based game engine</description>
 
     <properties>
-        <lwjgl.version>3.3.1</lwjgl.version>
+        <lwjgl.version>3.3.6</lwjgl.version>
         <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
