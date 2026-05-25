@@ -21,6 +21,8 @@ public class BasicContextExample {
         context.add(gameObject1);
         context.add(gameObject2);
 
+        context.init();
+
         System.out.println("\n- Ticking context 3 times");
         context.tick(1);
         context.tick(1);

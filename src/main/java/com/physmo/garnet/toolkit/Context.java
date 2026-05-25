@@ -192,6 +192,30 @@ public class Context {
     }
 
     /**
+     * Broadcasts a message to all game objects currently in this context.
+     *
+     * @param name The name of the message.
+     */
+    public void broadcastMessage(String name) {
+        broadcastMessage(name, null);
+    }
+
+    /**
+     * Broadcasts a message to all game objects currently in this context.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void broadcastMessage(String name, Object data) {
+        List<Object> objectsCopy = new ArrayList<>(objects);
+        for (Object object : objectsCopy) {
+            if (object instanceof GameObject) {
+                ((GameObject) object).sendMessage(name, data);
+            }
+        }
+    }
+
+    /**
      * Resets the context by clearing all objects currently stored.
      *
      * This method removes all objects from the internal list, effectively resetting

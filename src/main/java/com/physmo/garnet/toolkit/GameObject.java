@@ -168,6 +168,61 @@ public class GameObject {
     public void draw(Graphics g) {
     }
 
+    /**
+     * Sends a message to this game object and all of its attached components.
+     *
+     * @param name The name of the message.
+     */
+    public void sendMessage(String name) {
+        sendMessage(name, null);
+    }
+
+    /**
+     * Sends a message to this game object and all of its attached components.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void sendMessage(String name, Object data) {
+        onMessage(name, data);
+        List<Component> componentsCopy = new ArrayList<>(components);
+        for (Component component : componentsCopy) {
+            component.onMessage(name, data);
+        }
+    }
+
+    /**
+     * Called when a message is sent to this game object.
+     * Subclasses can override this method to handle specific messages.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void onMessage(String name, Object data) {
+        // Default: do nothing
+    }
+
+    /**
+     * Broadcasts a message to all game objects in the current context.
+     *
+     * @param name The name of the message.
+     */
+    public void broadcastMessage(String name) {
+        broadcastMessage(name, null);
+    }
+
+    /**
+     * Broadcasts a message to all game objects in the current context.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void broadcastMessage(String name, Object data) {
+        if (context != null) {
+            context.broadcastMessage(name, data);
+        }
+    }
+
     public GameObject setVisible(boolean b) {
         visible = b;
         return this;

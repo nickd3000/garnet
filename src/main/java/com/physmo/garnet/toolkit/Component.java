@@ -16,6 +16,38 @@ public abstract class Component {
 
     abstract public void draw(Graphics g);
 
+    /**
+     * Called when a message is sent to this component.
+     * Subclasses can override this method to handle specific messages.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void onMessage(String name, Object data) {
+        // Default: do nothing
+    }
+
+    /**
+     * Broadcasts a message to all game objects in the current context.
+     *
+     * @param name The name of the message.
+     */
+    public void broadcastMessage(String name) {
+        broadcastMessage(name, null);
+    }
+
+    /**
+     * Broadcasts a message to all game objects in the current context.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void broadcastMessage(String name, Object data) {
+        if (parent != null && parent.getContext() != null) {
+            parent.getContext().broadcastMessage(name, data);
+        }
+    }
+
     public void setParent(GameObject parent) {
         this.parent = parent;
     }
