@@ -6,6 +6,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
+/**
+ * A simple finite state machine that manages a set of named states and transitions between them.
+ *
+ * <p>States are represented by {@link StateMachineState} objects and are identified by string names.
+ * The machine ticks the currently active state each frame via {@link #tick(double)}.
+ * State changes requested via {@link #changeState(String)} are deferred and applied at the start
+ * of the next tick, allowing optional {@link Transition} states to run cleanup logic between states.</p>
+ *
+ * <p>Example usage:</p>
+ * <pre>{@code
+ * StateMachine sm = new StateMachine();
+ * sm.addState("idle", new IdleState());
+ * sm.addState("running", new RunningState());
+ * sm.addTransition(StateMachine.ANY_STATE, "running", new CleanupState());
+ * sm.changeState("running");
+ * sm.tick(deltaTime);
+ * }</pre>
+ *
+ * @see StateMachineState
+ * @see Transition
+ */
 public class StateMachine {
 
     public static final String ANY_STATE = "ANY_STATE";
@@ -16,14 +38,20 @@ public class StateMachine {
     List<Transition> transitions = new ArrayList<>();
 
     /**
-     * Get a string representing the current states name.
+     * Get a string representing the current state's name.
      *
-     * @return
+     * @return the name of the current state, or an empty string if no state has been set
      */
     public String getCurrentStateName() {
         return (currentStateName == null ? "" : currentStateName);
     }
 
+    /**
+     * Check whether the current state matches the given name (case-insensitive).
+     *
+     * @param name the state name to compare against
+     * @return {@code true} if the current state name matches {@code name}, {@code false} otherwise
+     */
     public boolean isCurrentState(String name) {
         return currentStateName.compareToIgnoreCase(name) == 0;
     }
@@ -32,7 +60,7 @@ public class StateMachine {
      * Add a state to the list of states this machine can use.
      *
      * @param stateName The string identifier that the state will be referred to by
-     * @param state     state object
+     * @param state     the StateMachineState implementation to register
      */
     public void addState(String stateName, StateMachineState state) {
         stateMap.put(stateName, state);
@@ -43,13 +71,14 @@ public class StateMachine {
     }
 
     /**
-     * Add a state that will be called when moving between two specified states.
-     * The supplied state will be called ticked once, just before the target state.
-     * The intended use is to perform cleanup before switching to the next state
+     * Add a transition state that is ticked once when moving between two specified states.
+     * The transition state is ticked immediately before the machine switches to the target state.
+     * The intended use is to perform cleanup or setup logic between state changes.
+     * Use {@link #ANY_STATE} as {@code fromState} or {@code toState} to match any state.
      *
-     * @param fromState
-     * @param toState
-     * @param state
+     * @param fromState the name of the source state, or {@link #ANY_STATE} to match any source state
+     * @param toState   the name of the target state, or {@link #ANY_STATE} to match any target state
+     * @param state     the transition state to tick when this transition is triggered
      */
     public void addTransition(String fromState, String toState, StateMachineState state) {
         Transition transition = new Transition();
@@ -69,9 +98,9 @@ public class StateMachine {
     }
 
     /**
-     * Handle any state changes then tick the currently active state.
+     * Handle any pending state changes, then tick the currently active state.
      *
-     * @param delta
+     * @param delta time elapsed since the last tick, in seconds
      */
     public void tick(double delta) {
         handleStateChange();
