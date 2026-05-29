@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Abstract class representing logic and behaviour that can be attached to a game object.
  */
-public abstract class Component {
+public abstract class Component implements MessageListener {
     protected GameObject parent;
 
     abstract public void init();
@@ -23,6 +23,7 @@ public abstract class Component {
      * @param name The name of the message.
      * @param data Optional data associated with the message.
      */
+    @Override
     public void onMessage(String name, Object data) {
         // Default: do nothing
     }
@@ -38,6 +39,8 @@ public abstract class Component {
 
     /**
      * Broadcasts a message to all game objects in the current context.
+     * This message will be sent to every GameObject in the context, which in turn
+     * propagates it to all its attached components.
      *
      * @param name The name of the message.
      * @param data Optional data associated with the message.
@@ -65,6 +68,7 @@ public abstract class Component {
      * @throws RuntimeException If no object of the specified type is found.
      */
     public <T> T getObjectByTypeFromParentContext(Class<T> clazz) {
+        checkParentContextAvailable();
         return parent.getContext().getObjectByType(clazz);
     }
 
@@ -78,6 +82,7 @@ public abstract class Component {
      * @return The component of the specified type, or {@code null} if no matching component is found.
      */
     public <T> T getComponentFromParentContext(Class<T> clazz) {
+        checkParentContextAvailable();
         return parent.getContext().getComponent(clazz);
     }
 
@@ -89,6 +94,7 @@ public abstract class Component {
      * @return A list of {@code GameObject} instances that match the specified tag.
      */
     public List<GameObject> getObjectsByTagFromParentContext(String tag) {
+        checkParentContextAvailable();
         return parent.getContext().getObjectsByTag(tag);
     }
 
@@ -101,6 +107,7 @@ public abstract class Component {
      * or {@code null} if no matching object is found.
      */
     public GameObject getObjectByTagFromParentContext(String tag) {
+        checkParentContextAvailable();
         return parent.getContext().getObjectByTag(tag);
     }
 

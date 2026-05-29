@@ -15,7 +15,7 @@ import java.util.Set;
  * game objects such as managing components, transformation, velocity,
  * visibility, activity status, and tagging functionality.
  */
-public class GameObject {
+public class GameObject implements MessageListener {
 
     protected final List<Component> components = new ArrayList<>();
     private final PointInt position = new PointInt(0, 0, 0);
@@ -122,19 +122,6 @@ public class GameObject {
         return this;
     }
 
-    /**
-     * Retrieves a component of the specified class type from the list of components.
-     *
-     * @param <T>   the type of the component to be retrieved
-     * @param clazz the class object representing the type of the component
-     * @return the component instance if found; otherwise, null
-     */
-    public <T> T getComponentByType(Class<T> clazz) {
-        for (Object object : components) {
-            if (object.getClass() == clazz) return (T) object;
-        }
-        return null;
-    }
 
     public void _init() {
         this.init();
@@ -198,6 +185,7 @@ public class GameObject {
      * @param name The name of the message.
      * @param data Optional data associated with the message.
      */
+    @Override
     public void onMessage(String name, Object data) {
         // Default: do nothing
     }

@@ -31,10 +31,11 @@ public class Context {
     }
 
     /**
-     * Add an object to this context.  If the object is derived
-     * from GameObject, the context will be automatically injected into it.
+     * Adds a new object to the context, handling initialization and ensuring the object
+     * is correctly managed based on the current state of the context.
      *
-     * @param object
+     * @param object The object to be added to the context. If the object is an instance
+     *               of {@code GameObject}, it will have the context injected into it.
      */
     public void add(Object object) {
 
@@ -238,6 +239,7 @@ public class Context {
      */
     public GameObject getObjectByTag(String tag) {
         List<GameObject> objectsByTag = getObjectsByTag(tag);
+        if (objectsByTag.isEmpty()) return null;
         return objectsByTag.get(0);
     }
 }

@@ -113,6 +113,21 @@ public class MessageSystemTest {
         gameObject.sendMessage("TEST");
     }
 
+    @Test
+    public void testContextTagSafety() {
+        Context context = new Context();
+        context.init();
+        GameObject obj = context.getObjectByTag("NON_EXISTENT");
+        Assert.assertNull(obj);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testComponentContextSafety() {
+        TestComponent component = new TestComponent();
+        // This should throw RuntimeException because parent is null
+        component.getObjectByTypeFromParentContext(GameObject.class);
+    }
+
     static class TestComponent extends Component {
         public List<String> receivedMessages = new ArrayList<>();
         public Object lastData = null;
