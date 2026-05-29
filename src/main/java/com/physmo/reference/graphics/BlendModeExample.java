@@ -9,22 +9,23 @@ import com.physmo.garnet.graphics.Texture;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
-// BlendModeExample demonstrates the five BlendMode options on DrawableElement.
+// BlendModeExample demonstrates the BlendMode options and colorOverride on DrawableElement.
 //
-// Each column renders a solid red background square, then a semi-transparent
-// blue overlay sprite drawn on top using a different blend mode:
+// Each column renders a solid red background square, then a sprite on top:
 //
-//   Column 1 - NORMAL      : standard alpha transparency
-//   Column 2 - ADDITIVE    : colours add together (glow/fire effect)
-//   Column 3 - SUBTRACTIVE : colours subtract (shadow/ink effect)
-//   Column 4 - MULTIPLY    : destination multiplied by source (tinting)
-//   Column 5 - MATTE       : writes only to alpha channel (mask effect) — sprite appears blank/invisible
+//   Column 1 - NORMAL        : standard alpha transparency
+//   Column 2 - ADDITIVE      : colours add together (glow/fire effect)
+//   Column 3 - SUBTRACTIVE   : colours subtract (shadow/ink effect)
+//   Column 4 - MULTIPLY      : destination multiplied by source (tinting)
+//   Column 5 - MATTE         : writes only to alpha channel — sprite appears blank/invisible by design
+//   Column 6 - colorOverride : every visible pixel rendered as the vertex colour (hit-flash effect)
 //
 // The blend mode is set by calling sprite.setBlendMode(BlendMode.XXX) on the
 // Sprite2D returned by g.drawImage(texture, x, y).
+// colorOverride is set by calling sprite.setColorOverride(true).
 public class BlendModeExample extends GarnetApp {
 
-    static final int WINDOW_W = 600;
+    static final int WINDOW_W = 720;
     static final int WINDOW_H = 260;
 
     Texture texture;
@@ -58,35 +59,54 @@ public class BlendModeExample extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
+        int numColumns = 6;
         int tileSize = 100;
         int padding = 10;
         int startX = 25;
         int startY = 80;
 
-        BlendMode[] modes = {
-                BlendMode.NORMAL,
-                BlendMode.ADDITIVE,
-                BlendMode.SUBTRACTIVE,
-                BlendMode.MULTIPLY,
-                BlendMode.MATTE
-        };
+        int spriteOffX = (tileSize - texture.getWidth()) / 2;
+        int spriteY = mousePos[1] - texture.getHeight() / 2;
 
-        for (int i = 0; i < modes.length; i++) {
+        for (int i = 0; i < numColumns; i++) {
             int x = startX + i * (tileSize + padding);
 
-            // Layer 0: solid red background square
+            // Background square
             g.setColor(ColorUtils.rgb(220, 60, 60, 255));
             g.setDrawOrder(0);
             g.filledRect(x, startY, tileSize, tileSize);
 
-            // Layer 1: semi-transparent sprite per column; X is fixed to the column,
-            // Y follows the mouse so the sprite slides up/down with the cursor.
-            g.setColor(ColorUtils.rgb(60, 100, 220, 0xff));
+            // Sprite — blend mode or effect varies per column
             g.setDrawOrder(1);
-            int spriteX = x + (tileSize - texture.getWidth()) / 2;
-            int spriteY = mousePos[1] - texture.getHeight() / 2;
-            g.drawImage(texture, spriteX, spriteY)
-                    .setBlendMode(modes[i]);
+            if (i == 5) {
+                // Column 6 - colorOverride: every visible pixel rendered as the vertex colour
+                g.setColor(ColorUtils.rgb(255, 255, 255, 255));
+                g.drawImage(texture, x + spriteOffX, spriteY)
+                        .setColorOverride(true);
+            } else {
+                g.setColor(ColorUtils.rgb(60, 100, 220, 0xff));
+                if (i == 0) {
+                    // Column 1 - NORMAL: standard alpha transparency
+                    g.drawImage(texture, x + spriteOffX, spriteY)
+                            .setBlendMode(BlendMode.NORMAL);
+                } else if (i == 1) {
+                    // Column 2 - ADDITIVE: colours add together (glow/fire effect)
+                    g.drawImage(texture, x + spriteOffX, spriteY)
+                            .setBlendMode(BlendMode.ADDITIVE);
+                } else if (i == 2) {
+                    // Column 3 - SUBTRACTIVE: colours subtract (shadow/ink effect)
+                    g.drawImage(texture, x + spriteOffX, spriteY)
+                            .setBlendMode(BlendMode.SUBTRACTIVE);
+                } else if (i == 3) {
+                    // Column 4 - MULTIPLY: destination multiplied by source (tinting)
+                    g.drawImage(texture, x + spriteOffX, spriteY)
+                            .setBlendMode(BlendMode.MULTIPLY);
+                } else if (i == 4) {
+                    // Column 5 - MATTE: writes only to alpha channel — sprite appears blank/invisible by design
+                    g.drawImage(texture, x + spriteOffX, spriteY)
+                            .setBlendMode(BlendMode.MATTE);
+                }
+            }
         }
     }
 }

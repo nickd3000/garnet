@@ -3,8 +3,13 @@ package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
+import static org.lwjgl.opengl.GL11.GL_MODULATE;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_REPLACE;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV_MODE;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glColor4fv;
 import static org.lwjgl.opengl.GL11.glEnable;
@@ -14,8 +19,16 @@ import static org.lwjgl.opengl.GL11.glPushMatrix;
 import static org.lwjgl.opengl.GL11.glRotatef;
 import static org.lwjgl.opengl.GL11.glScalef;
 import static org.lwjgl.opengl.GL11.glTexCoord2f;
+import static org.lwjgl.opengl.GL11.glTexEnvi;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.opengl.GL13.GL_COMBINE;
+import static org.lwjgl.opengl.GL13.GL_COMBINE_ALPHA;
+import static org.lwjgl.opengl.GL13.GL_COMBINE_RGB;
+import static org.lwjgl.opengl.GL13.GL_PRIMARY_COLOR;
+import static org.lwjgl.opengl.GL13.GL_SOURCE0_ALPHA;
+import static org.lwjgl.opengl.GL13.GL_SOURCE0_RGB;
+import static org.lwjgl.opengl.GL13.GL_SOURCE1_ALPHA;
 
 // TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
 public class Sprite2D extends DrawableElement {
@@ -32,6 +45,7 @@ public class Sprite2D extends DrawableElement {
 
     public void reset() {
         rotated = false;
+        setColorOverride(false);
     }
 
     public void setCoords(float[] vertexCoords, float[] texCoords) {
@@ -97,6 +111,8 @@ public class Sprite2D extends DrawableElement {
         }
         pushViewportTransform();
 
+        if (isColorOverride()) applyColorOverride();
+
         float txs = tx * textureScaleX;
         float tys = ty * textureScaleY;
         float tws = tw * textureScaleX;
@@ -115,6 +131,8 @@ public class Sprite2D extends DrawableElement {
         }
         glEnd();
 
+        if (isColorOverride()) removeColorOverride();
+
         popViewportTransform();
     }
 
@@ -131,7 +149,6 @@ public class Sprite2D extends DrawableElement {
     public int getType() {
         return SPRITE;
     }
-
 
     private void renderRotated(float textureScale) {
         glPushMatrix();
@@ -150,6 +167,8 @@ public class Sprite2D extends DrawableElement {
         float tws = tw * textureScaleX;
         float ths = th * textureScaleY;
 
+        if (isColorOverride()) applyColorOverride();
+
         glBegin(GL_QUADS);
         {
             glTexCoord2f(txs, tys);
@@ -164,7 +183,21 @@ public class Sprite2D extends DrawableElement {
         }
 
         glEnd();
+        if (isColorOverride()) removeColorOverride();
         glPopMatrix();
+    }
+
+    private static void applyColorOverride() {
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_REPLACE);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
+        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
+    }
+
+    private static void removeColorOverride() {
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
 
     public void setTextureScale(float x, float y) {

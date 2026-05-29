@@ -21,13 +21,33 @@ public abstract class DrawableElement {
     float[] colorFloats = new float[4];
     Viewport viewport = null;
     private BlendMode blendMode = BlendMode.NORMAL;
+    private boolean colorOverride = false;
 
     public BlendMode getBlendMode() {
         return blendMode;
     }
 
-    public void setBlendMode(BlendMode blendMode) {
+    public DrawableElement setBlendMode(BlendMode blendMode) {
         this.blendMode = blendMode;
+        return this;
+    }
+
+    public boolean isColorOverride() {
+        return colorOverride;
+    }
+
+    /**
+     * When enabled, every visible pixel of this element is rendered using the current
+     * vertex colour instead of the texture colour.  The texture's alpha channel is still
+     * used to determine which pixels are transparent, so the sprite's silhouette is
+     * preserved.  Useful for hit-flash effects (e.g. flash white on damage).
+     *
+     * @param override true to replace texture RGB with the vertex colour; false for normal rendering
+     * @return this element (for chaining)
+     */
+    public DrawableElement setColorOverride(boolean override) {
+        this.colorOverride = override;
+        return this;
     }
 
     public void setCommonValues(Viewport viewport, int drawOrder, int color) {
