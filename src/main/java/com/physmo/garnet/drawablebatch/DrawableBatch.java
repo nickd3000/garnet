@@ -15,6 +15,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 public class DrawableBatch {
 
     final Array<DrawableElement> elements;
+    private boolean dirty = true;
 
     public DrawableBatch() {
         elements = new Array<>(10);
@@ -26,6 +27,7 @@ public class DrawableBatch {
 
     public void add(DrawableElement batchElement) {
         elements.add(batchElement);
+        dirty = true;
     }
 
     public int size() {
@@ -33,7 +35,10 @@ public class DrawableBatch {
     }
 
     public void render(Graphics graphics) {
-        elements.sort(Comparator.comparingInt(DrawableElement::getDrawOrder));
+        if (dirty) {
+            elements.sort(Comparator.comparingInt(DrawableElement::getDrawOrder));
+            dirty = false;
+        }
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
@@ -53,6 +58,7 @@ public class DrawableBatch {
 
     public void clear() {
         elements.clear();
+        dirty = true;
     }
 
 

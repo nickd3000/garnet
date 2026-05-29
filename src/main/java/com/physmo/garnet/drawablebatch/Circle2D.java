@@ -2,7 +2,14 @@ package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor4fv;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
 public class Circle2D extends DrawableElement {
 
@@ -13,6 +20,7 @@ public class Circle2D extends DrawableElement {
     double detail = 1.5;
     int numSegments;
     boolean filled = false;
+    private final float[] coords;
 
     public Circle2D(float x, float y, float width, float height) {
         this.x = x;
@@ -22,18 +30,17 @@ public class Circle2D extends DrawableElement {
         numSegments = (int) (Math.max(width, height) / 2);
         numSegments = (int) (numSegments * detail);
         if (numSegments < 5) numSegments = 5;
+        coords = new float[numSegments * 2];
     }
 
     @Override
     public void render(Graphics graphics) {
         glDisable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
-        applyTranslation();
+        pushViewportTransform();
 
-        float[] coords = generatePoints();
+        generatePoints();
 
         if (!filled) {
             glBegin(GL_LINE_LOOP);
@@ -52,12 +59,11 @@ public class Circle2D extends DrawableElement {
             glEnd();
         }
 
-        removeTranslation();
+        popViewportTransform();
 
     }
 
     public float[] generatePoints() {
-        float[] coords = new float[(numSegments) * 2];
         int coordIndex = 0;
         float a = (float) (Math.PI / numSegments) * 2;
         float xx, yy;
@@ -74,11 +80,6 @@ public class Circle2D extends DrawableElement {
     @Override
     public int getTextureId() {
         return 0;
-    }
-
-    @Override
-    public boolean hasTexture() {
-        return false;
     }
 
     @Override

@@ -10,11 +10,11 @@ import static org.lwjgl.opengl.GL11.glScalef;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 
 public abstract class DrawableElement {
-    public static int SPRITE = 1;
-    public static int LINE = 2;
-    public static int CIRCLE = 3;
-    public static int SHAPE = 4;
-    public static int OTHER = 0;
+    public static final int SPRITE = 1;
+    public static final int LINE = 2;
+    public static final int CIRCLE = 3;
+    public static final int SHAPE = 4;
+    public static final int OTHER = 0;
 
     int drawOrder = 0;
     int color = 0xffffffff;
@@ -59,8 +59,6 @@ public abstract class DrawableElement {
 
     abstract int getTextureId();
 
-    abstract boolean hasTexture();
-
     public abstract int getType();
 
     public final void setColor(float[] c) {
@@ -71,8 +69,7 @@ public abstract class DrawableElement {
         setColor(ColorUtils.floatToRgb(r, g, b, a));
     }
 
-    //
-    public void applyTranslation() {
+    public void pushViewportTransform() {
         glPushMatrix();
         double z = viewport.getZoom();
         float xo = (float) (viewport.getWindowX() - (viewport.getX() * z));
@@ -82,7 +79,7 @@ public abstract class DrawableElement {
         glScalef((float) z, (float) z, 1);
     }
 
-    public void removeTranslation() {
+    public void popViewportTransform() {
         glPopMatrix();
     }
 

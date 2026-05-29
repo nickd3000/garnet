@@ -3,13 +3,9 @@ package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glColor4fv;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glEnd;
@@ -30,10 +26,7 @@ public class Sprite2D extends DrawableElement {
     boolean rotated = false;
     private float x, y, w, h, tx, ty, tw, th, angle, _w, _h;
 
-    static int creationCount = 0;
-
     public Sprite2D() {
-        creationCount++;
         reset();
     }
 
@@ -70,7 +63,7 @@ public class Sprite2D extends DrawableElement {
     }
 
     public void setCoords(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
-        rotated = false;
+        rotated = (angle != 0);
         this.x = x;
         this.y = y;
         this.w = w;
@@ -96,18 +89,14 @@ public class Sprite2D extends DrawableElement {
     @Override
     public void render(Graphics graphics) {
         glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
         if (rotated) {
             renderRotated(1.0f);
             return;
         }
-        applyTranslation();
+        pushViewportTransform();
 
-
-        float outputScale = 1;
         float txs = tx * textureScaleX;
         float tys = ty * textureScaleY;
         float tws = tw * textureScaleX;
@@ -116,17 +105,17 @@ public class Sprite2D extends DrawableElement {
         glBegin(GL_QUADS);
         {
             glTexCoord2f(txs, tys);
-            glVertex2f(x * outputScale, y * outputScale);
+            glVertex2f(x, y);
             glTexCoord2f(txs + tws, tys);
-            glVertex2f(x * outputScale + w * outputScale, y * outputScale);
+            glVertex2f(x + w, y);
             glTexCoord2f(txs + tws, tys + ths);
-            glVertex2f(x * outputScale + w * outputScale, y * outputScale + h * outputScale);
+            glVertex2f(x + w, y + h);
             glTexCoord2f(txs, tys + ths);
-            glVertex2f(x * outputScale, y * outputScale + h * outputScale);
+            glVertex2f(x, y + h);
         }
         glEnd();
 
-        removeTranslation();
+        popViewportTransform();
     }
 
     @Override
@@ -136,11 +125,6 @@ public class Sprite2D extends DrawableElement {
 
     public void setTextureId(int textureId) {
         this.textureId = textureId;
-    }
-
-    @Override
-    public boolean hasTexture() {
-        return true;
     }
 
     @Override
