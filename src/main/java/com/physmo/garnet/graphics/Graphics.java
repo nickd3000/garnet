@@ -293,7 +293,7 @@ public class Graphics {
         currentTextureId = texture.getId();
     }
 
-    public void drawImage(Texture texture, int x, int y) {
+    public Sprite2D drawImage(Texture texture, int x, int y) {
 
         int tileWidth = texture.getWidth();
         int tileHeight = texture.getHeight();
@@ -311,6 +311,7 @@ public class Graphics {
         sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
+        return sprite2D;
     }
 
     // TODO: only bind if different

@@ -20,6 +20,15 @@ public abstract class DrawableElement {
     int color = 0xffffffff;
     float[] colorFloats = new float[4];
     Viewport viewport = null;
+    private BlendMode blendMode = BlendMode.NORMAL;
+
+    public BlendMode getBlendMode() {
+        return blendMode;
+    }
+
+    public void setBlendMode(BlendMode blendMode) {
+        this.blendMode = blendMode;
+    }
 
     public void setCommonValues(Viewport viewport, int drawOrder, int color) {
         this.viewport = viewport;

@@ -6,11 +6,18 @@ import com.physmo.garnet.structure.Array;
 import java.util.Comparator;
 
 import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_DST_COLOR;
+import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_ZERO;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glColorMask;
 import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
+import static org.lwjgl.opengl.GL14.GL_FUNC_REVERSE_SUBTRACT;
+import static org.lwjgl.opengl.GL14.glBlendEquation;
 
 public class DrawableBatch {
 
@@ -42,14 +49,48 @@ public class DrawableBatch {
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        BlendMode currentMode = null;
         for (DrawableElement element : elements) {
+            BlendMode mode = element.getBlendMode();
+            if (mode != currentMode) {
+                applyBlendMode(mode);
+                currentMode = mode;
+            }
             applyClipRectIfRequired(graphics, element);
             graphics.bindTexture(element.getTextureId());
             element.render(graphics);
         }
 
+        applyBlendMode(BlendMode.NORMAL);
+    }
+
+    private void applyBlendMode(BlendMode mode) {
+        switch (mode) {
+            case NORMAL:
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                break;
+            case ADDITIVE:
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                break;
+            case SUBTRACTIVE:
+                glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                break;
+            case MULTIPLY:
+                glBlendFunc(GL_DST_COLOR, GL_ZERO);
+                break;
+            case MATTE:
+                glColorMask(false, false, false, true);
+                glBlendFunc(GL_ONE, GL_ZERO);
+                break;
+        }
+        if (mode != BlendMode.MATTE) {
+            glColorMask(true, true, true, true);
+        }
+        if (mode != BlendMode.SUBTRACTIVE) {
+            glBlendEquation(GL_FUNC_ADD);
+        }
     }
 
     public void applyClipRectIfRequired(Graphics graphics, DrawableElement de) {
