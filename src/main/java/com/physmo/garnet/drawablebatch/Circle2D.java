@@ -38,7 +38,7 @@ public class Circle2D extends DrawableElement {
         glDisable(GL_TEXTURE_2D);
 
         glColor4fv(colorFloats);
-        pushViewportTransform();
+        pushViewportTransform(graphics);
 
         generatePoints();
 

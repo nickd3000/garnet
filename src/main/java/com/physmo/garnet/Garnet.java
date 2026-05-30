@@ -32,7 +32,6 @@ import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glIsEnabled;
 import static org.lwjgl.opengl.GL11.glTexCoord2f;
 import static org.lwjgl.opengl.GL11.glVertex2f;
 
@@ -103,6 +102,7 @@ public class Garnet {
         display.init();
 
         if (useInternalBuffer) {
+            graphics.setInternalBufferMode(true);
             internalBuffer = new com.physmo.garnet.graphics.RenderTexture(display.getCanvasSize()[0], display.getCanvasSize()[1]);
             graphics.addTexture(internalBuffer.getTexture());
         }
@@ -187,12 +187,9 @@ public class Garnet {
         float[] bgCols = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols[0], bgCols[1], bgCols[2], bgCols[3]);
 
-        boolean scissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
-        if (scissorEnabled) glDisable(GL_SCISSOR_TEST);
+        graphics.resetSettings();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-        if (scissorEnabled) glEnable(GL_SCISSOR_TEST);
 
         garnetApp.draw(graphics);
         graphics.render();

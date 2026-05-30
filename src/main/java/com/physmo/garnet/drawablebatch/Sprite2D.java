@@ -107,10 +107,10 @@ public class Sprite2D extends DrawableElement {
 
         glColor4fv(colorFloats);
         if (rotated) {
-            renderRotated(1.0f);
+            renderRotated(graphics, 1.0f);
             return;
         }
-        pushViewportTransform();
+        pushViewportTransform(graphics);
 
         if (isColorOverride()) applyColorOverride();
 
@@ -151,13 +151,14 @@ public class Sprite2D extends DrawableElement {
         return SPRITE;
     }
 
-    private void renderRotated(float textureScale) {
+    private void renderRotated(Graphics graphics, float textureScale) {
         glPushMatrix();
 
         double z = viewport.getZoom();
 
-        float xo = (float) (viewport.getWindowX() - ((viewport.getX() - x) * z));
-        float yo = (float) (viewport.getWindowY() - ((viewport.getY() - y) * z));
+        float xo, yo;
+        xo = (float) (viewport.getWindowX() - ((viewport.getX() - x) * z));
+        yo = (float) (viewport.getWindowY() - ((viewport.getY() - y) * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);

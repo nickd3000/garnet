@@ -42,7 +42,7 @@ public class Line2D extends DrawableElement {
 
         glColor4fv(colorFloats);
 
-        pushViewportTransform();
+        pushViewportTransform(graphics);
 
         glBegin(GL_LINES);
         glVertex2f(coords[0], coords[1]);

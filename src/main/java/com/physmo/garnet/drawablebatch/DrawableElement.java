@@ -207,11 +207,14 @@ public abstract class DrawableElement {
      * Pushes the current GL matrix and applies the viewport's scroll and zoom transform.
      * Must be paired with a call to {@link #popViewportTransform()}.
      */
-    public void pushViewportTransform() {
+    public void pushViewportTransform(Graphics graphics) {
         glPushMatrix();
         double z = viewport.getZoom();
-        float xo = (float) (viewport.getWindowX() - (viewport.getX() * z));
-        float yo = (float) (viewport.getWindowY() - (viewport.getY() * z));
+
+        float xo, yo;
+
+        xo = (float) (viewport.getWindowX() - (viewport.getX() * z));
+        yo = (float) (viewport.getWindowY() - (viewport.getY() * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);

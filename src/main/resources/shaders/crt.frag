@@ -6,7 +6,7 @@ void main() {
 
     // ── 1. Screen curvature (barrel distortion) ──────────────────────────
     vec2 curved = uv * 2.0 - 1.0;
-    vec2 offset = curved.yx * curved.yx * 0.07;
+    vec2 offset = curved.yx * curved.yx * 0.035;
     curved += curved * offset;
     vec2 distUV = curved * 0.5 + 0.5;
 

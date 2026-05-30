@@ -40,7 +40,7 @@ public class Shape2D extends DrawableElement {
         glDisable(GL_TEXTURE_2D);
 
         glColor4fv(colorFloats);
-        pushViewportTransform();
+        pushViewportTransform(graphics);
 
         glBegin(GL_TRIANGLE_FAN);
         // Add mid-point

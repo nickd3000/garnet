@@ -9,6 +9,7 @@ import com.physmo.garnet.drawablebatch.Line2D;
 import com.physmo.garnet.drawablebatch.Shape2D;
 import com.physmo.garnet.drawablebatch.Sprite2D;
 import com.physmo.garnet.structure.Array;
+import org.lwjgl.opengl.GL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,15 @@ public class Graphics {
     private int currentDrawOrder;
     private int currentlyBoundTextureId;
     private int backgroundColor = 0;
+    private boolean internalBufferMode = false;
+
+    public boolean isInternalBufferMode() {
+        return internalBufferMode;
+    }
+
+    public void setInternalBufferMode(boolean internalBufferMode) {
+        this.internalBufferMode = internalBufferMode;
+    }
     private int clipRectHash = 0;
     private int activeViewportId = 0;
     SubImage subImage = new SubImage();
@@ -59,6 +69,14 @@ public class Graphics {
         color = ColorUtils.rgb(0xff, 0xff, 0xff, 0xff);
         currentDrawOrder = 0;
         currentlyBoundTextureId = 0;
+        clipRectHash = 0;
+        try {
+            if (GL.getCapabilities() != null) {
+                glDisable(GL_SCISSOR_TEST);
+            }
+        } catch (IllegalStateException e) {
+            // Ignore - capabilities not set yet
+        }
     }
 
     public ViewportManager getViewportManager() {
@@ -414,19 +432,35 @@ public class Graphics {
             // - clip rect hash matches the last viewport clip rect that was applied.
         } else {
 
-            int[] windowSize = display.getBufferSize();
-
             glEnable(GL_SCISSOR_TEST);
             int[] clipRect = vp.getClipRect();
-            int w = (int) (clipRect[2] / display.glViewportScale[0]);
-            int h = (int) (clipRect[3] / display.glViewportScale[1]);
-            int x = (int) (clipRect[0] / display.glViewportScale[0]);
-            int y = (int) (clipRect[1] / display.glViewportScale[1]);
 
-            x += display.glViewportOffsets[0];
-            y += display.glViewportOffsets[1];
+            int x, y, w, h;
 
-            glScissor(x, windowSize[1] - h - y, w, h);
+            if (internalBufferMode) {
+                // When rendering to an internal buffer (FBO), coordinates are 1:1 and relative to the FBO (top-left).
+                // glScissor expects bottom-left coordinates.
+                x = clipRect[0];
+                y = clipRect[1];
+                w = clipRect[2];
+                h = clipRect[3];
+
+                // FBO height is the same as canvas height in our implementation.
+                int fboHeight = display.getCanvasSize()[1];
+                glScissor(x, fboHeight - h - y, w, h);
+            } else {
+                w = (int) (clipRect[2] / display.glViewportScale[0]);
+                h = (int) (clipRect[3] / display.glViewportScale[1]);
+                x = (int) (clipRect[0] / display.glViewportScale[0]);
+                y = (int) (clipRect[1] / display.glViewportScale[1]);
+
+                x += display.glViewportOffsets[0];
+                y += display.glViewportOffsets[1];
+
+                int[] windowSize = display.getBufferSize();
+                glScissor(x, windowSize[1] - h - y, w, h);
+            }
+
             clipRectHash = vp.getClipRectHash();
 
         }
