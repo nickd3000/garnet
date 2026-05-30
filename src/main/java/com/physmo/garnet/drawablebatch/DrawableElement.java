@@ -213,8 +213,8 @@ public abstract class DrawableElement {
 
         float xo, yo;
 
-        xo = (float) (viewport.getWindowX() - (viewport.getX() * z));
-        yo = (float) (viewport.getWindowY() - (viewport.getY() * z));
+        xo = (float) (viewport.getWindowX() - (viewport.getScrollX() * z));
+        yo = (float) (viewport.getWindowY() - (viewport.getScrollY() * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);

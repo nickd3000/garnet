@@ -157,8 +157,8 @@ public class Sprite2D extends DrawableElement {
         double z = viewport.getZoom();
 
         float xo, yo;
-        xo = (float) (viewport.getWindowX() - ((viewport.getX() - x) * z));
-        yo = (float) (viewport.getWindowY() - ((viewport.getY() - y) * z));
+        xo = (float) (viewport.getWindowX() - ((viewport.getScrollX() - x) * z));
+        yo = (float) (viewport.getWindowY() - ((viewport.getScrollY() - y) * z));
 
         glTranslatef(xo, yo, 0);
         glScalef((float) z, (float) z, 1);

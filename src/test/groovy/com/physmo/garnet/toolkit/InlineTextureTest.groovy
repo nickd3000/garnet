@@ -12,10 +12,10 @@ class InlineTextureTest extends Specification {
             display.init()
 
             String data =
-                    "    x   " +
-                            "    x   " +
-                            "    x   " +
-                            "    x   " +
+                    "    scrollX   " +
+                            "    scrollX   " +
+                            "    scrollX   " +
+                            "    scrollX   " +
                             "        " +
                             "        " +
                             "        " +

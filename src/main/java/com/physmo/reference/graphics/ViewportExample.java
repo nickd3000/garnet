@@ -80,8 +80,8 @@ public class ViewportExample extends GarnetApp {
         double[] mpn = garnet.getInput().getMouse().getPositionNormalised();
 
         Viewport vp1 = garnet.getGraphics().getViewportManager().getViewport(viewportId1);
-        vp1.setX(mpn[0] * 150);
-        vp1.setY(mpn[1] * 150);
+        vp1.setScrollX(mpn[0] * 150);
+        vp1.setScrollY(mpn[1] * 150);
 
         g.setActiveViewport(viewportId1);
         g.setZoom(1.5);

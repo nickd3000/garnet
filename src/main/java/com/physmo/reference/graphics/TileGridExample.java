@@ -99,8 +99,8 @@ public class TileGridExample extends GarnetApp {
             scrollY = mousePosition[1];
         }
 
-        viewport.setX(scrollX);
-        viewport.setY(scrollY);
+        viewport.setScrollX(scrollX);
+        viewport.setScrollY(scrollY);
 
         // Resize window with mouse.
         if (garnet.getInput().getMouse().isButtonPressed(Mouse.BUTTON_LEFT)) {

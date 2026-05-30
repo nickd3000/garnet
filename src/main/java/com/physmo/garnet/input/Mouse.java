@@ -65,8 +65,8 @@ public class Mouse {
 
         // 3. Adjust for active viewport scroll and zoom
         com.physmo.garnet.graphics.Viewport activeViewport = garnet.getGraphics().getViewportManager().getActiveViewport();
-        x = (x / activeViewport.getZoom()) + activeViewport.getX();
-        y = (y / activeViewport.getZoom()) + activeViewport.getY();
+        x = (x / activeViewport.getZoom()) + activeViewport.getScrollX();
+        y = (y / activeViewport.getZoom()) + activeViewport.getScrollY();
 
         position[0] = (int) x;
         position[1] = (int) y;
