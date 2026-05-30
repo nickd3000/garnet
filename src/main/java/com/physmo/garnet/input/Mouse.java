@@ -38,13 +38,38 @@ public class Mouse {
         positionPrev[1] = position[1];
 
         glfwGetCursorPos(windowHandle, cx, cy);
-        double[] windowToPixelsScale = garnet.getDisplay().getWindowToPixelsScale();
 
-        cx[0] /= windowToPixelsScale[0];
-        cy[0] /= windowToPixelsScale[1];
+        int[] bufferSize = garnet.getDisplay().getBufferSize();
+        int[] viewportOffsets = garnet.getDisplay().glViewportOffsets;
+        double[] viewportScale = garnet.getDisplay().glViewportScale;
 
-        position[0] = (int) cx[0];
-        position[1] = (int) cy[0];
+        // Convert window coordinates to framebuffer coordinates
+        double[] windowToBufferScale = garnet.getDisplay().getWindowToBufferScale();
+
+        // 1. Convert cursor from window space to buffer space
+        double bx = cx[0] * windowToBufferScale[0];
+        double by = cy[0] * windowToBufferScale[1];
+
+        // 2. Adjust for viewport offset. 
+        // In OpenGL, viewport Y starts from bottom, but our Ortho makes 0,0 top-left.
+        // GLFW cursor 0,0 is top-left.
+        // Display.java sets glViewport(xOffset, yOffset, newWidth, newHeight) where yOffset is from bottom.
+
+        double x = (bx - viewportOffsets[0]) * viewportScale[0];
+
+        int[] canvasSize = garnet.getDisplay().getCanvasSize();
+        double newHeight = (double) canvasSize[1] / viewportScale[1];
+        double viewportTop = (double) bufferSize[1] - ((double) viewportOffsets[1] + newHeight);
+
+        double y = (by - viewportTop) * viewportScale[1];
+
+        // 3. Adjust for active viewport scroll and zoom
+        com.physmo.garnet.graphics.Viewport activeViewport = garnet.getGraphics().getViewportManager().getActiveViewport();
+        x = (x / activeViewport.getZoom()) + activeViewport.getX();
+        y = (y / activeViewport.getZoom()) + activeViewport.getY();
+
+        position[0] = (int) x;
+        position[1] = (int) y;
 
         System.arraycopy(buttonState, 0, buttonStatePrev, 0, buttonState.length);
         buttonState[BUTTON_LEFT] = glfwGetMouseButton(windowHandle, BUTTON_LEFT) > 0;

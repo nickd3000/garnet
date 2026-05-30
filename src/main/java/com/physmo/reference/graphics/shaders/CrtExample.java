@@ -4,14 +4,9 @@ import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.RenderTexture;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUniform2f;
 import static org.lwjgl.opengl.GL20.glUseProgram;
@@ -37,7 +32,6 @@ public class CrtExample extends GarnetApp {
     static final int WINDOW_H = 320;
 
     Texture texture;
-    RenderTexture renderTexture;
     ShaderProgram crtShader;
 
     double time = 0;
@@ -48,6 +42,7 @@ public class CrtExample extends GarnetApp {
 
     public static void main(String[] args) {
         Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
+        garnet.setInternalBufferMode(true);
         GarnetApp app = new CrtExample(garnet, "");
         garnet.setApp(app);
         garnet.init();
@@ -62,10 +57,9 @@ public class CrtExample extends GarnetApp {
         texture = Texture.loadTexture("garnetCrystal.png");
         garnet.getGraphics().addTexture(texture);
 
-        renderTexture = new RenderTexture(WINDOW_W, WINDOW_H);
-        garnet.getGraphics().addTexture(renderTexture.getTexture());
-
         crtShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/crt.frag");
+
+        garnet.setInternalBufferShader(crtShader);
     }
 
     @Override
@@ -75,11 +69,6 @@ public class CrtExample extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
-
-        // ── Pass 1: render the scene into the off-screen FBO ────────────────
-        renderTexture.bind();
-        glClearColor(0.05f, 0.05f, 0.15f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         int cx = WINDOW_W / 2;
         int cy = WINDOW_H / 2;
@@ -106,19 +95,10 @@ public class CrtExample extends GarnetApp {
             g.drawImage(texture, sx, sy);
         }
 
-        // Flush the batch into the FBO, then restore the default framebuffer
-        g.render();
-        renderTexture.unbind(garnet.getDisplay());
-
-        // ── Pass 2: draw the FBO texture through the CRT shader ─────────────
+        // Apply uniforms for the next time the CRT shader is used (at the end of the frame)
         crtShader.bind();
         int loc = glGetUniformLocation(crtShader.getProgramId(), "resolution");
         glUniform2f(loc, WINDOW_W, WINDOW_H);
         glUseProgram(0);
-
-        g.setColor(ColorUtils.WHITE);
-        g.setDrawOrder(0);
-        g.drawImage(renderTexture.getTexture(), 0, 0)
-                .setShader(crtShader);
     }
 }

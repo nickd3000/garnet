@@ -21,12 +21,20 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glIsEnabled;
+import static org.lwjgl.opengl.GL11.glTexCoord2f;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 
@@ -47,6 +55,11 @@ public class Garnet {
     private double tickRate = 1;
     private GarnetApp garnetApp;
     private double runningLogicDelta = 0;
+
+    private boolean useInternalBuffer = false;
+    private com.physmo.garnet.graphics.RenderTexture internalBuffer;
+    private com.physmo.garnet.graphics.ShaderProgram internalBufferShader;
+
     /**
      * Constructs a new Garnet object initializing the key components required for the framework.
      *
@@ -88,6 +101,12 @@ public class Garnet {
     public void init() {
 
         display.init();
+
+        if (useInternalBuffer) {
+            internalBuffer = new com.physmo.garnet.graphics.RenderTexture(display.getCanvasSize()[0], display.getCanvasSize()[1]);
+            graphics.addTexture(internalBuffer.getTexture());
+        }
+
         sound.init();
         input.init();
         garnetApp.init(this);
@@ -160,6 +179,11 @@ public class Garnet {
 
         gameClock.getTimer(GameClock.TIMER_RENDER).start();
 
+        if (useInternalBuffer) {
+            internalBuffer.bind();
+        }
+
+        // Clear the current target (either the Screen or the FBO)
         float[] bgCols = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols[0], bgCols[1], bgCols[2], bgCols[3]);
 
@@ -172,6 +196,46 @@ public class Garnet {
 
         garnetApp.draw(graphics);
         graphics.render();
+
+        if (useInternalBuffer) {
+            internalBuffer.unbind(display);
+
+            // Draw the internal buffer to the screen.
+            // We bypass the Graphics/DrawableBatch system to avoid viewport/scrolling interference.
+            glDisable(GL_SCISSOR_TEST);
+            display.placeGlViewport(); // Ensure correct screen viewport is set
+
+            float[] bgCols2 = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
+            glClearColor(bgCols2[0], bgCols2[1], bgCols2[2], bgCols2[3]);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            if (internalBufferShader != null) {
+                internalBufferShader.bind();
+            }
+            internalBuffer.getTexture().bind();
+            glColor4f(1, 1, 1, 1);
+            glEnable(GL_TEXTURE_2D);
+
+            glBegin(GL_QUADS);
+            {
+                // Texture coordinates flipped on Y
+                glTexCoord2f(0, 1);
+                glVertex2f(0, 0);
+                glTexCoord2f(1, 1);
+                glVertex2f(internalBuffer.getWidth(), 0);
+                glTexCoord2f(1, 0);
+                glVertex2f(internalBuffer.getWidth(), internalBuffer.getHeight());
+                glTexCoord2f(0, 0);
+                glVertex2f(0, internalBuffer.getHeight());
+            }
+            glEnd();
+            if (internalBufferShader != null) {
+                internalBufferShader.unbind();
+            }
+            glDisable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            graphics.resetSettings();
+        }
 
         debugDrawer.setFPS(gameClock.getFps());
         debugDrawer.draw(graphics);
@@ -218,6 +282,14 @@ public class Garnet {
 
     public void setApp(GarnetApp garnetApp) {
         this.garnetApp = garnetApp;
+    }
+
+    public void setInternalBufferMode(boolean val) {
+        this.useInternalBuffer = val;
+    }
+
+    public void setInternalBufferShader(com.physmo.garnet.graphics.ShaderProgram shader) {
+        this.internalBufferShader = shader;
     }
 
 }

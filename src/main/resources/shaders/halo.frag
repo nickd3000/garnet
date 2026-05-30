@@ -4,6 +4,9 @@ uniform vec2 texelSize;   // 1.0/width, 1.0/height — set each frame
 void main() {
     vec2 uv = gl_TexCoord[0].st;
 
+    // Original color
+    vec4 baseColor = texture2D(texture, uv);
+
     // 5x5 box blur accumulated as additive glow
     vec4 glow = vec4(0.0);
     int radius = 6;
@@ -20,5 +23,6 @@ void main() {
     glow.rgb *= 2.5;
     glow.a = glow.a * 0.85;
 
-    gl_FragColor = glow;
+    // Composite: Base + Glow (Additive-ish)
+    gl_FragColor = baseColor + glow;
 }
