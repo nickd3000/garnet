@@ -28,6 +28,7 @@ public class ViewportExample extends GarnetApp {
 
     public static void main(String[] args) {
         Garnet garnet = new Garnet(400, 400);
+        garnet.setInternalBufferMode(true);
         GarnetApp app = new ViewportExample(garnet, "");
 
         garnet.setApp(app);

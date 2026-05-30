@@ -18,10 +18,9 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 //
 // The crt.frag shader applies, in order:
 //   1. Barrel distortion  — slight screen curvature with black border
-//   2. Phosphor pixel grid — snaps to coarse CRT dots with RGB sub-pixel stripes
-//   3. Scanlines           — horizontal dark bands between phosphor rows
-//   4. Colour bleeding     — chromatic aberration shifts R left and B right
-//   5. Vignette            — edges of the screen are darkened
+//   2. Scanlines           — horizontal dark bands between pixel rows
+//   3. Colour bleeding     — chromatic aberration shifts R left and B right
+//   4. Vignette            — edges of the screen are darkened
 //
 // Scene: several sprites orbit the centre of the screen.  The whole scene is
 // first rendered into a RenderTexture, then the CRT shader is applied to that

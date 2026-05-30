@@ -16,29 +16,19 @@ void main() {
         return;
     }
 
-    // ── 2. Pixel / phosphor grid ─────────────────────────────────────────
-    // Snap to nearest "CRT pixel" (3x3 screen pixels per CRT dot)
-    float pixelSize = 3.0;
-    vec2 pixelUV = floor(distUV * resolution / pixelSize) * pixelSize / resolution;
-    vec4 col = texture2D(texture, pixelUV);
-
-    // Sub-pixel RGB stripe mask (R | G | B repeating every 3 screen pixels)
-    float subX = mod(floor(distUV.x * resolution.x), 3.0);
-    vec3 mask = vec3(0.0);
-    if      (subX < 1.0) mask = vec3(1.0, 0.2, 0.2);
-    else if (subX < 2.0) mask = vec3(0.2, 1.0, 0.2);
-    else                 mask = vec3(0.2, 0.2, 1.0);
-    col.rgb *= mix(vec3(1.0), mask, 0.35);
+    // ── 2. Sampling ─────────────────────────────────────────────────────
+    vec4 col = texture2D(texture, distUV);
 
     // ── 3. Scanlines ─────────────────────────────────────────────────────
-    float scanline = sin(distUV.y * resolution.y * 3.14159) * 0.5 + 0.5;
-    scanline = pow(scanline, 0.6);          // soften the dark bands
-    col.rgb *= mix(0.55, 1.0, scanline);    // darken every other line
+    // Scanlines are based on the internal resolution (y-axis)
+    float scanline = sin(distUV.y * resolution.y * 3.14159 * 2.0) * 0.5 + 0.5;
+    scanline = pow(scanline, 0.4);          // sharpen/soften the dark bands
+    col.rgb *= mix(0.7, 1.0, scanline);    // darken every other line
 
     // ── 4. Horizontal colour bleeding (chromatic aberration) ─────────────
-    float bleed = 1.5 / resolution.x;
-    float r = texture2D(texture, pixelUV + vec2(-bleed, 0.0)).r;
-    float b = texture2D(texture, pixelUV + vec2( bleed, 0.0)).b;
+    float bleed = 1.0 / resolution.x;
+    float r = texture2D(texture, distUV + vec2(-bleed, 0.0)).r;
+    float b = texture2D(texture, distUV + vec2( bleed, 0.0)).b;
     col.r = mix(col.r, r, 0.45);
     col.b = mix(col.b, b, 0.45);
 
