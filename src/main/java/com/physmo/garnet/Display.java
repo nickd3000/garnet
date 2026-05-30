@@ -250,6 +250,9 @@ public class Display {
             glViewportOffsets[1] = 0;
             glViewportScale[0] = (double) canvasSize[0] / bufferSize[0];
             glViewportScale[1] = (double) canvasSize[1] / bufferSize[1];
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0.0f, canvasSize[0], canvasSize[1], 0.0f, 0.0f, 1.0f);
         }
 
         // Scale and keep aspect.
@@ -276,6 +279,9 @@ public class Display {
             glViewportOffsets[1] = yOffset;
             glViewportScale[0] = scale;
             glViewportScale[1] = scale;
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0.0f, canvasSize[0], canvasSize[1], 0.0f, 0.0f, 1.0f);
         }
 
 

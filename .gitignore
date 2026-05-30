@@ -6,6 +6,8 @@
 target/
 .idea/
 .idea
+.junie
+.junie/
 **/*.iml
 .iml
 

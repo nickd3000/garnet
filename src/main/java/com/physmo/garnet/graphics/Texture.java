@@ -130,6 +130,26 @@ public class Texture {
     }
 
 
+    /**
+     * Creates an empty (uninitialized pixel data) RGBA texture suitable for use as an FBO colour attachment.
+     *
+     * @param width  Width of the texture
+     * @param height Height of the texture
+     * @return empty Texture
+     */
+    public static Texture createEmpty(int width, int height) {
+        Texture texture = new Texture();
+        texture.setWidth(width);
+        texture.setHeight(height);
+        texture.bind();
+        texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (java.nio.ByteBuffer) null);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return texture;
+    }
 
     /**
      * Creates a texture with specified width, height and data.

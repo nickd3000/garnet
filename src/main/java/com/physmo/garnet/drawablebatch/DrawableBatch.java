@@ -1,6 +1,7 @@
 package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.structure.Array;
 
 import java.util.Comparator;
@@ -51,17 +52,25 @@ public class DrawableBatch {
         glEnable(GL_BLEND);
 
         BlendMode currentMode = null;
+        ShaderProgram currentShader = null;
         for (DrawableElement element : elements) {
             BlendMode mode = element.getBlendMode();
             if (mode != currentMode) {
                 applyBlendMode(mode);
                 currentMode = mode;
             }
+            ShaderProgram shader = element.getShader();
+            if (shader != currentShader) {
+                if (currentShader != null) currentShader.unbind();
+                if (shader != null) shader.bind();
+                currentShader = shader;
+            }
             applyClipRectIfRequired(graphics, element);
             graphics.bindTexture(element.getTextureId());
             element.render(graphics);
         }
 
+        if (currentShader != null) currentShader.unbind();
         applyBlendMode(BlendMode.NORMAL);
     }
 
