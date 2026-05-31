@@ -2,8 +2,25 @@ package com.physmo.garnet.toolkit;
 
 import com.physmo.garnet.graphics.Graphics;
 
+/**
+ * Utility class for drawing a simple line graph overlay.
+ * Useful for visualising time-series data such as frame times or performance counters.
+ */
 public class GraphDrawer {
 
+    /**
+     * Draws a line graph of the supplied data array within the given screen rectangle.
+     * Horizontal grid lines are drawn at integer intervals when {@code maxValue} is below 15.
+     *
+     * @param g         the graphics context
+     * @param doubles   the data values to plot
+     * @param x         the x-coordinate of the top-left corner of the graph area
+     * @param y         the y-coordinate of the top-left corner of the graph area
+     * @param width     the width of the graph area in pixels
+     * @param height    the height of the graph area in pixels
+     * @param maxValue  the value that maps to the top of the graph (full height)
+     * @param numValues the number of values from {@code doubles} to plot
+     */
     public static void drawGraph(Graphics g, double[] doubles, int x, int y, int width, int height, double maxValue, int numValues) {
 
         int storedCol = g.getColor();

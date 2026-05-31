@@ -37,6 +37,14 @@ public class Vector3 {
         return new Vector3(Math.sin(angle) * magnitude, Math.cos(angle) * magnitude, 0);
     }
 
+    /**
+     * Sets the components of this vector.
+     *
+     * @param x the x component
+     * @param y the y component
+     * @param z the z component
+     * @return this vector, for chaining
+     */
     public Vector3 set(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -44,6 +52,12 @@ public class Vector3 {
         return this;
     }
 
+    /**
+     * Copies the components of another vector into this vector.
+     *
+     * @param other the source vector
+     * @return this vector, for chaining
+     */
     public Vector3 set(Vector3 other) {
         this.x = other.x;
         this.y = other.y;
@@ -91,6 +105,12 @@ public class Vector3 {
         return this;
     }
 
+    /**
+     * Multiplies all components of this vector by the given scalar.
+     *
+     * @param v the scale factor
+     * @return this vector, for chaining
+     */
     public Vector3 scale(double v) {
         x *= v;
         y *= v;
@@ -98,6 +118,12 @@ public class Vector3 {
         return this;
     }
 
+    /**
+     * Subtracts another vector from this vector in-place.
+     *
+     * @param other the vector to subtract
+     * @return this vector, for chaining
+     */
     public Vector3 sub(Vector3 other) {
         x -= other.x;
         y -= other.y;
@@ -137,12 +163,24 @@ public class Vector3 {
         return Math.sqrt((x * x) + (y * y) + (z * z));
     }
 
+    /**
+     * Returns the 2D distance from this vector's (x, y) position to the given point.
+     *
+     * @param x the x-coordinate of the target point
+     * @param y the y-coordinate of the target point
+     * @return the Euclidean distance
+     */
     public double distance(double x, double y) {
         double xx = this.x - x;
         double yy = this.y - y;
         return Math.sqrt((xx * xx) + (yy * yy));
     }
 
+    /**
+     * Returns the Euclidean length (magnitude) of this vector.
+     *
+     * @return the length of this vector
+     */
     public double length() {
         return Math.sqrt((x * x) + (y * y) + (z * z));
     }

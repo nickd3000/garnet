@@ -6,6 +6,13 @@ import com.physmo.garnet.toolkit.curve.Curve;
 import com.physmo.garnet.toolkit.curve.CurveType;
 import com.physmo.garnet.toolkit.curve.StandardCurve;
 
+/**
+ * Spawns particles from a {@link ParticleTemplate} over a fixed duration.
+ * <p>
+ * The emission rate follows an {@link com.physmo.garnet.toolkit.curve.Curve} so it can ramp
+ * up or down over the emitter's lifetime. Once the duration expires the emitter marks itself
+ * for removal by the owning {@link ParticleManager}.
+ */
 public class Emitter {
     ParticleManager particleManager;
     Vector3 position;
@@ -31,10 +38,22 @@ public class Emitter {
         new Emitter(position, duration, new ParticleTemplate());
     }
 
+    /**
+     * Injects the owning {@link ParticleManager} so the emitter can request free particles.
+     * Called automatically by {@link ParticleManager#addEmitter}.
+     *
+     * @param particleManager the manager that owns this emitter
+     */
     public void setParticleManager(ParticleManager particleManager) {
         this.particleManager = particleManager;
     }
 
+    /**
+     * Advances the emitter by one frame: ages it, calculates how many particles to emit
+     * this tick, and marks the emitter for removal when its duration is exceeded.
+     *
+     * @param delta seconds elapsed since the last tick
+     */
     public void tick(double delta) {
         age += delta;
         double pAge = age / duration;
@@ -52,6 +71,10 @@ public class Emitter {
         if (age > duration) remove = true;
     }
 
+    /**
+     * Requests a free particle from the manager and initialises it using the
+     * current {@link ParticleTemplate} and this emitter's position.
+     */
     public void emit() {
         if (particleTemplate != null) {
             Particle p = particleManager.getFreeParticle();
@@ -61,10 +84,21 @@ public class Emitter {
         }
     }
 
+    /**
+     * Replaces the particle template used by this emitter.
+     *
+     * @param particleTemplate the new template
+     */
     public void addParticleTemplate(ParticleTemplate particleTemplate) {
         this.particleTemplate = particleTemplate;
     }
 
+    /**
+     * Sets the peak emission rate in particles per second.
+     * The actual rate each frame is scaled by the emission-rate curve.
+     *
+     * @param emitPerSecond the desired peak emission rate
+     */
     public void setEmitPerSecond(double emitPerSecond) {
         this.emitPerSecond = emitPerSecond;
     }

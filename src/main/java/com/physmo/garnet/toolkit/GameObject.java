@@ -92,20 +92,32 @@ public class GameObject implements MessageListener {
     }
 
     /**
-     * Get the integer based position for this game object.
+     * Returns the integer-based position of this game object.
      *
-     * @return
+     * @return the position as a {@link PointInt}
      */
     public PointInt getPosition() {
         return position;
     }
 
+    /**
+     * Sets the integer-based position of this game object.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     */
     public void setPosition(int x, int y) {
         position.x = x;
         position.y = y;
     }
 
 
+    /**
+     * Injects the owning {@link Context} into this game object so it can access
+     * sibling objects and components at runtime.
+     *
+     * @param context the context this object belongs to
+     */
     public void injectContext(Context context) {
         this.context = context;
     }
@@ -123,6 +135,10 @@ public class GameObject implements MessageListener {
     }
 
 
+    /**
+     * Internal initialisation: calls {@link #init()} then initialises all attached components.
+     * Called by the framework; do not call directly.
+     */
     public void _init() {
         this.init();
         for (Component c : components) {
@@ -134,6 +150,12 @@ public class GameObject implements MessageListener {
     }
 
 
+    /**
+     * Internal tick: calls {@link #tick(double)} then ticks all attached components.
+     * Called by the framework; do not call directly.
+     *
+     * @param t seconds elapsed since the last tick
+     */
     public void _tick(double t) {
         this.tick(t);
 
@@ -145,6 +167,12 @@ public class GameObject implements MessageListener {
     public void tick(double t) {
     }
 
+    /**
+     * Internal draw: calls {@link #draw(Graphics)} then draws all attached components.
+     * Called by the framework; do not call directly.
+     *
+     * @param g the graphics context
+     */
     protected void _draw(Graphics g) {
         this.draw(g);
         for (Component component : components) {
@@ -211,11 +239,24 @@ public class GameObject implements MessageListener {
         }
     }
 
+    /**
+     * Sets the visibility of this game object.
+     *
+     * @param b {@code true} to make the object visible, {@code false} to hide it
+     * @return this game object, for chaining
+     */
     public GameObject setVisible(boolean b) {
         visible = b;
         return this;
     }
 
+    /**
+     * Adds a string tag to this game object. Tags can be used to query groups of objects
+     * from a {@link Context}.
+     *
+     * @param tag the tag string to add
+     * @return this game object, for chaining
+     */
     public GameObject addTag(String tag) {
         tags.add(StringIdBroker.INSTANCE.getId(tag));
         return this;
@@ -225,6 +266,12 @@ public class GameObject implements MessageListener {
         return tags;
     }
 
+    /**
+     * Returns whether this game object has the given string tag.
+     *
+     * @param tag the tag string to check
+     * @return {@code true} if the tag is present
+     */
     public boolean hasTag(String tag) {
         return hasTag(StringIdBroker.INSTANCE.getId(tag));
     }
@@ -233,10 +280,23 @@ public class GameObject implements MessageListener {
         return tags.contains(tagId);
     }
 
+    /**
+     * Returns whether this game object is currently active.
+     * Inactive objects are skipped during tick and draw.
+     *
+     * @return {@code true} if active
+     */
     public boolean isActive() {
         return active;
     }
 
+    /**
+     * Sets the active state of this game object.
+     * Inactive objects are skipped during tick and draw.
+     *
+     * @param b {@code true} to activate, {@code false} to deactivate
+     * @return this game object, for chaining
+     */
     public GameObject setActive(boolean b) {
         active = b;
         return this;

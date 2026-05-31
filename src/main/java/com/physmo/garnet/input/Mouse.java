@@ -9,6 +9,13 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
 
+/**
+ * Tracks mouse cursor position and button state each frame.
+ * <p>
+ * Cursor coordinates are transformed from GLFW window space through the
+ * framebuffer and viewport scales so that {@link #getPosition()} returns
+ * values in canvas/world space matching the active viewport.
+ */
 public class Mouse {
 
     public static final int BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
@@ -33,6 +40,10 @@ public class Mouse {
     }
 
 
+    /**
+     * Samples the current cursor position and button states from GLFW.
+     * Called once per logic tick by {@link com.physmo.garnet.input.Input}.
+     */
     void update() {
         positionPrev[0] = position[0];
         positionPrev[1] = position[1];
@@ -78,18 +89,31 @@ public class Mouse {
     }
 
 
+    /**
+     * Returns the current mouse position in canvas/world coordinates as {@code [x, y]}.
+     *
+     * @return the mouse position array
+     */
     public int[] getPosition() {
         return position;
     }
 
+    /**
+     * Returns the mouse position divided by the given scale factor.
+     * Useful when the game world uses a different coordinate scale than the canvas.
+     *
+     * @param scale the divisor applied to both x and y
+     * @return the scaled position as {@code [x, y]}
+     */
     public int[] getPositionScaled(double scale) {
         return new int[]{(int) (position[0] / scale), (int) (position[1] / scale)};
     }
 
     /**
-     * Returns the mouse position normalised to 0..1 double values.
+     * Returns the mouse position normalised to the range [0, 1] for both axes.
+     * (0, 0) is the top-left corner of the canvas; (1, 1) is the bottom-right.
      *
-     * @return
+     * @return a two-element array {@code [normalisedX, normalisedY]}
      */
     public double[] getPositionNormalised() {
         int windowWidth = garnet.getDisplay().getWindowWidth();
@@ -101,15 +125,22 @@ public class Mouse {
     }
 
 
+    /**
+     * Returns whether the specified mouse button is currently held down.
+     *
+     * @param mouseButtonId one of {@link #BUTTON_LEFT}, {@link #BUTTON_RIGHT}, or {@link #BUTTON_MIDDLE}
+     * @return {@code true} if the button is pressed
+     */
     public boolean isButtonPressed(int mouseButtonId) {
         return buttonState[mouseButtonId];
     }
 
     /**
-     * True if mouse button first pressed this frame.
+     * Returns {@code true} only on the first frame the specified button is pressed.
+     * Subsequent frames while the button is held return {@code false}.
      *
-     * @param mouseButtonId
-     * @return
+     * @param mouseButtonId one of {@link #BUTTON_LEFT}, {@link #BUTTON_RIGHT}, or {@link #BUTTON_MIDDLE}
+     * @return {@code true} if the button was just pressed this frame
      */
     public boolean isButtonFirstPress(int mouseButtonId) {
         return (buttonState[mouseButtonId] && !buttonStatePrev[mouseButtonId]);

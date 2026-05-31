@@ -25,6 +25,13 @@ import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
+/**
+ * Represents a compiled and linked OpenGL shader program.
+ * <p>
+ * Use {@link #fromFiles} or {@link #fromSource} to create an instance, then call
+ * {@link #bind()} before issuing draw calls or setting uniforms, and {@link #unbind()}
+ * afterwards to restore the fixed-function pipeline.
+ */
 public class ShaderProgram {
 
     private final int programId;
@@ -98,22 +105,45 @@ public class ShaderProgram {
         return shaderId;
     }
 
+    /**
+     * Activates this shader program for subsequent GL draw calls and uniform updates.
+     */
     public void bind() {
         glUseProgram(programId);
     }
 
+    /**
+     * Deactivates this shader program, restoring the fixed-function pipeline.
+     */
     public void unbind() {
         glUseProgram(0);
     }
 
+    /**
+     * Returns the OpenGL program object ID for this shader program.
+     * Use this when calling {@code glGetUniformLocation} or other raw GL uniform APIs.
+     *
+     * @return the GL program ID
+     */
     public int getProgramId() {
         return programId;
     }
 
+    /**
+     * Returns the location of the named uniform variable within this program.
+     * Returns -1 if the name does not correspond to an active uniform.
+     *
+     * @param name the GLSL uniform variable name
+     * @return the uniform location, or -1 if not found
+     */
     public int getUniformLocation(String name) {
         return glGetUniformLocation(programId, name);
     }
 
+    /**
+     * Frees the GPU resources associated with this shader program.
+     * The program must not be used after this call.
+     */
     public void delete() {
         glDeleteProgram(programId);
     }

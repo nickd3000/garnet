@@ -1,9 +1,9 @@
 package com.physmo.garnet.graphics;
 
-/*
-    A description of an area of an image, this does not contain image data.
-    As an example, it can be used to describe the position and size of a single sprite
-    in a tile sheet.
+/**
+ * Describes a rectangular region within a {@link Texture}.
+ * Does not hold pixel data — it is a lightweight descriptor used to identify
+ * a sub-region such as a single sprite within a tile sheet.
  */
 public class SubImage {
     public Texture texture;
@@ -28,6 +28,16 @@ public class SubImage {
         this.h = h;
     }
 
+    /**
+     * Reconfigures this SubImage to point to a new region within a texture.
+     * Useful when reusing a SubImage instance to avoid allocation.
+     *
+     * @param texture the source texture
+     * @param x       the x-coordinate of the region's top-left corner in the texture
+     * @param y       the y-coordinate of the region's top-left corner in the texture
+     * @param w       the width of the region in pixels
+     * @param h       the height of the region in pixels
+     */
     public void configure(Texture texture, int x, int y, int w, int h) {
         this.texture = texture;
         this.x = x;

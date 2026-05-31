@@ -21,6 +21,11 @@ public class Context {
     private List<Object> objects = new ArrayList<>();
     private boolean duringTick = false;
 
+    /**
+     * Returns whether this context has been initialised.
+     *
+     * @return {@code true} if {@link #init()} has been called
+     */
     public boolean isInitialised() {
         return initialised;
     }
@@ -123,6 +128,10 @@ public class Context {
         uninitialisedObjects.clear();
     }
 
+    /**
+     * Initialises the context: marks it as initialised and runs first-time setup on any
+     * objects that were added before the first tick.
+     */
     public void init() {
         initialised = true;
         addNewObjects();
@@ -227,6 +236,11 @@ public class Context {
         objects.clear();
     }
 
+    /**
+     * Returns the total number of objects currently held in this context.
+     *
+     * @return the object count
+     */
     public int getObjectCount() {
         return objects.size();
     }

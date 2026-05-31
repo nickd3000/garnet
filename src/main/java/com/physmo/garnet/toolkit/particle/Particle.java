@@ -7,6 +7,13 @@ import com.physmo.garnet.toolkit.color.ColorSupplier;
 import com.physmo.garnet.toolkit.color.ColorSupplierLinear;
 import com.physmo.garnet.toolkit.curve.Curve;
 
+/**
+ * A single particle instance managed by a {@link ParticleManager}.
+ * <p>
+ * Particles are pooled and reused. When {@link #active} is {@code true} the particle is
+ * alive and will be ticked and drawn each frame. Fields are populated by a
+ * {@link ParticleTemplate} when the particle is spawned.
+ */
 public class Particle {
     public Vector3 position = new Vector3();
     public double lifeTime;
@@ -47,6 +54,12 @@ public class Particle {
         this.particleDrawer = particleDrawer;
     }
 
+    /**
+     * Advances this particle by one frame: moves it along its direction vector,
+     * ages it, and deactivates it when its lifetime is exceeded.
+     *
+     * @param delta seconds elapsed since the last tick
+     */
     public void tick(double delta) {
         double pAge = age / lifeTime;
         double _speed = speed * delta * speedCurve.value(pAge);
@@ -59,6 +72,12 @@ public class Particle {
         if (age > lifeTime) active = false;
     }
 
+    /**
+     * Returns the normalised age of this particle in the range [0, 1].
+     * 0 = just spawned, 1 = end of lifetime.
+     *
+     * @return normalised age
+     */
     public double getTime() {
         return age / lifeTime;
     }

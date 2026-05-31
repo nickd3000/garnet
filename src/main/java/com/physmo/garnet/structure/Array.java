@@ -96,6 +96,11 @@ public class Array<T> implements Iterable<T> {
         for (int i = 0; i < list.size(); i++) add(list.get(i));
     }
 
+    /**
+     * Adds all elements from another {@link Array} to this array.
+     *
+     * @param list the source array whose elements will be added
+     */
     public void addAll(Array<T> list) {
         for (int i = 0; i < list.size(); i++) add(list.get(i));
     }

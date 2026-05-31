@@ -23,22 +23,38 @@ public abstract class Scene {
         return name;
     }
 
-    public void _init() {
-        init();
-        context.init();
-        isInitialized = true;
-    }
-
-    public abstract void init();
-
+    /**
+     * Internal tick: ticks the scene's context then calls {@link #tick(double)}.
+     * Called by the framework; do not call directly.
+     *
+     * @param delta seconds elapsed since the last tick
+     */
     public void _tick(double delta) {
         if (!isInitialized) _init();
         context.tick(delta);
         tick(delta);
     }
 
+    public abstract void init();
+
+    /**
+     * Internal initialisation: calls {@link #init()} then initialises the scene's context.
+     * Called by the framework; do not call directly.
+     */
+    public void _init() {
+        init();
+        context.init();
+        isInitialized = true;
+    }
+
     public abstract void tick(double delta);
 
+    /**
+     * Internal draw: calls {@link #draw(Graphics)} then draws the scene's context.
+     * Called by the framework; do not call directly.
+     *
+     * @param g the graphics context
+     */
     public void _draw(Graphics g) {
 
         draw(g);
@@ -47,10 +63,19 @@ public abstract class Scene {
 
     public abstract void draw(Graphics g);
 
+    /**
+     * Called by the framework when this scene becomes the active scene.
+     */
     public abstract void onMakeActive();
 
+    /** Called by the framework when this scene is deactivated (another scene takes over). */
     public abstract void onMakeInactive();
 
+    /**
+     * Returns whether this scene has been initialised.
+     *
+     * @return {@code true} if {@link #_init()} has been called
+     */
     public boolean isInitialized() {
         return isInitialized;
     }

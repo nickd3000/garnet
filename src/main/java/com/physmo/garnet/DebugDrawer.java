@@ -8,6 +8,13 @@ import com.physmo.garnet.text.RegularFont;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Renders an on-screen debug overlay showing FPS, mouse coordinates, and arbitrary
+ * user-defined key/value strings.
+ * <p>
+ * Toggle visibility with {@link #setVisible}. Individual sections (FPS, mouse coords)
+ * can be enabled independently. The overlay always renders on top via the debug viewport.
+ */
 public class DebugDrawer {
     public static String DEBUG_FONT_NAME = "drake_10x10.png";
     private final Map<String, String> userStrings = new HashMap<>();
@@ -50,6 +57,9 @@ public class DebugDrawer {
         this.drawMouseCoords = drawMouseCoords;
     }
 
+    /**
+     * Initialises the debug font. Must be called before {@link #draw}.
+     */
     public void init() {
         //visible = false;
         regularFont = new RegularFont(DEBUG_FONT_NAME, 10, 10);
@@ -57,6 +67,12 @@ public class DebugDrawer {
         regularFont.setScale(scale);
     }
 
+    /**
+     * Draws the debug overlay if {@link #setVisible visible} is {@code true}.
+     * Saves and restores all graphics state (colour, zoom, draw order, viewport).
+     *
+     * @param g the graphics context
+     */
     public void draw(Graphics g) {
         if (!visible) return;
 
@@ -79,6 +95,14 @@ public class DebugDrawer {
         g.setActiveViewport(prevViewportId);
     }
 
+    /**
+     * Draws a single debug string with a drop shadow at the given y position.
+     *
+     * @param g   the graphics context
+     * @param str the string to draw
+     * @param y   the y-coordinate (in debug viewport space)
+     * @return the line height advance to use for the next line
+     */
     public int drawString(Graphics g, String str, int y) {
 
         g.setDrawOrder(100);
@@ -93,6 +117,11 @@ public class DebugDrawer {
         return (int) (lineHeight * scale);
     }
 
+    /**
+     * Returns a formatted string showing the current mouse canvas coordinates.
+     *
+     * @return a string of the form {@code "Mouse X:nnn Y:nnn"}
+     */
     public String getMouseCoordsString() {
         int[] mousePosition = input.getMouse().getPosition();
         return String.format("Mouse X:%d Y:%d", mousePosition[0], mousePosition[1]);
@@ -108,18 +137,40 @@ public class DebugDrawer {
         return yy;
     }
 
+    /**
+     * Adds or updates a named debug string displayed in the overlay.
+     *
+     * @param name  the label shown before the value
+     * @param value the value string to display
+     */
     public void setUserString(String name, String value) {
         userStrings.put(name, value);
     }
 
+    /**
+     * Removes a previously added debug string from the overlay.
+     *
+     * @param name the label of the string to remove
+     */
     public void clearUserString(String name) {
         userStrings.remove(name);
     }
 
+    /**
+     * Updates the FPS value displayed in the overlay.
+     * Called each frame by the main loop.
+     *
+     * @param fps the current frames-per-second value
+     */
     public void setFPS(double fps) {
         this.fps = fps;
     }
 
+    /**
+     * Sets the text colour used for debug strings.
+     *
+     * @param i the packed RGBA colour
+     */
     public void setColor(int i) {
         textColor = i;
     }

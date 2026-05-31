@@ -24,11 +24,21 @@ public class ObjectPool<T> {
         pool = (T[]) Array.newInstance(clazz, startingCapacity);
     }
 
+    /**
+     * Returns an object to the pool so it can be reused.
+     * The pool is expanded automatically if it is full.
+     *
+     * @param object the object to return to the pool
+     */
     public void releaseObject(T object) {
         if (head == pool.length - 2) expandPool();
         pool[++head] = object;
     }
 
+    /**
+     * Doubles the capacity of the internal pool array.
+     * Called automatically by {@link #releaseObject} when the pool is full.
+     */
     public void expandPool() {
         T[] newPool = (T[]) Array.newInstance(clazz, pool.length * 2);
         System.arraycopy(pool, 0, newPool, 0, pool.length);
@@ -36,6 +46,12 @@ public class ObjectPool<T> {
         // System.out.println("Expanding pool to " + pool.length + "  head:" + head);
     }
 
+    /**
+     * Returns a pooled object for reuse, or creates a new one via the
+     * {@link PoolObjectCreator} if the pool is empty.
+     *
+     * @return a reusable object of type {@code T}
+     */
     public T getFreeObject() {
         if (head >= 0) {
             return pool[head--];

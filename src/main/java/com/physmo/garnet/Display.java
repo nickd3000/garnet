@@ -42,7 +42,10 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
- *
+ * Manages the GLFW window, OpenGL context, and viewport scaling.
+ * <p>
+ * Handles window creation, fullscreen toggling, resize callbacks, and the
+ * mapping between window/buffer/canvas coordinate spaces used by the renderer.
  */
 public class Display {
 
@@ -67,6 +70,12 @@ public class Display {
         canvasSize[1] = windowHeight;
     }
 
+    /**
+     * Returns the logical canvas size as {@code [width, height]} in pixels.
+     * This is the resolution the game renders at, independent of the window size.
+     *
+     * @return the canvas size array
+     */
     public int[] getCanvasSize() {
         return canvasSize;
     }
@@ -79,10 +88,20 @@ public class Display {
         return windowHeight;
     }
 
+    /**
+     * Returns the native GLFW window handle.
+     *
+     * @return the GLFW window handle
+     */
     public long getWindowHandle() {
         return windowHandle;
     }
 
+    /**
+     * Returns the scale factors from window coordinates to physical pixel (framebuffer) coordinates.
+     *
+     * @return a two-element array {@code [scaleX, scaleY]}
+     */
     public double[] getWindowToPixelsScale() {
         int[] bufferSize = getWindowSize();
         double w = (double) bufferSize[0] / (double) windowWidth;
@@ -90,6 +109,11 @@ public class Display {
         return new double[]{w, h};
     }
 
+    /**
+     * Returns the current window size in screen coordinates as {@code [width, height]}.
+     *
+     * @return the window size array
+     */
     public int[] getWindowSize() {
         int[] w2 = new int[1], h2 = new int[1];
         glfwGetWindowSize(windowHandle, w2, h2);
@@ -97,29 +121,21 @@ public class Display {
         return new int[]{w2[0], h2[0]};
     }
 
-    public int[] getBufferSize() {
-        int[] w = new int[1], h = new int[1];
-        glfwGetFramebufferSize(windowHandle, w, h);
-
-        return new int[]{w[0], h[0]};
-    }
-
+    /**
+     * Sets the title displayed in the window's title bar.
+     *
+     * @param title the new window title
+     */
     public void setWindowTitle(String title) {
         glfwSetWindowTitle(windowHandle, title);
     }
 
-    public boolean isFullscreen() {
-        // Return value will be 0 if in windowed mode.
-        return glfwGetWindowMonitor(windowHandle) != 0;
-    }
-
-    private void storeWindowPos() {
-        int[] x = new int[1], y = new int[1];
-        glfwGetWindowPos(windowHandle, x, y);
-        storedWindowX = x[0];
-        storedWindowY = y[0];
-    }
-
+    /**
+     * Switches the window between fullscreen and windowed mode.
+     * The previous windowed position is restored when leaving fullscreen.
+     *
+     * @param val {@code true} to enter fullscreen, {@code false} to return to windowed mode
+     */
     public void setFullScreen(boolean val) {
 
         boolean fullScreenActive = isFullscreen();
@@ -140,6 +156,28 @@ public class Display {
         }
     }
 
+    /**
+     * Returns whether the window is currently in fullscreen mode.
+     *
+     * @return {@code true} if fullscreen, {@code false} if windowed
+     */
+    public boolean isFullscreen() {
+        // Return value will be 0 if in windowed mode.
+        return glfwGetWindowMonitor(windowHandle) != 0;
+    }
+
+    private void storeWindowPos() {
+        int[] x = new int[1], y = new int[1];
+        glfwGetWindowPos(windowHandle, x, y);
+        storedWindowX = x[0];
+        storedWindowY = y[0];
+    }
+
+    /**
+     * Returns the scale factors from window coordinates to framebuffer (buffer) coordinates.
+     *
+     * @return a two-element array {@code [scaleX, scaleY]}
+     */
     public double[] getWindowToBufferScale() {
         int[] bufferSize = getBufferSize();
         double w = (double) bufferSize[0] / (double) windowWidth;
@@ -148,6 +186,25 @@ public class Display {
 
     }
 
+    /**
+     * Returns the framebuffer size in physical pixels as {@code [width, height]}.
+     * On HiDPI displays this may differ from the window size.
+     *
+     * @return the framebuffer size array
+     */
+    public int[] getBufferSize() {
+        int[] w = new int[1], h = new int[1];
+        glfwGetFramebufferSize(windowHandle, w, h);
+
+        return new int[]{w[0], h[0]};
+    }
+
+    /**
+     * Resizes the window by a scale factor relative to the canvas size.
+     *
+     * @param windowScale  the scale multiplier (e.g. 2.0 doubles the window size)
+     * @param centerWindow if {@code true}, the window is re-centred on the primary monitor
+     */
     public void setWindowScale(double windowScale, boolean centerWindow) {
         this.windowScale = windowScale;
         glfwSetWindowSize(windowHandle, (int) (windowWidth * windowScale), (int) (windowHeight * windowScale));
@@ -156,6 +213,10 @@ public class Display {
         }
     }
 
+    /**
+     * Initialises GLFW, creates the window, sets up the OpenGL context, and registers resize callbacks.
+     * Must be called before the main loop.
+     */
     public void init() {
 
         // Setup an error callback. The default implementation
@@ -221,6 +282,9 @@ public class Display {
         placeGlViewport();
     }
 
+    /**
+     * Registers GLFW callbacks that recalculate the GL viewport whenever the window is resized or moved.
+     */
     public void setupWindowResizeHandlers() {
         glfwSetWindowSizeCallback(windowHandle, new GLFWWindowSizeCallback() {
             @Override
@@ -239,6 +303,10 @@ public class Display {
         });
     }
 
+    /**
+     * Recalculates and applies the GL viewport and projection matrix to match the current window/buffer size.
+     * Called automatically on resize; also called manually after binding/unbinding FBOs.
+     */
     public void placeGlViewport() {
         int[] bufferSize = getBufferSize();
 

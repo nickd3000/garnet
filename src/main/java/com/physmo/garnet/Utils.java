@@ -1,6 +1,9 @@
 package com.physmo.garnet;
 
 
+/**
+ * General-purpose mathematical utility methods used throughout the framework.
+ */
 public class Utils {
 
     /**
