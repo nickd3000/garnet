@@ -102,7 +102,7 @@ class Vector3Test extends Specification {
             def result = v.toString()
 
         then: "The output is formatted correctly with the vector values"
-          result == "[scrollX:1.00, scrollY:2.00, z:3.00]"
+          result == "[x:1.00, y:2.00, z:3.00]"
     }
 
 
@@ -181,8 +181,8 @@ class Vector3Test extends Specification {
 
         and:
             double result = v.getAngle()
-          println "scrollX:" + v.x
-          println "scrollY:" + v.y
+          println "x:" + v.x
+          println "x:" + v.y
             println "a:" + result
 
 

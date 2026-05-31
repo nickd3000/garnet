@@ -73,30 +73,65 @@ public class Garnet {
         debugDrawer = new DebugDrawer(input);
     }
 
+    /**
+     * Returns the current tick rate multiplier applied to logic updates.
+     *
+     * @return the tick rate multiplier
+     */
     public double getTickRate() {
         return tickRate;
     }
 
+    /**
+     * Sets the tick rate multiplier applied to logic updates.
+     * A value of 1.0 runs at normal speed; values above or below speed up or slow down game logic.
+     *
+     * @param tickRate the tick rate multiplier to set
+     */
     public void setTickRate(double tickRate) {
         this.tickRate = tickRate;
     }
 
+    /**
+     * Sets the application to be managed by this Garnet instance.
+     *
+     * @param garnetApp the {@link GarnetApp} to run
+     */
     public void setGarnetApp(GarnetApp garnetApp) {
         this.garnetApp = garnetApp;
     }
 
+    /**
+     * Returns the debug drawer used for rendering debug overlays.
+     *
+     * @return the {@link DebugDrawer} instance
+     */
     public DebugDrawer getDebugDrawer() {
         return debugDrawer;
     }
 
+    /**
+     * Returns the game clock used for timing logic and render cycles.
+     *
+     * @return the {@link GameClock} instance
+     */
     public GameClock getGameClock() {
         return gameClock;
     }
 
+    /**
+     * Returns the graphics subsystem used for rendering.
+     *
+     * @return the {@link Graphics} instance
+     */
     public Graphics getGraphics() {
         return graphics;
     }
 
+    /**
+     * Initialises all subsystems including display, sound, input, and the application.
+     * Must be called before {@link #run()}.
+     */
     public void init() {
 
         display.init();
@@ -124,6 +159,10 @@ public class Garnet {
 
     }
 
+    /**
+     * Starts the main game loop, processing logic and rendering each frame until the window is closed.
+     * Calls {@link #init()} should be made before this method.
+     */
     public void run() {
 
         glfwMakeContextCurrent(display.getWindowHandle());
@@ -154,6 +193,12 @@ public class Garnet {
         }
     }
 
+    /**
+     * Advances game logic and renders a single frame.
+     * Logic is updated at a fixed rate independent of the render frame rate.
+     *
+     * @param delta elapsed time in seconds since the last call
+     */
     public void updateLogicAndRender(double delta) {
 
         int logicUpdatesPerSecond = 60 * 8;
@@ -196,55 +241,14 @@ public class Garnet {
 
         if (useInternalBuffer) {
             internalBuffer.unbind(display);
-
-            // Draw the internal buffer to the screen.
-            // We bypass the Graphics/DrawableBatch system to avoid viewport/scrolling interference.
-            glDisable(GL_SCISSOR_TEST);
-            display.placeGlViewport(); // Ensure correct screen viewport is set
-
-            float[] bgCols2 = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
-            glClearColor(bgCols2[0], bgCols2[1], bgCols2[2], bgCols2[3]);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            if (internalBufferShader != null) {
-                internalBufferShader.bind();
-            }
-            internalBuffer.getTexture().bind();
-            glColor4f(1, 1, 1, 1);
-            glEnable(GL_TEXTURE_2D);
-
-            glBegin(GL_QUADS);
-            {
-                // Texture coordinates flipped on Y
-                glTexCoord2f(0, 1);
-                glVertex2f(0, 0);
-                glTexCoord2f(1, 1);
-                glVertex2f(internalBuffer.getWidth(), 0);
-                glTexCoord2f(1, 0);
-                glVertex2f(internalBuffer.getWidth(), internalBuffer.getHeight());
-                glTexCoord2f(0, 0);
-                glVertex2f(0, internalBuffer.getHeight());
-            }
-            glEnd();
-            if (internalBufferShader != null) {
-                internalBufferShader.unbind();
-            }
-            glDisable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            graphics.resetSettings();
+            drawInternalBufferToScreen();
         }
 
         debugDrawer.setFPS(gameClock.getFps());
         debugDrawer.draw(graphics);
 
         if (drawFrameGraph) {
-            double MAX_TIME_NANOS_120_FPS = (double) 1_000_000_000 / (60);
-            graphics.setColor(0xff00ffff);
-            GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_RENDER).getTimes(), 10, 50, 250, 100, 1.0 / 60, 256);
-            graphics.setColor(0x00ffffff);
-            GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_LOGIC_AND_RENDER).getTimes(), 270, 50, 250, 100, 1.0 / 60, 256);
-            graphics.setColor(0xffff00ff);
-            GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_DEBUG).getTimes(), 10, 50 + 100 + 10, 250, 100, 1.0 / 60, 256);
+            drawFrameGraph();
         }
 
         gameClock.logFrame();
@@ -260,31 +264,126 @@ public class Garnet {
         gameClock.getTimer(GameClock.TIMER_RENDER).stop();
     }
 
+    /**
+     * Blits the internal render buffer onto the screen framebuffer.
+     * Bypasses the {@link Graphics} batching system to avoid viewport or scrolling interference.
+     * An optional shader can be applied via {@link #setInternalBufferShader}.
+     */
+    private void drawInternalBufferToScreen() {
+        // Draw the internal buffer to the screen.
+        // We bypass the Graphics/DrawableBatch system to avoid viewport/scrolling interference.
+        glDisable(GL_SCISSOR_TEST);
+        display.placeGlViewport(); // Ensure correct screen viewport is set
+
+        float[] bgCols2 = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
+        glClearColor(bgCols2[0], bgCols2[1], bgCols2[2], bgCols2[3]);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (internalBufferShader != null) {
+            internalBufferShader.bind();
+        }
+        internalBuffer.getTexture().bind();
+        glColor4f(1, 1, 1, 1);
+        glEnable(GL_TEXTURE_2D);
+
+        glBegin(GL_QUADS);
+        {
+            // Texture coordinates flipped on Y
+            glTexCoord2f(0, 1);
+            glVertex2f(0, 0);
+            glTexCoord2f(1, 1);
+            glVertex2f(internalBuffer.getWidth(), 0);
+            glTexCoord2f(1, 0);
+            glVertex2f(internalBuffer.getWidth(), internalBuffer.getHeight());
+            glTexCoord2f(0, 0);
+            glVertex2f(0, internalBuffer.getHeight());
+        }
+        glEnd();
+        if (internalBufferShader != null) {
+            internalBufferShader.unbind();
+        }
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        graphics.resetSettings();
+    }
+
+    /**
+     * Draws timing graphs for render, logic, and debug timers as an overlay.
+     * Only called when {@code drawFrameGraph} is {@code true}.
+     */
+    private void drawFrameGraph() {
+        graphics.setColor(0xff00ffff);
+        GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_RENDER).getTimes(), 10, 50, 250, 100, 1.0 / 60, 256);
+        graphics.setColor(0x00ffffff);
+        GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_LOGIC_AND_RENDER).getTimes(), 270, 50, 250, 100, 1.0 / 60, 256);
+        graphics.setColor(0xffff00ff);
+        GraphDrawer.drawGraph(graphics, gameClock.getTimer(GameClock.TIMER_DEBUG).getTimes(), 10, 50 + 100 + 10, 250, 100, 1.0 / 60, 256);
+    }
+
+    /**
+     * Registers a keyboard callback that will be invoked on key events.
+     *
+     * @param keyboardCallback the callback to register
+     */
     public void addKeyboardCallback(KeyboardCallback keyboardCallback) {
         System.out.println("addKeyboardCallback");
         keyboardCallbacks.add(keyboardCallback);
     }
 
+    /**
+     * Returns the input subsystem for querying keyboard and mouse state.
+     *
+     * @return the {@link Input} instance
+     */
     public Input getInput() {
         return input;
     }
 
+    /**
+     * Returns the display managing the application window.
+     *
+     * @return the {@link Display} instance
+     */
     public Display getDisplay() {
         return display;
     }
 
+    /**
+     * Returns the sound subsystem for playing audio.
+     *
+     * @return the {@link Sound} instance
+     */
     public Sound getSound() {
         return sound;
     }
 
+    /**
+     * Sets the application to be managed by this Garnet instance.
+     * Equivalent to {@link #setGarnetApp(GarnetApp)}.
+     *
+     * @param garnetApp the {@link GarnetApp} to run
+     */
     public void setApp(GarnetApp garnetApp) {
         this.garnetApp = garnetApp;
     }
 
+    /**
+     * Enables or disables rendering to an internal off-screen buffer.
+     * When enabled, the scene is rendered to a framebuffer object and then composited onto the screen,
+     * allowing post-processing shaders to be applied.
+     *
+     * @param val {@code true} to enable internal buffer mode, {@code false} to disable
+     */
     public void setInternalBufferMode(boolean val) {
         this.useInternalBuffer = val;
     }
 
+    /**
+     * Sets the shader program applied when drawing the internal buffer to the screen.
+     * Pass {@code null} to use the default fixed-function pipeline.
+     *
+     * @param shader the {@link com.physmo.garnet.graphics.ShaderProgram} to apply, or {@code null} for none
+     */
     public void setInternalBufferShader(com.physmo.garnet.graphics.ShaderProgram shader) {
         this.internalBufferShader = shader;
     }
