@@ -101,5 +101,6 @@ public class GlowExample extends GarnetApp {
         g.drawImage(texture, startX, startY).setShader(glowBlue);
         g.drawImage(texture, startX + spacing, startY).setShader(glowOrange);
         g.drawImage(texture, startX + spacing * 2, startY).setShader(glowGreen);
+
     }
 }

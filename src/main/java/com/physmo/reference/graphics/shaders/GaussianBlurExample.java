@@ -48,7 +48,7 @@ public class GaussianBlurExample extends GarnetApp {
     static final int BLUR_PASSES = 3;
 
     // Maximum blur-radius multiplier (mouse all the way right)
-    static final float MAX_BLUR_RADIUS = 16.0f;
+    static final float MAX_BLUR_RADIUS = 5.0f;
 
     Texture texture;
 
