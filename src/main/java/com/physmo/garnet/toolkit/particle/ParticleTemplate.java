@@ -164,8 +164,8 @@ public class ParticleTemplate {
     public Vector3 getVectorWithJitter(Vector3 v, double jitter) {
         Vector3 nv = new Vector3(v);
         if (jitter != 0) {
-            nv.x += Math.random() * jitter;
-            nv.y += Math.random() * jitter;
+            nv.x += (Math.random() - 0.5) * jitter;
+            nv.y += (Math.random() - 0.5) * jitter;
         }
         return nv;
     }
