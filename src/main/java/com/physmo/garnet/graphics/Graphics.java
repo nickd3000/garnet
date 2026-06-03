@@ -26,19 +26,22 @@ import static org.lwjgl.opengl.GL11.glScissor;
 public class Graphics {
 
     private final Display display;
-    private final Map<Integer, Texture> textures;
+    private final ViewportManager viewportManager;
     private final DrawableBatch drawableBatch;
 
-    private final ViewportManager viewportManager;
-    ObjectPool<Sprite2D> sprite2DObjectPool;
-    ObjectPool<Line2D> line2DObjectPool;
+    private final Map<Integer, Texture> textures;
+    private final ObjectPool<Sprite2D> sprite2DObjectPool;
+    private final ObjectPool<Line2D> line2DObjectPool;
 
-    private int currentTextureId = 0;
     private int color;
+    private final SubImage subImage = new SubImage();
     private int currentDrawOrder;
+    private int backgroundColor;
     private int currentlyBoundTextureId;
-    private int backgroundColor = 0;
-    private boolean internalBufferMode = false;
+    private int currentTextureId;
+    private int activeViewportId;
+    private int clipRectHash;
+    private boolean internalBufferMode;
 
     /**
      * Creates a new Graphics instance tied to the given display.
@@ -47,15 +50,30 @@ public class Graphics {
      */
     public Graphics(Display display) {
         this.display = display;
+        viewportManager = new ViewportManager(display.getWindowWidth(), display.getWindowHeight());
         drawableBatch = new DrawableBatch();
+
         textures = new HashMap<>();
-
-        resetSettings();
-
         sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, Sprite2D::new);
         line2DObjectPool = new ObjectPool<>(Line2D.class, Line2D::new);
-        viewportManager = new ViewportManager(display.getWindowWidth(), display.getWindowHeight());
 
+        resetSettings();
+    }
+
+    // Frame lifecycle
+
+    /**
+     * Renders the current frame by executing the following steps:
+     * 1. Draws the viewport debug information.
+     * 2. Renders the drawable batch using the current graphics settings.
+     * 3. Releases the current batch of drawable elements back to the object pool.
+     * 4. Clears the drawable batch for the next frame.
+     */
+    public void render() {
+        drawViewportDebugInfo();
+        drawableBatch.render(this);
+        releaseBatch();
+        drawableBatch.clear();
     }
 
     /**
@@ -75,58 +93,11 @@ public class Graphics {
             // Ignore - capabilities not set yet
         }
     }
-    private int clipRectHash = 0;
-    private int activeViewportId = 0;
-    SubImage subImage = new SubImage();
-
-    /**
-     * Returns whether internal buffer (FBO) mode is active.
-     *
-     * @return {@code true} if rendering to an internal buffer
-     */
-    public boolean isInternalBufferMode() {
-        return internalBufferMode;
-    }
-
-    /**
-     * Enables or disables internal buffer (FBO) rendering mode.
-     * When enabled, rendering targets an off-screen framebuffer rather than the display directly.
-     *
-     * @param internalBufferMode {@code true} to enable internal buffer mode
-     */
-    public void setInternalBufferMode(boolean internalBufferMode) {
-        this.internalBufferMode = internalBufferMode;
-    }
-
-    /**
-     * Returns the {@link ViewportManager} used to manage viewports for this Graphics instance.
-     *
-     * @return the viewport manager
-     */
-    public ViewportManager getViewportManager() {
-        return viewportManager;
-    }
-
-    /**
-     * Renders the current frame by executing the following steps:
-     * 1. Draws the viewport debug information.
-     * 2. Renders the drawable batch using the current graphics settings.
-     * 3. Releases the current batch of drawable elements back to the object pool.
-     * 4. Clears the drawable batch for the next frame.
-     */
-    public void render() {
-        drawViewportDebugInfo();
-        drawableBatch.render(this);
-        releaseBatch();
-        drawableBatch.clear();
-
-    }
 
     private void drawViewportDebugInfo() {
         int prevViewportId = viewportManager.getActiveViewport().getId();
         double prevScale = this.getZoom();
         int prevColor = this.getColor();
-
 
         setActiveViewport(ViewportManager.DEBUG_VIEWPORT);
         this.setZoom(1);
@@ -149,7 +120,6 @@ public class Graphics {
         setColor(prevColor);
     }
 
-
     /**
      * Releases all sprite objects in the current drawable batch back to the object pool.
      * <p>
@@ -157,14 +127,23 @@ public class Graphics {
      * the element is of type SPRITE, and if so, releases it back to the Sprite2D object pool.
      */
     public void releaseBatch() {
-
         Array<DrawableElement> elements = drawableBatch.getElements();
 
         for (DrawableElement element : elements) {
             if (element.getType() == DrawableElement.SPRITE) sprite2DObjectPool.releaseObject((Sprite2D) element);
             if (element.getType() == DrawableElement.LINE) line2DObjectPool.releaseObject((Line2D) element);
         }
+    }
 
+    // Viewports
+
+    /**
+     * Returns the {@link ViewportManager} used to manage viewports for this Graphics instance.
+     *
+     * @return the viewport manager
+     */
+    public ViewportManager getViewportManager() {
+        return viewportManager;
     }
 
     /**
@@ -186,6 +165,41 @@ public class Graphics {
     }
 
     /**
+     * Sets the active viewport by id. Subsequent draw calls will be rendered within this viewport.
+     *
+     * @param id the id of the viewport to activate
+     */
+    public void setActiveViewport(int id) {
+        if (id == activeViewportId) return;
+        activeViewportId = id;
+        viewportManager.setActiveViewport(id);
+//        Viewport viewport = viewportManager.getActiveViewport();
+//        xo = viewport.getWindowX() - viewport.getScrollX();
+//        yo = viewport.getWindowY() - viewport.getScrollY();
+    }
+
+    /**
+     * Returns whether internal buffer (FBO) mode is active.
+     *
+     * @return {@code true} if rendering to an internal buffer
+     */
+    public boolean isInternalBufferMode() {
+        return internalBufferMode;
+    }
+
+    /**
+     * Enables or disables internal buffer (FBO) rendering mode.
+     * When enabled, rendering targets an off-screen framebuffer rather than the display directly.
+     *
+     * @param internalBufferMode {@code true} to enable internal buffer mode
+     */
+    public void setInternalBufferMode(boolean internalBufferMode) {
+        this.internalBufferMode = internalBufferMode;
+    }
+
+    // Render state
+
+    /**
      * Returns the current drawing color as a packed RGBA integer.
      *
      * @return the current color
@@ -204,51 +218,67 @@ public class Graphics {
     }
 
     /**
-     * Sets the active viewport by id. Subsequent draw calls will be rendered within this viewport.
+     * Returns the background clear color as a packed RGBA integer.
      *
-     * @param id the id of the viewport to activate
+     * @return the background color
      */
-    public void setActiveViewport(int id) {
-        if (id == activeViewportId) return;
-        activeViewportId = id;
-        viewportManager.setActiveViewport(id);
-//        Viewport viewport = viewportManager.getActiveViewport();
-//        xo = viewport.getWindowX() - viewport.getScrollX();
-//        yo = viewport.getWindowY() - viewport.getScrollY();
+    public int getBackgroundColor() {
+        return backgroundColor;
     }
 
     /**
-     * Draws the outline of a rectangle using four lines.
+     * Sets the background clear color.
      *
-     * @param x the x-coordinate of the top-left corner
-     * @param y the y-coordinate of the top-left corner
-     * @param w the width of the rectangle
-     * @param h the height of the rectangle
+     * @param rgba the background color as a packed RGBA integer
      */
-    public void drawRect(float x, float y, float w, float h) {
-        drawLine(x, y, x + w, y);
-        drawLine(x + w, y, x + w, y + h);
-        drawLine(x + w, y + h, x, y + h);
-        drawLine(x, y + h, x, y);
+    public void setBackgroundColor(int rgba) {
+        backgroundColor = rgba;
     }
 
     /**
-     * Draws a line between two points using the current color and draw order.
+     * Returns the current draw order value. Graphics are painted from lower to higher values.
      *
-     * @param x1 the x-coordinate of the start point
-     * @param y1 the y-coordinate of the start point
-     * @param x2 the x-coordinate of the end point
-     * @param y2 the y-coordinate of the end point
+     * @return the current draw order
      */
-    public void drawLine(float x1, float y1, float x2, float y2) {
-        //Line2D line = new Line2D(x1, y1, x2, y2);
-        Line2D line = line2DObjectPool.getFreeObject();
-        line.set(x1, y1, x2, y2);
-        line.setColor(color);
-        line.setDrawOrder(currentDrawOrder);
-        line.setViewport(viewportManager.getActiveViewport());
-        //line.setScale(zoom);
-        drawableBatch.add(line);
+    public int getDrawOrder() {
+        return currentDrawOrder;
+    }
+
+    /**
+     * Sets the current draw order for rendering operations.
+     * Graphics are painted from lower to higher.
+     *
+     * @param i the draw order value to set
+     */
+    public void setDrawOrder(int i) {
+        currentDrawOrder = i;
+    }
+
+    // Textures
+
+    /**
+     * Adds a texture to the collection of textures if it is not already present.
+     * If the texture is already registered, the method does nothing.
+     *
+     * @param texture the Texture object to be added
+     */
+    public void addTexture(Texture texture) {
+        if (textures.containsKey(texture.getId())) {
+            //System.out.println("Registered texture id: " + texture.getId());
+            return;
+        }
+        textures.put(texture.getId(), texture);
+        currentTextureId = texture.getId();
+    }
+
+    /**
+     * Returns whether a texture with the given id has been registered.
+     *
+     * @param id the texture id to check
+     * @return {@code true} if the texture is registered
+     */
+    public boolean hasTexture(int id) {
+        return textures.containsKey(id);
     }
 
     /**
@@ -270,36 +300,49 @@ public class Graphics {
     }
 
     /**
-     * Draws an image from a specified tile in the given TileSheet at the specified coordinates,
-     * with an additional rotation applied to the drawn image.
+     * Binds the texture with the given id for rendering, if it is not already bound.
      *
-     * @param tileSheet the TileSheet containing the tile to be drawn
-     * @param x         the x-coordinate where the image should be drawn
-     * @param y         the y-coordinate where the image should be drawn
-     * @param tileX     the x-coordinate of the tile in the TileSheet
-     * @param tileY     the y-coordinate of the tile in the TileSheet
-     * @param rotation  the rotation angle to apply to the drawn image
-     * @return the Sprite2D object representing the drawn image with the applied rotation
+     * @param textureId the id of the texture to bind
      */
-    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY, double rotation) {
-        Sprite2D sprite2D = drawImage(tileSheet, x, y, tileX, tileY);
-        sprite2D.addAngle((float) rotation);
-        return sprite2D;
+    public void bindTexture(int textureId) {
+        if (textureId == 0) return;
+        if (currentlyBoundTextureId == textureId) return;
+
+        Texture texture = textures.get(textureId);
+        if (texture == null) return;
+
+        texture.bind();
+        currentlyBoundTextureId = textureId;
     }
 
+    // Images
 
     /**
-     * Draws an image from a specified tile in the given TileSheet at the specified coordinates.
+     * Draws a full texture at the specified screen coordinates.
      *
-     * @param tileSheet the TileSheet containing the tile to be drawn
-     * @param x the x-coordinate where the image should be drawn
-     * @param y the y-coordinate where the image should be drawn
-     * @param tileX the x-coordinate of the tile in the TileSheet
-     * @param tileY the y-coordinate of the tile in the TileSheet
-     * @return the Sprite2D object representing the drawn image
+     * @param texture the {@link Texture} to draw
+     * @param x       the x-coordinate where the texture should be rendered
+     * @param y       the y-coordinate where the texture should be rendered
+     * @return the {@link Sprite2D} object representing the drawn image
      */
-    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
-        return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
+    public Sprite2D drawImage(Texture texture, int x, int y) {
+        int tileWidth = texture.getWidth();
+        int tileHeight = texture.getHeight();
+        int tx = 0;
+        int ty = 0;
+
+        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
+        sprite2D.reset();
+
+        sprite2D.setCoords(x, y, tileWidth, tileHeight, tx, ty, tileWidth, tileHeight);
+        sprite2D.setTextureId(texture.getId());
+
+        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+
+        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
+
+        drawableBatch.add(sprite2D);
+        return sprite2D;
     }
 
     /**
@@ -356,6 +399,38 @@ public class Graphics {
     }
 
     /**
+     * Draws an image from a specified tile in the given TileSheet at the specified coordinates,
+     * with an additional rotation applied to the drawn image.
+     *
+     * @param tileSheet the TileSheet containing the tile to be drawn
+     * @param x         the x-coordinate where the image should be drawn
+     * @param y         the y-coordinate where the image should be drawn
+     * @param tileX     the x-coordinate of the tile in the TileSheet
+     * @param tileY     the y-coordinate of the tile in the TileSheet
+     * @param rotation  the rotation angle to apply to the drawn image
+     * @return the Sprite2D object representing the drawn image with the applied rotation
+     */
+    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY, double rotation) {
+        Sprite2D sprite2D = drawImage(tileSheet, x, y, tileX, tileY);
+        sprite2D.addAngle((float) rotation);
+        return sprite2D;
+    }
+
+    /**
+     * Draws an image from a specified tile in the given TileSheet at the specified coordinates.
+     *
+     * @param tileSheet the TileSheet containing the tile to be drawn
+     * @param x         the x-coordinate where the image should be drawn
+     * @param y         the y-coordinate where the image should be drawn
+     * @param tileX     the x-coordinate of the tile in the TileSheet
+     * @param tileY     the y-coordinate of the tile in the TileSheet
+     * @return the Sprite2D object representing the drawn image
+     */
+    public Sprite2D drawImage(TileSheet tileSheet, double x, double y, int tileX, int tileY) {
+        return drawImage(tileSheet.getSubImage(tileX, tileY), x, y);
+    }
+
+    /**
      * Draws an image using explicit vertex and texture coordinate arrays.
      * Primarily used for font rendering.
      *
@@ -364,7 +439,6 @@ public class Graphics {
      * @param texCoords    the texture coordinates array
      */
     public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
-
         // TODO: make font register texture
         if (!textures.containsKey(texture.getId())) this.addTexture(texture);
 
@@ -378,128 +452,54 @@ public class Graphics {
         drawableBatch.add(sprite2D);
     }
 
+    // Primitives
+
     /**
-     * Adds a texture to the collection of textures if it is not already present.
-     * If the texture is already registered, the method does nothing.
-     *
-     * @param texture the Texture object to be added
+     * Integer-coordinate overload of {@link #drawLine(float, float, float, float)}.
      */
-    public void addTexture(Texture texture) {
-        if (textures.containsKey(texture.getId())) {
-            //System.out.println("Registered texture id: " + texture.getId());
-            return;
-        }
-        textures.put(texture.getId(), texture);
-        currentTextureId = texture.getId();
+    public void drawLine(int x1, int y1, int x2, int y2) {
+        drawLine((float) x1, (float) y1, (float) x2, (float) y2);
     }
 
     /**
-     * Draws a full texture at the specified screen coordinates.
+     * Draws a line between two points using the current color and draw order.
      *
-     * @param texture the {@link Texture} to draw
-     * @param x       the x-coordinate where the texture should be rendered
-     * @param y       the y-coordinate where the texture should be rendered
-     * @return the {@link Sprite2D} object representing the drawn image
+     * @param x1 the x-coordinate of the start point
+     * @param y1 the y-coordinate of the start point
+     * @param x2 the x-coordinate of the end point
+     * @param y2 the y-coordinate of the end point
      */
-    public Sprite2D drawImage(Texture texture, int x, int y) {
-
-        int tileWidth = texture.getWidth();
-        int tileHeight = texture.getHeight();
-        int tx = 0;
-        int ty = 0;
-
-        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-        sprite2D.reset();
-
-        sprite2D.setCoords(x, y, tileWidth, tileHeight, tx, ty, tileWidth, tileHeight);
-        sprite2D.setTextureId(texture.getId());
-
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-
-        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
-
-        drawableBatch.add(sprite2D);
-        return sprite2D;
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        //Line2D line = new Line2D(x1, y1, x2, y2);
+        Line2D line = line2DObjectPool.getFreeObject();
+        line.set(x1, y1, x2, y2);
+        line.setColor(color);
+        line.setDrawOrder(currentDrawOrder);
+        line.setViewport(viewportManager.getActiveViewport());
+        //line.setScale(zoom);
+        drawableBatch.add(line);
     }
 
     /**
-     * Binds the texture with the given id for rendering, if it is not already bound.
-     *
-     * @param textureId the id of the texture to bind
+     * Integer-coordinate overload of {@link #drawRect(float, float, float, float)}.
      */
-    public void bindTexture(int textureId) {
-        if (textureId == 0) return;
-        if (currentlyBoundTextureId == textureId) return;
-
-        Texture texture = textures.get(textureId);
-        if (texture == null) return;
-
-        texture.bind();
-        currentlyBoundTextureId = textureId;
+    public void drawRect(int x, int y, int w, int h) {
+        drawRect((float) x, (float) y, (float) w, (float) h);
     }
 
     /**
-     * Draws the outline of an ellipse inscribed within the specified bounding rectangle.
+     * Draws the outline of a rectangle using four lines.
      *
-     * @param x the x-coordinate of the bounding rectangle
-     * @param y the y-coordinate of the bounding rectangle
-     * @param w the width of the bounding rectangle
-     * @param h the height of the bounding rectangle
+     * @param x the x-coordinate of the top-left corner
+     * @param y the y-coordinate of the top-left corner
+     * @param w the width of the rectangle
+     * @param h the height of the rectangle
      */
-    public void drawCircle(float x, float y, float w, float h) {
-        Circle2D circle = new Circle2D(x, y, w, h);
-
-        circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
-
-        drawableBatch.add(circle);
-    }
-
-    /**
-     * Draws a filled ellipse inscribed within the specified bounding rectangle.
-     *
-     * @param x the x-coordinate of the bounding rectangle
-     * @param y the y-coordinate of the bounding rectangle
-     * @param w the width of the bounding rectangle
-     * @param h the height of the bounding rectangle
-     */
-    public void filledCircle(float x, float y, float w, float h) {
-        Circle2D circle = new Circle2D(x, y, w, h);
-        circle.setFilled(true);
-
-        circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
-
-        drawableBatch.add(circle);
-    }
-
-    /**
-     * Returns the current draw order value. Graphics are painted from lower to higher values.
-     *
-     * @return the current draw order
-     */
-    public int getDrawOrder() {
-        return currentDrawOrder;
-    }
-
-    /**
-     * Sets the current draw order for rendering operations.
-     * Graphics are painted from lower to higher.
-     *
-     * @param i the draw order value to set
-     */
-    public void setDrawOrder(int i) {
-        currentDrawOrder = i;
-    }
-
-    /**
-     * Draws a filled rectangle at the specified position and size.
-     *
-     * @param _x the x-coordinate of the top-left corner
-     * @param _y the y-coordinate of the top-left corner
-     * @param _w the width of the rectangle
-     * @param _h the height of the rectangle
-     */
-    public void filledRect(int _x, int _y, int _w, int _h) {
-        filledRect((float) _x, (float) _y, (float) _w, (float) _h);
+    public void drawRect(float x, float y, float w, float h) {
+        drawLine(x, y, x + w, y);
+        drawLine(x + w, y, x + w, y + h);
+        drawLine(x + w, y + h, x, y + h);
+        drawLine(x, y + h, x, y);
     }
 
     /**
@@ -534,33 +534,60 @@ public class Graphics {
     }
 
     /**
-     * Returns the background clear color as a packed RGBA integer.
-     *
-     * @return the background color
+     * Integer-coordinate overload of {@link #filledRect(float, float, float, float)}.
      */
-    public int getBackgroundColor() {
-        return backgroundColor;
+    public void filledRect(int _x, int _y, int _w, int _h) {
+        filledRect((float) _x, (float) _y, (float) _w, (float) _h);
     }
 
     /**
-     * Sets the background clear color.
-     *
-     * @param rgba the background color as a packed RGBA integer
+     * Integer-coordinate overload of {@link #drawCircle(float, float, float, float)}.
      */
-    public void setBackgroundColor(int rgba) {
-        backgroundColor = rgba;
+    public void drawCircle(int x, int y, int w, int h) {
+        drawCircle((float) x, (float) y, (float) w, (float) h);
     }
 
     /**
-     * Returns whether a texture with the given id has been registered.
+     * Draws the outline of an ellipse inscribed within the specified bounding rectangle.
      *
-     * @param id the texture id to check
-     * @return {@code true} if the texture is registered
+     * @param x the x-coordinate of the bounding rectangle
+     * @param y the y-coordinate of the bounding rectangle
+     * @param w the width of the bounding rectangle
+     * @param h the height of the bounding rectangle
      */
-    public boolean hasTexture(int id) {
-        return textures.containsKey(id);
+    public void drawCircle(float x, float y, float w, float h) {
+        Circle2D circle = new Circle2D(x, y, w, h);
+
+        circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
+
+        drawableBatch.add(circle);
     }
 
+    /**
+     * Integer-coordinate overload of {@link #filledCircle(float, float, float, float)}.
+     */
+    public void filledCircle(int x, int y, int w, int h) {
+        filledCircle((float) x, (float) y, (float) w, (float) h);
+    }
+
+    /**
+     * Draws a filled ellipse inscribed within the specified bounding rectangle.
+     *
+     * @param x the x-coordinate of the bounding rectangle
+     * @param y the y-coordinate of the bounding rectangle
+     * @param w the width of the bounding rectangle
+     * @param h the height of the bounding rectangle
+     */
+    public void filledCircle(float x, float y, float w, float h) {
+        Circle2D circle = new Circle2D(x, y, w, h);
+        circle.setFilled(true);
+
+        circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
+
+        drawableBatch.add(circle);
+    }
+
+    // Clipping internals
 
     /**
      * Internal function, not for user use.
@@ -568,7 +595,6 @@ public class Graphics {
      * @param vp
      */
     public void _activateClipRect(Viewport vp) {
-
         if (!vp.isClipActive()) {
             if (clipRectHash != 0) {
                 glDisable(GL_SCISSOR_TEST);
@@ -609,10 +635,7 @@ public class Graphics {
             }
 
             clipRectHash = vp.getClipRectHash();
-
         }
-
-
     }
 
 }
