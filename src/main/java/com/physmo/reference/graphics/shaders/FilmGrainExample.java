@@ -10,9 +10,6 @@ import com.physmo.garnet.graphics.Texture;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -79,9 +76,9 @@ public class FilmGrainExample extends GarnetApp {
 
         // Update animated uniforms before draw() is called
         filmGrainShader.bind();
-        glUniform1f(glGetUniformLocation(filmGrainShader.getProgramId(), "time"), (float) time);
-        glUniform1f(glGetUniformLocation(filmGrainShader.getProgramId(), "strength"), 0.18f);
-        glUseProgram(0);
+        filmGrainShader.setUniform1f("time", (float) time);
+        filmGrainShader.setUniform1f("strength", 0.18f);
+        filmGrainShader.unbind();
     }
 
     @Override

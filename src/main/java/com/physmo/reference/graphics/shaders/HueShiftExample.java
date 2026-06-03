@@ -7,9 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -28,8 +25,8 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 //
 // WHY FIVE SHADER INSTANCES FOR THE STATIC SPRITES?
 // Each ShaderProgram stores its own GPU uniform state.  Garnet batches all
-// draw calls and flushes them at end-of-frame, so any glUniform call made
-// before a draw() is overwritten by later calls before rendering occurs.
+// draw calls and flushes them at end-of-frame, so any uniform update made before
+// a draw() can be overwritten by later calls before rendering occurs.
 // The fix is one ShaderProgram per distinct uniform value, with the value
 // baked in at init() time (see OutlineExample for a full explanation).
 //
@@ -74,8 +71,8 @@ public class HueShiftExample extends GarnetApp {
         for (int i = 0; i < hueAngles.length; i++) {
             hueShaders[i] = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/hueshift.frag");
             hueShaders[i].bind();
-            glUniform1f(glGetUniformLocation(hueShaders[i].getProgramId(), "hue"), hueAngles[i]);
-            glUseProgram(0);
+            hueShaders[i].setUniform1f("hue", hueAngles[i]);
+            hueShaders[i].unbind();
         }
 
         // Animated shader: a single instance whose 'hue' uniform is updated every tick()
@@ -88,8 +85,8 @@ public class HueShiftExample extends GarnetApp {
         // Cycle hue through 360° over 4 seconds
         float animatedHue = (float) ((time * 90.0) % 360.0);
         animatedHueShader.bind();
-        glUniform1f(glGetUniformLocation(animatedHueShader.getProgramId(), "hue"), animatedHue);
-        glUseProgram(0);
+        animatedHueShader.setUniform1f("hue", animatedHue);
+        animatedHueShader.unbind();
     }
 
     @Override

@@ -7,10 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -75,10 +71,10 @@ public class PaletteExample extends GarnetApp {
 
         for (int i = 0; i < 3; i++) {
             paletteShader.bind();
-            glUniform1f(glGetUniformLocation(paletteShader.getProgramId(), "levels"), levels[i]);
-            glUniform1f(glGetUniformLocation(paletteShader.getProgramId(), "ditherScale"), ditherScale[i]);
-            glUniform2f(glGetUniformLocation(paletteShader.getProgramId(), "resolution"), tw, th);
-            glUseProgram(0);
+            paletteShader.setUniform1f("levels", levels[i]);
+            paletteShader.setUniform1f("ditherScale", ditherScale[i]);
+            paletteShader.setUniform2f("resolution", tw, th);
+            paletteShader.unbind();
 
             g.setColor(ColorUtils.WHITE);
             g.drawImage(texture, startX + spacing * (i + 1), startY).setShader(paletteShader);

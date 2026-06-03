@@ -7,9 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -81,8 +78,7 @@ public class PostProcessExample extends GarnetApp {
 
         // Upload texelSize uniform for the final pass
         haloShader.bind();
-        int loc = glGetUniformLocation(haloShader.getProgramId(), "texelSize");
-        glUniform2f(loc, 1.0f / WINDOW_W, 1.0f / WINDOW_H);
-        glUseProgram(0);
+        haloShader.setUniform2f("texelSize", 1.0f / WINDOW_W, 1.0f / WINDOW_H);
+        haloShader.unbind();
     }
 }

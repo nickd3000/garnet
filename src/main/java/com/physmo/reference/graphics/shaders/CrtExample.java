@@ -7,9 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -96,8 +93,7 @@ public class CrtExample extends GarnetApp {
 
         // Apply uniforms for the next time the CRT shader is used (at the end of the frame)
         crtShader.bind();
-        int loc = glGetUniformLocation(crtShader.getProgramId(), "resolution");
-        glUniform2f(loc, WINDOW_W, WINDOW_H);
-        glUseProgram(0);
+        crtShader.setUniform2f("resolution", WINDOW_W, WINDOW_H);
+        crtShader.unbind();
     }
 }

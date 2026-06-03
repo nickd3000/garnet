@@ -7,11 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUniform4f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -26,8 +21,8 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 //
 // WHY THREE SHADER INSTANCES?
 // Each ShaderProgram stores its own GPU uniform state.  Garnet batches all
-// draw calls and flushes them at end-of-frame, so any glUniform call made
-// before a draw() is overwritten by later calls before rendering occurs.
+// draw calls and flushes them at end-of-frame, so any uniform update made before
+// a draw() can be overwritten by later calls before rendering occurs.
 // The fix is one ShaderProgram per distinct uniform value, with the value
 // baked in at init() time (see OutlineExample for a full explanation).
 public class GlowExample extends GarnetApp {
@@ -65,24 +60,24 @@ public class GlowExample extends GarnetApp {
 
         glowBlue = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/glow.frag");
         glowBlue.bind();
-        glUniform2f(glGetUniformLocation(glowBlue.getProgramId(), "texelSize"), texelW, texelH);
-        glUniform4f(glGetUniformLocation(glowBlue.getProgramId(), "glowColor"), 0.2f, 0.5f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(glowBlue.getProgramId(), "glowRadius"), 3.0f);
-        glUseProgram(0);
+        glowBlue.setUniform2f("texelSize", texelW, texelH);
+        glowBlue.setUniform4f("glowColor", 0.2f, 0.5f, 1.0f, 1.0f);
+        glowBlue.setUniform1f("glowRadius", 3.0f);
+        glowBlue.unbind();
 
         glowOrange = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/glow.frag");
         glowOrange.bind();
-        glUniform2f(glGetUniformLocation(glowOrange.getProgramId(), "texelSize"), texelW, texelH);
-        glUniform4f(glGetUniformLocation(glowOrange.getProgramId(), "glowColor"), 1.0f, 0.5f, 0.1f, 1.0f);
-        glUniform1f(glGetUniformLocation(glowOrange.getProgramId(), "glowRadius"), 5.0f);
-        glUseProgram(0);
+        glowOrange.setUniform2f("texelSize", texelW, texelH);
+        glowOrange.setUniform4f("glowColor", 1.0f, 0.5f, 0.1f, 1.0f);
+        glowOrange.setUniform1f("glowRadius", 5.0f);
+        glowOrange.unbind();
 
         glowGreen = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/glow.frag");
         glowGreen.bind();
-        glUniform2f(glGetUniformLocation(glowGreen.getProgramId(), "texelSize"), texelW, texelH);
-        glUniform4f(glGetUniformLocation(glowGreen.getProgramId(), "glowColor"), 0.2f, 1.0f, 0.3f, 1.0f);
-        glUniform1f(glGetUniformLocation(glowGreen.getProgramId(), "glowRadius"), 2.0f);
-        glUseProgram(0);
+        glowGreen.setUniform2f("texelSize", texelW, texelH);
+        glowGreen.setUniform4f("glowColor", 0.2f, 1.0f, 0.3f, 1.0f);
+        glowGreen.setUniform1f("glowRadius", 2.0f);
+        glowGreen.unbind();
     }
 
     @Override

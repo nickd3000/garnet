@@ -7,10 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUniform4f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -25,10 +21,10 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 //
 // WHY THREE SHADER INSTANCES?
 // Each ShaderProgram has its own set of uniform values stored on the GPU.
-// If you reuse a single ShaderProgram and call glUniform4f() to change the
+// If you reuse a single ShaderProgram and update the outline colour uniform
 // colour before each sprite, all sprites end up the same colour — because
 // Garnet batches draw calls and only executes them at the end of the frame,
-// by which point the last glUniform4f() call has overwritten all the earlier
+// by which point the last uniform update has overwritten all the earlier
 // ones.  The fix is to compile a separate ShaderProgram per colour and bake
 // the uniform values in at init() time, so each sprite carries its own
 // immutable GPU state into the batch.
@@ -67,21 +63,21 @@ public class OutlineExample extends GarnetApp {
 
         outlineShaderRed = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/outline.frag");
         outlineShaderRed.bind();
-        glUniform2f(glGetUniformLocation(outlineShaderRed.getProgramId(), "texelSize"), texelW, texelH);
-        glUniform4f(glGetUniformLocation(outlineShaderRed.getProgramId(), "outlineColor"), 1f, 0.1f, 0.1f, 1f);
-        glUseProgram(0);
+        outlineShaderRed.setUniform2f("texelSize", texelW, texelH);
+        outlineShaderRed.setUniform4f("outlineColor", 1f, 0.1f, 0.1f, 1f);
+        outlineShaderRed.unbind();
 
         outlineShaderYellow = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/outline.frag");
         outlineShaderYellow.bind();
-        glUniform2f(glGetUniformLocation(outlineShaderYellow.getProgramId(), "texelSize"), texelW, texelH);
-        glUniform4f(glGetUniformLocation(outlineShaderYellow.getProgramId(), "outlineColor"), 1f, 0.9f, 0f, 1f);
-        glUseProgram(0);
+        outlineShaderYellow.setUniform2f("texelSize", texelW, texelH);
+        outlineShaderYellow.setUniform4f("outlineColor", 1f, 0.9f, 0f, 1f);
+        outlineShaderYellow.unbind();
 
         outlineShaderCyan = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/outline.frag");
         outlineShaderCyan.bind();
-        glUniform2f(glGetUniformLocation(outlineShaderCyan.getProgramId(), "texelSize"), texelW, texelH);
-        glUniform4f(glGetUniformLocation(outlineShaderCyan.getProgramId(), "outlineColor"), 0f, 1f, 0.9f, 1f);
-        glUseProgram(0);
+        outlineShaderCyan.setUniform2f("texelSize", texelW, texelH);
+        outlineShaderCyan.setUniform4f("outlineColor", 0f, 1f, 0.9f, 1f);
+        outlineShaderCyan.unbind();
     }
 
     @Override

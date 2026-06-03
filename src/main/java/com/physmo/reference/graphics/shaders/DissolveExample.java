@@ -7,10 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform4f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -29,8 +25,8 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 // NOTE ON UNIFORM UPDATES:
 // Unlike the outline shader (which bakes uniforms at init time), this shader
 // updates 'threshold' every frame in tick().  Because Garnet batches draw calls
-// until end-of-frame, the uniform must be uploaded via the shader's bind()/
-// glUniform/glUseProgram(0) pattern before draw() is called — the value is
+// until end-of-frame, the uniform must be uploaded via the shader's bind() and
+// setUniform calls before draw() is called — the value is
 // read by the GPU when the batch is flushed at frame end, by which point the
 // last uploaded value is in effect.  This works correctly here because there
 // is only one sprite using this shader; if you had multiple sprites needing
@@ -69,9 +65,9 @@ public class DissolveExample extends GarnetApp {
 
         // Bake in the static uniforms at init time
         dissolveShader.bind();
-        glUniform1f(glGetUniformLocation(dissolveShader.getProgramId(), "edgeWidth"), 0.08f);
-        glUniform4f(glGetUniformLocation(dissolveShader.getProgramId(), "edgeColor"), 1.0f, 0.4f, 0.0f, 1.0f);
-        glUseProgram(0);
+        dissolveShader.setUniform1f("edgeWidth", 0.08f);
+        dissolveShader.setUniform4f("edgeColor", 1.0f, 0.4f, 0.0f, 1.0f);
+        dissolveShader.unbind();
     }
 
     @Override
@@ -82,8 +78,8 @@ public class DissolveExample extends GarnetApp {
         float threshold = (float) (Math.abs(Math.sin(time * Math.PI / 3.0)));
 
         dissolveShader.bind();
-        glUniform1f(glGetUniformLocation(dissolveShader.getProgramId(), "threshold"), threshold);
-        glUseProgram(0);
+        dissolveShader.setUniform1f("threshold", threshold);
+        dissolveShader.unbind();
     }
 
     @Override

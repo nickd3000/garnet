@@ -10,9 +10,6 @@ import com.physmo.garnet.graphics.Texture;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -67,10 +64,10 @@ public class UnderwaterExample extends GarnetApp {
 
         // Bake in the static uniforms
         underwaterShader.bind();
-        glUniform1f(glGetUniformLocation(underwaterShader.getProgramId(), "waveAmp"), 0.008f);
-        glUniform1f(glGetUniformLocation(underwaterShader.getProgramId(), "waveSpeed"), 1.0f);
-        glUniform1f(glGetUniformLocation(underwaterShader.getProgramId(), "tintStr"), 0.7f);
-        glUseProgram(0);
+        underwaterShader.setUniform1f("waveAmp", 0.008f);
+        underwaterShader.setUniform1f("waveSpeed", 1.0f);
+        underwaterShader.setUniform1f("tintStr", 0.7f);
+        underwaterShader.unbind();
 
         for (int i = 0; i < NUM_SPRITES; i++) {
             angle[i] = i * (2 * Math.PI / NUM_SPRITES);
@@ -86,8 +83,8 @@ public class UnderwaterExample extends GarnetApp {
 
         // Update the animated time uniform
         underwaterShader.bind();
-        glUniform1f(glGetUniformLocation(underwaterShader.getProgramId(), "time"), (float) time);
-        glUseProgram(0);
+        underwaterShader.setUniform1f("time", (float) time);
+        underwaterShader.unbind();
     }
 
     @Override

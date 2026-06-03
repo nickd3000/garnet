@@ -7,9 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -66,10 +63,10 @@ public class WaveExample extends GarnetApp {
 
         // Upload animated uniforms
         waveShader.bind();
-        glUniform1f(glGetUniformLocation(waveShader.getProgramId(), "time"), (float) time);
-        glUniform1f(glGetUniformLocation(waveShader.getProgramId(), "amplitude"), 0.025f);
-        glUniform1f(glGetUniformLocation(waveShader.getProgramId(), "frequency"), 12.0f);
-        glUseProgram(0);
+        waveShader.setUniform1f("time", (float) time);
+        waveShader.setUniform1f("amplitude", 0.025f);
+        waveShader.setUniform1f("frequency", 12.0f);
+        waveShader.unbind();
 
         // Column 1 — no shader (normal)
         g.setColor(ColorUtils.WHITE);

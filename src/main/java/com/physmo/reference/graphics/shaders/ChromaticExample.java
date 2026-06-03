@@ -7,9 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -70,8 +67,8 @@ public class ChromaticExample extends GarnetApp {
         float[] shifts = {0.005f, 0.015f, 0.03f};
         for (int i = 0; i < shifts.length; i++) {
             chromaticShader.bind();
-            glUniform1f(glGetUniformLocation(chromaticShader.getProgramId(), "shift"), shifts[i]);
-            glUseProgram(0);
+            chromaticShader.setUniform1f("shift", shifts[i]);
+            chromaticShader.unbind();
 
             g.setColor(ColorUtils.WHITE);
             g.drawImage(texture, startX + spacing * (i + 1), startY).setShader(chromaticShader);
