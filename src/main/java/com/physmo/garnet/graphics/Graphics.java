@@ -86,9 +86,8 @@ public class Graphics {
         currentlyBoundTextureId = 0;
         clipRectHash = 0;
         try {
-            if (GL.getCapabilities() != null) {
-                glDisable(GL_SCISSOR_TEST);
-            }
+            GL.getCapabilities();
+            glDisable(GL_SCISSOR_TEST);
         } catch (IllegalStateException e) {
             // Ignore - capabilities not set yet
         }
