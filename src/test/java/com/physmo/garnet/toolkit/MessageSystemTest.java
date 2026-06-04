@@ -1,28 +1,33 @@
 package com.physmo.garnet.toolkit;
 
 import com.physmo.garnet.graphics.Graphics;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageSystemTest {
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class MessageSystemTest {
 
     @Test
-    public void testLocalMessaging() {
+    void localMessageIsDeliveredToComponents() {
         GameObject gameObject = new GameObject("TestObject");
         TestComponent component = new TestComponent();
         gameObject.addComponent(component);
 
         gameObject.sendMessage("HELLO", "WORLD");
 
-        Assert.assertTrue(component.receivedMessages.contains("HELLO"));
-        Assert.assertEquals("WORLD", component.lastData);
+        assertTrue(component.receivedMessages.contains("HELLO"));
+        assertEquals("WORLD", component.lastData);
     }
 
     @Test
-    public void testGlobalBroadcasting() {
+    void contextBroadcastIsDeliveredToAllGameObjectComponents() {
         Context context = new Context();
         context.init();
 
@@ -39,14 +44,14 @@ public class MessageSystemTest {
 
         context.broadcastMessage("BROADCAST", 123);
 
-        Assert.assertTrue(comp1.receivedMessages.contains("BROADCAST"));
-        Assert.assertEquals(123, comp1.lastData);
-        Assert.assertTrue(comp2.receivedMessages.contains("BROADCAST"));
-        Assert.assertEquals(123, comp2.lastData);
+        assertTrue(comp1.receivedMessages.contains("BROADCAST"));
+        assertEquals(123, comp1.lastData);
+        assertTrue(comp2.receivedMessages.contains("BROADCAST"));
+        assertEquals(123, comp2.lastData);
     }
 
     @Test
-    public void testInitiatingBroadcastFromComponent() {
+    void componentCanInitiateBroadcastThroughParentContext() {
         Context context = new Context();
         context.init();
 
@@ -63,13 +68,13 @@ public class MessageSystemTest {
 
         comp1.broadcastMessage("FROM_COMP", "DATA");
 
-        Assert.assertTrue(comp1.receivedMessages.contains("FROM_COMP"));
-        Assert.assertTrue(comp2.receivedMessages.contains("FROM_COMP"));
-        Assert.assertEquals("DATA", comp2.lastData);
+        assertTrue(comp1.receivedMessages.contains("FROM_COMP"));
+        assertTrue(comp2.receivedMessages.contains("FROM_COMP"));
+        assertEquals("DATA", comp2.lastData);
     }
 
     @Test
-    public void testInitiatingBroadcastFromGameObject() {
+    void gameObjectCanInitiateBroadcastThroughContext() {
         Context context = new Context();
         context.init();
 
@@ -86,14 +91,13 @@ public class MessageSystemTest {
 
         obj1.broadcastMessage("FROM_OBJ");
 
-        Assert.assertTrue(comp1.receivedMessages.contains("FROM_OBJ"));
-        Assert.assertTrue(comp2.receivedMessages.contains("FROM_OBJ"));
+        assertTrue(comp1.receivedMessages.contains("FROM_OBJ"));
+        assertTrue(comp2.receivedMessages.contains("FROM_OBJ"));
     }
 
     @Test
-    public void testNoOpDefault() {
+    void defaultMessageHandlerDoesNotThrow() {
         GameObject gameObject = new GameObject("TestObject");
-        // Add a component that doesn't override onMessage
         Component normalComp = new Component() {
             @Override
             public void init() {
@@ -109,23 +113,23 @@ public class MessageSystemTest {
         };
         gameObject.addComponent(normalComp);
 
-        // This should not throw any exception
-        gameObject.sendMessage("TEST");
+        assertDoesNotThrow(() -> gameObject.sendMessage("TEST"));
     }
 
     @Test
-    public void testContextTagSafety() {
+    void getObjectByTagReturnsNullForUnknownTag() {
         Context context = new Context();
         context.init();
         GameObject obj = context.getObjectByTag("NON_EXISTENT");
-        Assert.assertNull(obj);
+
+        assertNull(obj);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testComponentContextSafety() {
+    @Test
+    void componentParentContextAccessThrowsWhenParentIsMissing() {
         TestComponent component = new TestComponent();
-        // This should throw RuntimeException because parent is null
-        component.getObjectByTypeFromParentContext(GameObject.class);
+
+        assertThrows(RuntimeException.class, () -> component.getObjectByTypeFromParentContext(GameObject.class));
     }
 
     static class TestComponent extends Component {

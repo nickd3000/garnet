@@ -8,6 +8,9 @@ target/
 .idea
 .junie
 .junie/
+.agents
+.agents/
+AGENTS.md
 **/*.iml
 .iml
 
