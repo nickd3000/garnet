@@ -3,6 +3,8 @@ package com.physmo.garnet.structure;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Vector3Test {
 
@@ -15,6 +17,17 @@ class Vector3Test {
 
         assertVector(defaultVector, 0, 0, 0);
         assertVector(vector, 1, 2, 3);
+    }
+
+    @Test
+    void copyConstructorCreatesIndependentCopy() {
+        Vector3 original = new Vector3(1, 2, 3);
+        Vector3 copy = new Vector3(original);
+
+        original.set(4, 5, 6);
+
+        assertNotSame(original, copy);
+        assertVector(copy, 1, 2, 3);
     }
 
     private static void assertVector(Vector3 vector, double x, double y, double z) {
@@ -131,6 +144,37 @@ class Vector3Test {
     }
 
     @Test
+    void normaliseZeroVectorProducesNaNComponents() {
+        Vector3 vector = new Vector3(0, 0, 0);
+
+        vector.normalise();
+
+        assertTrue(Double.isNaN(vector.x));
+        assertTrue(Double.isNaN(vector.y));
+        assertTrue(Double.isNaN(vector.z));
+    }
+
+    @Test
+    void getDirectionToReturnsDirectionFromOtherToThis() {
+        Vector3 vector = new Vector3(10, 0, 0);
+        Vector3 other = new Vector3(0, 0, 0);
+
+        Vector3 direction = vector.getDirectionTo(other);
+
+        assertVector(direction, 1, 0, 0);
+    }
+
+    @Test
+    void generateRandomRadial2DReturnsRequestedLengthWithZeroZ() {
+        for (int i = 0; i < 100; i++) {
+            Vector3 vector = Vector3.generateRandomRadial2D(7.5);
+
+            assertEquals(7.5, vector.length(), DELTA);
+            assertEquals(0, vector.z, DELTA);
+        }
+    }
+
+    @Test
     void distanceCalculatesDistanceBetweenVectors() {
         Vector3 v1 = new Vector3(1.0, 2.0, 3.0);
         Vector3 v2 = new Vector3(4.0, 6.0, 3.0);
@@ -162,6 +206,15 @@ class Vector3Test {
     }
 
     @Test
+    void setFromAnglePreservesZ() {
+        Vector3 vector = new Vector3(0, 0, 9);
+
+        vector.setFromAngle(Math.PI / 2, 2);
+
+        assertVector(vector, 2, 0, 9);
+    }
+
+    @Test
     void getAngleReturnsAngleUsedBySetFromAngle() {
         Vector3 vector = new Vector3();
         double angle = Math.PI / 2;
@@ -169,5 +222,13 @@ class Vector3Test {
         vector.setFromAngle(angle, 1);
 
         assertEquals(angle, vector.getAngle(), 0.001);
+    }
+
+    @Test
+    void getAngleReturnsCardinalDirections() {
+        assertEquals(0, new Vector3(0, 1, 0).getAngle(), DELTA);
+        assertEquals(Math.PI / 2, new Vector3(1, 0, 0).getAngle(), DELTA);
+        assertEquals(Math.PI, new Vector3(0, -1, 0).getAngle(), DELTA);
+        assertEquals(Math.PI * 1.5, new Vector3(-1, 0, 0).getAngle(), DELTA);
     }
 }

@@ -6,7 +6,7 @@
 
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.10a-SNAPSHOT</version>
+    <version>0.5.10b-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/nickd3000/garnet</url>
@@ -16,6 +16,8 @@
         <lwjgl.version>3.3.6</lwjgl.version>
         <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
         <jacoco.version>0.8.14</jacoco.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <argLine></argLine>

@@ -55,6 +55,26 @@ class RectTest {
     }
 
     @Test
+    void intersectTreatsTouchingEdgesAsIntersection() {
+        Rect rect = new Rect(0, 0, 10, 10);
+
+        assertTrue(rect.intersect(new Rect(10, 0, 5, 5)));
+        assertTrue(rect.intersect(new Rect(-5, 0, 5, 5)));
+        assertTrue(rect.intersect(new Rect(0, 10, 5, 5)));
+        assertTrue(rect.intersect(new Rect(0, -5, 5, 5)));
+    }
+
+    @Test
+    void intersectDetectsContainedIdenticalAndNegativeCoordinateRectangles() {
+        Rect rect = new Rect(-10, -10, 20, 20);
+
+        assertTrue(rect.intersect(new Rect(-5, -5, 2, 2)));
+        assertTrue(rect.intersect(new Rect(-10, -10, 20, 20)));
+        assertTrue(rect.intersect(new Rect(-15, -15, 6, 6)));
+        assertFalse(rect.intersect(new Rect(-30, -30, 5, 5)));
+    }
+
+    @Test
     void overlapReportsRightAndBottomOverlap() {
         Rect rect1 = new Rect(0, 0, 10, 10);
         Rect rect2 = new Rect(5, 5, 10, 10);
@@ -66,14 +86,32 @@ class RectTest {
     }
 
     @Test
+    void overlapReportsTopRightBottomAndLeftDirectionalValues() {
+        Rect rect = new Rect(0, 0, 10, 10);
+
+        assertOverlap(rect, new Rect(0, -5, 10, 10), new double[]{5, 0, 0, 10});
+        assertOverlap(rect, new Rect(5, 0, 10, 10), new double[]{0, 5, 10, 0});
+        assertOverlap(rect, new Rect(0, 5, 10, 10), new double[]{0, 0, 5, 10});
+        assertOverlap(rect, new Rect(-5, 0, 10, 10), new double[]{0, 0, 10, 5});
+    }
+
+    private static void assertOverlap(Rect rect, Rect other, double[] expected) {
+        double[] overlap = new double[4];
+
+        rect.overlap(other, overlap);
+
+        assertArrayEquals(expected, overlap, DELTA);
+    }
+
+    @Test
     void overlapLeavesArrayUnchangedWhenEdgesTouch() {
         Rect rect1 = new Rect(0, 0, 10, 10);
         Rect rect2 = new Rect(10, 0, 10, 10);
-        double[] overlap = new double[4];
+        double[] overlap = new double[]{1, 2, 3, 4};
 
         rect1.overlap(rect2, overlap);
 
-        assertArrayEquals(new double[]{0, 0, 0, 0}, overlap, DELTA);
+        assertArrayEquals(new double[]{1, 2, 3, 4}, overlap, DELTA);
     }
 
     @Test
@@ -85,5 +123,16 @@ class RectTest {
         rect1.overlap(rect2, overlap);
 
         assertArrayEquals(new double[]{0, 0, 0.1, 10}, overlap, DELTA);
+    }
+
+    @Test
+    void overlapLeavesArrayUnchangedWhenRectanglesDoNotOverlap() {
+        Rect rect1 = new Rect(0, 0, 10, 10);
+        Rect rect2 = new Rect(20, 0, 10, 10);
+        double[] overlap = new double[]{1, 2, 3, 4};
+
+        rect1.overlap(rect2, overlap);
+
+        assertArrayEquals(new double[]{1, 2, 3, 4}, overlap, DELTA);
     }
 }
