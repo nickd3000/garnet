@@ -12,6 +12,8 @@ target/
 .agents/
 agent_notes
 agent_notes/
+agent-notes
+agent-notes/
 AGENTS.md
 **/*.iml
 .iml

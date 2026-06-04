@@ -83,10 +83,33 @@ public class SimpleSpriteExample extends GarnetApp {
 
 ### Changelist
 
+### Version 0.5.xx - June 2026
+
+- Version moved from 0.5.3 in January 2025 to current 0.5.10a-SNAPSHOT.
+- Added tick-rate control in Garnet via getTickRate() / setTickRate(double).
+- Added shader/post-processing support: ShaderProgram, RenderTexture, internal buffer mode, optional buffer shader, and
+  many shader examples/resources.
+- Added advanced graphics examples: CRT, glow, blur, palette, film grain, dissolve, hue shift, outline, chromatic
+  aberration, underwater, wave, colour grading.
+- Added per-element blend modes in DrawableBatch using BlendMode.
+- Added drawable color override support.
+- Refactored viewport/scrolling behavior, including renamed scrolling-related methods and updated transform handling.
+- Added toolkit messaging: Context, GameObject, and Component can send/broadcast messages, with MessageListener.
+- Collision system substantially improved: collision groups/matrix, BucketGridMap, lower allocations, group-based
+  queries, and removeColliderFromGameObject.
+- Particle system improved: gravity support, default emission curve, and corrected centered jitter behavior.
+- Array gained more utility methods and performance-oriented improvements.
+- TileSheet / SubImage usage was optimized to reduce allocations; tile index lookup from 2D coordinates was added.
+- Fixed Vector3.getAngle and added VectorAngleExample.
+- Examples moved from com.physmo.garnetexamples to com.physmo.reference.
+- LWJGL updated to 3.3.6; mouse cursor handling optimized.
+- Javadocs/API docs expanded heavily across the public API.
+
 ### Version 0.5.3 - January 2025
 
 - Allow tick rate control in core Garnet class
-- CollisionSystem - added removeColliderFromGameObject()Add gravity support to particles
+- CollisionSystem - added removeColliderFromGameObject()
+- Add gravity support to particles
 - Convert some graphics classes that use SubImage to use an output parameter to help avoid allocations.
 - Improvements to collision - Reduce memory allocations by reusing structures
 - Moved examples to reference folder
@@ -141,3 +164,4 @@ public class SimpleSpriteExample extends GarnetApp {
 - Optimized sprite drawing - added Sprite2D object pool to reuse sprite objects.
 - Package refactoring
 - Rewrote paragraph drawer and fixed new line bugs.
+
