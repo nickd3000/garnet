@@ -10,6 +10,8 @@ target/
 .junie/
 .agents
 .agents/
+agent_notes
+agent_notes/
 AGENTS.md
 **/*.iml
 .iml
