@@ -25,8 +25,8 @@ public class ViewportManager {
 
     public void refreshCurrentValues() {
         Viewport vp = getViewport(activeViewportId);
-        xOffset = vp.getX();
-        yOffset = vp.getY();
+        xOffset = vp.getScrollX();
+        yOffset = vp.getScrollY();
     }
 
     public Viewport getViewport(int id) {

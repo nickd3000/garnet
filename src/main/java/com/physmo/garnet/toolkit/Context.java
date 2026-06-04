@@ -21,6 +21,11 @@ public class Context {
     private List<Object> objects = new ArrayList<>();
     private boolean duringTick = false;
 
+    /**
+     * Returns whether this context has been initialised.
+     *
+     * @return {@code true} if {@link #init()} has been called
+     */
     public boolean isInitialised() {
         return initialised;
     }
@@ -31,10 +36,11 @@ public class Context {
     }
 
     /**
-     * Add an object to this context.  If the object is derived
-     * from GameObject, the context will be automatically injected into it.
+     * Adds a new object to the context, handling initialization and ensuring the object
+     * is correctly managed based on the current state of the context.
      *
-     * @param object
+     * @param object The object to be added to the context. If the object is an instance
+     *               of {@code GameObject}, it will have the context injected into it.
      */
     public void add(Object object) {
 
@@ -122,6 +128,10 @@ public class Context {
         uninitialisedObjects.clear();
     }
 
+    /**
+     * Initialises the context: marks it as initialised and runs first-time setup on any
+     * objects that were added before the first tick.
+     */
     public void init() {
         initialised = true;
         addNewObjects();
@@ -192,6 +202,30 @@ public class Context {
     }
 
     /**
+     * Broadcasts a message to all game objects currently in this context.
+     *
+     * @param name The name of the message.
+     */
+    public void broadcastMessage(String name) {
+        broadcastMessage(name, null);
+    }
+
+    /**
+     * Broadcasts a message to all game objects currently in this context.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void broadcastMessage(String name, Object data) {
+        List<Object> objectsCopy = new ArrayList<>(objects);
+        for (Object object : objectsCopy) {
+            if (object instanceof GameObject) {
+                ((GameObject) object).sendMessage(name, data);
+            }
+        }
+    }
+
+    /**
      * Resets the context by clearing all objects currently stored.
      *
      * This method removes all objects from the internal list, effectively resetting
@@ -202,6 +236,11 @@ public class Context {
         objects.clear();
     }
 
+    /**
+     * Returns the total number of objects currently held in this context.
+     *
+     * @return the object count
+     */
     public int getObjectCount() {
         return objects.size();
     }
@@ -214,6 +253,7 @@ public class Context {
      */
     public GameObject getObjectByTag(String tag) {
         List<GameObject> objectsByTag = getObjectsByTag(tag);
+        if (objectsByTag.isEmpty()) return null;
         return objectsByTag.get(0);
     }
 }

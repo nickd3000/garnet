@@ -1,5 +1,11 @@
 package com.physmo.garnet;
 
+/**
+ * Provides predefined RGBA colour constants and utility methods for converting between
+ * colour representations (packed RGBA integers, float arrays, and individual components).
+ * <p>
+ * All packed integers use the format {@code 0xRRGGBBAA}.
+ */
 public class ColorUtils {
     public static int BLACK;
     public static int WHITE;
@@ -123,12 +129,26 @@ public class ColorUtils {
         return rgb;
     }
 
+    /**
+     * Converts a packed RGBA integer to a 4-element float array {@code [r, g, b, a]}
+     * with each component in the range 0.0–1.0.
+     *
+     * @param rgba the packed RGBA colour
+     * @return a new float array containing the four components
+     */
     public static float[] rgbToFloat(int rgba) {
         float[] f = new float[4];
         rgbToFloat(rgba, f);
         return f;
     }
 
+    /**
+     * Unpacks a packed RGBA integer into an existing float array.
+     * Each component is written into {@code outFloats[0..3]} in the range 0.0–1.0.
+     *
+     * @param rgba      the packed RGBA colour
+     * @param outFloats the destination array (must have length ≥ 4)
+     */
     public static void rgbToFloat(int rgba, float[] outFloats) {
         outFloats[0] = ((rgba >> 24) & 0xff) / 255f;
         outFloats[1] = ((rgba >> 16) & 0xff) / 255f;
@@ -136,6 +156,14 @@ public class ColorUtils {
         outFloats[3] = ((rgba) & 0xff) / 255f;
     }
 
+    /**
+     * Converts a packed RGBA integer to a new 4-element float array {@code [r, g, b, a]}
+     * with each component in the range 0.0–1.0.
+     * Equivalent to {@link #rgbToFloat(int)} but always allocates a new array.
+     *
+     * @param rgba the packed RGBA colour
+     * @return a new float array containing the four components
+     */
     public static float[] rgbaToFloats(int rgba) {
         float[] f = new float[4];
         f[0] = ((rgba >> 24) & 0xff) / 255f;
@@ -145,6 +173,16 @@ public class ColorUtils {
         return f;
     }
 
+    /**
+     * Converts four float colour components to a packed RGBA integer.
+     * Each component is clamped to the range 0.0–1.0 before conversion.
+     *
+     * @param r red component (0.0–1.0)
+     * @param g green component (0.0–1.0)
+     * @param b blue component (0.0–1.0)
+     * @param a alpha component (0.0–1.0)
+     * @return the packed RGBA integer
+     */
     public static int asRGBA(float r, float g, float b, float a) {
         int rgb = 0;
 

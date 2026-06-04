@@ -2,7 +2,13 @@ package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor4fv;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
 public class Shape2D extends DrawableElement {
 
@@ -32,13 +38,10 @@ public class Shape2D extends DrawableElement {
     @Override
     void render(Graphics graphics) {
         glDisable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
-        applyTranslation();
+        pushViewportTransform(graphics);
 
-        //glBegin(GL_LINES);
         glBegin(GL_TRIANGLE_FAN);
         // Add mid-point
         glVertex2f(midPoint[0], midPoint[1]);
@@ -48,17 +51,12 @@ public class Shape2D extends DrawableElement {
         }
         glVertex2f(coords[0], coords[1]);
         glEnd();
-        removeTranslation();
+        popViewportTransform();
     }
 
     @Override
     int getTextureId() {
         return 0;
-    }
-
-    @Override
-    boolean hasTexture() {
-        return false;
     }
 
     @Override

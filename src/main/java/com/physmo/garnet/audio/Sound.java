@@ -6,6 +6,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Manages loading and playback of audio clips.
+ * <p>
+ * Sounds are loaded from classpath resources via {@link #loadSound} which returns an integer
+ * handle. Use {@link #playSound(int)} or {@link #playSound(int, float, float)} to play a
+ * sound on a background thread. Master volume scales all playback.
+ */
 public class Sound {
 
     private static final float defaultClipVolume = 1.0f;
@@ -22,10 +29,20 @@ public class Sound {
         this.masterVolume = masterVolume;
     }
 
+    /**
+     * Initialises the audio subsystem. Currently a no-op; reserved for future setup.
+     */
     public void init() {
 
     }
 
+    /**
+     * Loads a sound file from the classpath and returns a handle for later playback.
+     *
+     * @param fileName the classpath-relative path to the audio file (e.g. {@code "sounds/boom.wav"})
+     * @return an integer handle to pass to {@link #playSound(int)}
+     * @throws RuntimeException if the file cannot be read
+     */
     public int loadSound(String fileName) {
 
         try {
@@ -40,6 +57,11 @@ public class Sound {
     }
 
 
+    /**
+     * Plays the sound identified by {@code id} at the default volume and centre pan on a new thread.
+     *
+     * @param id the handle returned by {@link #loadSound}
+     */
     public void playSound(int id) {
         //new Thread(() -> playSound2(id, defaultClipVolume, defaultClipPan)).start();
         new Thread(() -> {
@@ -54,6 +76,12 @@ public class Sound {
         ).start();
     }
 
+    /**
+     * Sets the volume of an already-obtained {@link Clip}, scaled by the master volume.
+     *
+     * @param clip   the clip to adjust
+     * @param volume the desired volume in the range 0.0 (silent) to 1.0 (full)
+     */
     public void setClipVolume(Clip clip, float volume) {
 
         float v = masterVolume * volume;
@@ -94,6 +122,13 @@ public class Sound {
         return clip;
     }
 
+    /**
+     * Plays the sound identified by {@code id} with explicit volume and stereo pan on a new thread.
+     *
+     * @param id     the handle returned by {@link #loadSound}
+     * @param volume playback volume in the range 0.0 (silent) to 1.0 (full)
+     * @param pan    stereo position: -1.0 = full left, 0.0 = centre, +1.0 = full right
+     */
     public void playSound(int id, float volume, float pan) {
         new Thread(() -> {
             Clip clip = playSound2(id, volume, pan);

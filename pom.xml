@@ -6,7 +6,7 @@
 
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.4</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/nickd3000/garnet</url>
@@ -15,8 +15,12 @@
     <properties>
         <lwjgl.version>3.3.6</lwjgl.version>
         <lwjgl.natives>natives-macos-arm64</lwjgl.natives>
+        <jacoco.version>0.8.14</jacoco.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
+        <argLine></argLine>
     </properties>
 
     <licenses>
@@ -63,9 +67,6 @@
 
             <resource>
                 <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources_examples</directory>
             </resource>
 
         </resources>
@@ -158,10 +159,30 @@
                 <version>3.5.1</version>
                 <configuration>
                     <argLine>
-                        -XstartOnFirstThread
+                        @{argLine} -XstartOnFirstThread
                     </argLine>
                 </configuration>
 
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -183,26 +204,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.8.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.spockframework</groupId>
-            <artifactId>spock-core</artifactId>
-            <version>2.3-groovy-3.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>3.0.22</version>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.2.5</version>
             <scope>test</scope>
         </dependency>
 
@@ -414,13 +415,6 @@
             <classifier>natives-linux</classifier>
         </dependency>
 
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 

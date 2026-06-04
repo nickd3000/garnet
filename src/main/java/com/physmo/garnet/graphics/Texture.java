@@ -71,6 +71,12 @@ public class Texture {
         id = glGenTextures();
     }
 
+    /**
+     * Loads a texture from a classpath resource path.
+     *
+     * @param path the classpath-relative path to the image file (e.g. {@code "garnetCrystal.png"})
+     * @return the loaded {@link Texture}
+     */
     public static Texture loadTexture(String path) {
         InputStream inputStream = FileUtils.getFileFromResourceAsStream(path);
         return loadTexture(inputStream);
@@ -130,6 +136,26 @@ public class Texture {
     }
 
 
+    /**
+     * Creates an empty (uninitialized pixel data) RGBA texture suitable for use as an FBO colour attachment.
+     *
+     * @param width  Width of the texture
+     * @param height Height of the texture
+     * @return empty Texture
+     */
+    public static Texture createEmpty(int width, int height) {
+        Texture texture = new Texture();
+        texture.setWidth(width);
+        texture.setHeight(height);
+        texture.bind();
+        texture.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        texture.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        texture.setParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        texture.setParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (java.nio.ByteBuffer) null);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return texture;
+    }
 
     /**
      * Creates a texture with specified width, height and data.
@@ -159,18 +185,32 @@ public class Texture {
         return texture;
     }
 
+    /**
+     * Sets the texture filter mode.
+     *
+     * @param val {@code true} for linear (smooth) filtering, {@code false} for nearest-neighbour (pixelated)
+     */
     public void setFilter(boolean val) {
         int filterMode = !val ? GL_NEAREST : GL_LINEAR;
         setParameter(GL_TEXTURE_MIN_FILTER, filterMode);
         setParameter(GL_TEXTURE_MAG_FILTER, filterMode);
     }
 
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
+    /**
+     * Sets a texture parameter on the currently bound {@code GL_TEXTURE_2D} target.
+     *
+     * @param name  the parameter name (e.g. {@code GL_TEXTURE_MIN_FILTER})
+     * @param value the parameter value
+     */
     public void setParameter(int name, int value) {
         glTexParameteri(GL_TEXTURE_2D, name, value);
+    }
+
+    /**
+     * Binds this texture as the current {@code GL_TEXTURE_2D} target.
+     */
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
     }
 
     /**
@@ -198,6 +238,10 @@ public class Texture {
         uploadData(GL_RGBA8, width, height, GL_RGBA, pixelData);
     }
 
+    /**
+     * Frees the GPU memory associated with this texture.
+     * The texture must not be used after this call.
+     */
     public void delete() {
         glDeleteTextures(id);
     }
@@ -222,6 +266,11 @@ public class Texture {
         }
     }
 
+    /**
+     * Returns the OpenGL texture object ID.
+     *
+     * @return the GL texture ID
+     */
     public int getId() {
         return id;
     }

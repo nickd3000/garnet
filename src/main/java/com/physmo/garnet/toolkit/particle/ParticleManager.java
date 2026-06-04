@@ -7,6 +7,13 @@ import com.physmo.garnet.toolkit.GameObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages a fixed-size pool of {@link Particle} objects and a list of active {@link Emitter}s.
+ * <p>
+ * Add emitters via {@link #addEmitter}; the manager ticks them each frame, spawning particles
+ * from the pool as needed. Rendering is delegated to a {@link ParticleDrawer} set via
+ * {@link #setParticleDrawer}, or to per-particle drawers if configured on individual particles.
+ */
 public class ParticleManager extends GameObject {
 
     List<Emitter> emitterList;
@@ -24,6 +31,12 @@ public class ParticleManager extends GameObject {
         }
     }
 
+    /**
+     * Sets the default {@link ParticleDrawer} used to render particles that do not have
+     * their own per-particle drawer.
+     *
+     * @param particleDrawer the drawer to use
+     */
     public void setParticleDrawer(ParticleDrawer particleDrawer) {
         this.particleDrawer = particleDrawer;
     }
@@ -44,6 +57,11 @@ public class ParticleManager extends GameObject {
     }
 
 
+    /**
+     * Returns the first inactive particle from the pool, or {@code null} if the pool is exhausted.
+     *
+     * @return a free {@link Particle}, or {@code null} if none are available
+     */
     // TODO: we'll optimise this later.
     public Particle getFreeParticle() {
         for (Particle particle : particles) {
@@ -72,6 +90,12 @@ public class ParticleManager extends GameObject {
 //        this.spriteBatch = spriteBatch;
 //    }
 
+    /**
+     * Adds an {@link Emitter} to this manager. The emitter will be ticked each frame and
+     * automatically removed when its duration expires.
+     *
+     * @param emitter the emitter to add
+     */
     public void addEmitter(Emitter emitter) {
         emitter.setParticleManager(this);
         emitterList.add(emitter);

@@ -1,33 +1,40 @@
 package com.physmo.garnet.graphics;
 
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class ObjectPoolTest {
+class ObjectPoolTest {
 
-    static int n = 1;
+    private int nextId = 1;
 
     @Test
-    public void t1() {
+    void getFreeObjectReusesReleasedObjectsInLifoOrder() {
         ObjectPool<String> objectPool = new ObjectPool<>(
                 String.class,
-                () -> "hello " + n++);
+                () -> "hello " + nextId++);
 
-        System.out.println(objectPool);
         String s1 = objectPool.getFreeObject();
-        System.out.println(objectPool);
         String s2 = objectPool.getFreeObject();
-        System.out.println(objectPool);
-
-        System.out.println();
 
         objectPool.releaseObject(s1);
-        System.out.println(objectPool);
         objectPool.releaseObject(s2);
-        System.out.println(objectPool);
 
-        s1 = objectPool.getFreeObject();
-        System.out.println(s1);
-        System.out.println(objectPool);
+        assertEquals("hello 2", objectPool.getFreeObject());
+        assertSame(s1, objectPool.getFreeObject());
+    }
+
+    @Test
+    void releaseObjectExpandsPoolWhenCapacityIsReached() {
+        ObjectPool<String> objectPool = new ObjectPool<>(
+                String.class,
+                () -> "hello " + nextId++);
+
+        for (int i = 0; i < 50; i++) {
+            objectPool.releaseObject("value-" + i);
+        }
+
+        assertEquals(100, objectPool.pool.length);
     }
 }

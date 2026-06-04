@@ -88,13 +88,14 @@ public class Animation {
     }
 
     /**
-     * Returns the current frame as a SubImage object compatible with image drawing methods.
+     * Updates the provided SubImage object with the current frame's image data.
      *
-     * @return A SubImage object representing the image area of the frame.
+     * @param outSubImage The SubImage object to be updated with current frame data.
      */
     public void getImage(SubImage outSubImage) {
         FrameInfo frameInfo = frameList.get(currentFrame);
-        outSubImage = tileSheet.getSubImage(frameInfo.col, frameInfo.row);
+        SubImage src = tileSheet.getSubImage(frameInfo.col, frameInfo.row);
+        outSubImage.configure(src.texture, src.x, src.y, src.w, src.h);
     }
 
     private class FrameInfo {

@@ -9,6 +9,13 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
 
+/**
+ * Tracks mouse cursor position and button state each frame.
+ * <p>
+ * Cursor coordinates are transformed from GLFW window space through the
+ * framebuffer and viewport scales so that {@link #getPosition()} returns
+ * values in canvas/world space matching the active viewport.
+ */
 public class Mouse {
 
     public static final int BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
@@ -33,18 +40,47 @@ public class Mouse {
     }
 
 
+    /**
+     * Samples the current cursor position and button states from GLFW.
+     * Called once per logic tick by {@link com.physmo.garnet.input.Input}.
+     */
     void update() {
         positionPrev[0] = position[0];
         positionPrev[1] = position[1];
 
         glfwGetCursorPos(windowHandle, cx, cy);
-        double[] windowToPixelsScale = garnet.getDisplay().getWindowToPixelsScale();
 
-        cx[0] /= windowToPixelsScale[0];
-        cy[0] /= windowToPixelsScale[1];
+        int[] bufferSize = garnet.getDisplay().getBufferSize();
+        int[] viewportOffsets = garnet.getDisplay().glViewportOffsets;
+        double[] viewportScale = garnet.getDisplay().glViewportScale;
 
-        position[0] = (int) cx[0];
-        position[1] = (int) cy[0];
+        // Convert window coordinates to framebuffer coordinates
+        double[] windowToBufferScale = garnet.getDisplay().getWindowToBufferScale();
+
+        // 1. Convert cursor from window space to buffer space
+        double bx = cx[0] * windowToBufferScale[0];
+        double by = cy[0] * windowToBufferScale[1];
+
+        // 2. Adjust for viewport offset. 
+        // In OpenGL, viewport Y starts from bottom, but our Ortho makes 0,0 top-left.
+        // GLFW cursor 0,0 is top-left.
+        // Display.java sets glViewport(xOffset, yOffset, newWidth, newHeight) where yOffset is from bottom.
+
+        double x = (bx - viewportOffsets[0]) * viewportScale[0];
+
+        int[] canvasSize = garnet.getDisplay().getCanvasSize();
+        double newHeight = (double) canvasSize[1] / viewportScale[1];
+        double viewportTop = (double) bufferSize[1] - ((double) viewportOffsets[1] + newHeight);
+
+        double y = (by - viewportTop) * viewportScale[1];
+
+        // 3. Adjust for active viewport scroll and zoom
+        com.physmo.garnet.graphics.Viewport activeViewport = garnet.getGraphics().getViewportManager().getActiveViewport();
+        x = (x / activeViewport.getZoom()) + activeViewport.getScrollX();
+        y = (y / activeViewport.getZoom()) + activeViewport.getScrollY();
+
+        position[0] = (int) x;
+        position[1] = (int) y;
 
         System.arraycopy(buttonState, 0, buttonStatePrev, 0, buttonState.length);
         buttonState[BUTTON_LEFT] = glfwGetMouseButton(windowHandle, BUTTON_LEFT) > 0;
@@ -53,18 +89,31 @@ public class Mouse {
     }
 
 
+    /**
+     * Returns the current mouse position in canvas/world coordinates as {@code [x, y]}.
+     *
+     * @return the mouse position array
+     */
     public int[] getPosition() {
         return position;
     }
 
+    /**
+     * Returns the mouse position divided by the given scale factor.
+     * Useful when the game world uses a different coordinate scale than the canvas.
+     *
+     * @param scale the divisor applied to both x and y
+     * @return the scaled position as {@code [x, y]}
+     */
     public int[] getPositionScaled(double scale) {
         return new int[]{(int) (position[0] / scale), (int) (position[1] / scale)};
     }
 
     /**
-     * Returns the mouse position normalised to 0..1 double values.
+     * Returns the mouse position normalised to the range [0, 1] for both axes.
+     * (0, 0) is the top-left corner of the canvas; (1, 1) is the bottom-right.
      *
-     * @return
+     * @return a two-element array {@code [normalisedX, normalisedY]}
      */
     public double[] getPositionNormalised() {
         int windowWidth = garnet.getDisplay().getWindowWidth();
@@ -76,15 +125,22 @@ public class Mouse {
     }
 
 
+    /**
+     * Returns whether the specified mouse button is currently held down.
+     *
+     * @param mouseButtonId one of {@link #BUTTON_LEFT}, {@link #BUTTON_RIGHT}, or {@link #BUTTON_MIDDLE}
+     * @return {@code true} if the button is pressed
+     */
     public boolean isButtonPressed(int mouseButtonId) {
         return buttonState[mouseButtonId];
     }
 
     /**
-     * True if mouse button first pressed this frame.
+     * Returns {@code true} only on the first frame the specified button is pressed.
+     * Subsequent frames while the button is held return {@code false}.
      *
-     * @param mouseButtonId
-     * @return
+     * @param mouseButtonId one of {@link #BUTTON_LEFT}, {@link #BUTTON_RIGHT}, or {@link #BUTTON_MIDDLE}
+     * @return {@code true} if the button was just pressed this frame
      */
     public boolean isButtonFirstPress(int mouseButtonId) {
         return (buttonState[mouseButtonId] && !buttonStatePrev[mouseButtonId]);

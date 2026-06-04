@@ -2,6 +2,13 @@ package com.physmo.garnet.input;
 
 import com.physmo.garnet.Garnet;
 
+/**
+ * Tracks keyboard key state each frame via a GLFW key callback.
+ * <p>
+ * Key states are stored as boolean arrays indexed by GLFW key code.
+ * Use {@link #isKeyPressed} to test whether a key is currently held, and
+ * {@link #isKeyFirstPress} to detect the first frame a key is pressed.
+ */
 public class Keyboard {
 
     public boolean printKeyCodes = false;
@@ -29,6 +36,10 @@ public class Keyboard {
         });
     }
 
+    /**
+     * Copies the current key state to the previous-frame snapshot.
+     * Called once per logic tick by {@link Input} before new events are processed.
+     */
     public void update() {
         System.arraycopy(keyboardState, 0, keyboardStatePrev, 0, keyboardState.length);
     }

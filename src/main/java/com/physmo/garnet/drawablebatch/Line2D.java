@@ -2,16 +2,11 @@ package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glColor4fv;
 import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glVertex2f;
 
@@ -44,29 +39,22 @@ public class Line2D extends DrawableElement {
     @Override
     public void render(Graphics graphics) {
         glDisable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glColor4fv(colorFloats);
 
-        applyTranslation();
+        pushViewportTransform(graphics);
 
         glBegin(GL_LINES);
         glVertex2f(coords[0], coords[1]);
         glVertex2f(coords[2], coords[3]);
         glEnd();
 
-        removeTranslation();
+        popViewportTransform();
     }
 
     @Override
     public int getTextureId() {
         return 0;
-    }
-
-    @Override
-    public boolean hasTexture() {
-        return false;
     }
 
     @Override

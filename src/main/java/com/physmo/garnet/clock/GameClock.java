@@ -28,6 +28,14 @@ public class GameClock {
         }
     }
 
+    /**
+     * Returns the {@link TimeIntervalTracker} at the given index.
+     * Use the predefined constants {@link #TIMER_RENDER}, {@link #TIMER_LOGIC_AND_RENDER},
+     * and {@link #TIMER_DEBUG} for the standard timer slots.
+     *
+     * @param index the timer slot index (0–9)
+     * @return the corresponding {@link TimeIntervalTracker}
+     */
     public TimeIntervalTracker getTimer(int index) {
         return timers[index];
     }
@@ -75,6 +83,10 @@ public class GameClock {
         logicTicksPerFrame[logicTicksPerFrameIndex]++;
     }
 
+    /**
+     * Records that a rendered frame has completed and updates the frames-per-second (FPS) counter.
+     * Should be called once per rendered frame.
+     */
     public void logFrame() {
         long curTime = System.nanoTime();
         frameCount++;

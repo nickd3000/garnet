@@ -15,7 +15,7 @@ import java.util.Set;
  * game objects such as managing components, transformation, velocity,
  * visibility, activity status, and tagging functionality.
  */
-public class GameObject {
+public class GameObject implements MessageListener {
 
     protected final List<Component> components = new ArrayList<>();
     private final PointInt position = new PointInt(0, 0, 0);
@@ -92,20 +92,32 @@ public class GameObject {
     }
 
     /**
-     * Get the integer based position for this game object.
+     * Returns the integer-based position of this game object.
      *
-     * @return
+     * @return the position as a {@link PointInt}
      */
     public PointInt getPosition() {
         return position;
     }
 
+    /**
+     * Sets the integer-based position of this game object.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     */
     public void setPosition(int x, int y) {
         position.x = x;
         position.y = y;
     }
 
 
+    /**
+     * Injects the owning {@link Context} into this game object so it can access
+     * sibling objects and components at runtime.
+     *
+     * @param context the context this object belongs to
+     */
     public void injectContext(Context context) {
         this.context = context;
     }
@@ -122,20 +134,11 @@ public class GameObject {
         return this;
     }
 
-    /**
-     * Retrieves a component of the specified class type from the list of components.
-     *
-     * @param <T>   the type of the component to be retrieved
-     * @param clazz the class object representing the type of the component
-     * @return the component instance if found; otherwise, null
-     */
-    public <T> T getComponentByType(Class<T> clazz) {
-        for (Object object : components) {
-            if (object.getClass() == clazz) return (T) object;
-        }
-        return null;
-    }
 
+    /**
+     * Internal initialisation: calls {@link #init()} then initialises all attached components.
+     * Called by the framework; do not call directly.
+     */
     public void _init() {
         this.init();
         for (Component c : components) {
@@ -147,6 +150,12 @@ public class GameObject {
     }
 
 
+    /**
+     * Internal tick: calls {@link #tick(double)} then ticks all attached components.
+     * Called by the framework; do not call directly.
+     *
+     * @param t seconds elapsed since the last tick
+     */
     public void _tick(double t) {
         this.tick(t);
 
@@ -158,6 +167,12 @@ public class GameObject {
     public void tick(double t) {
     }
 
+    /**
+     * Internal draw: calls {@link #draw(Graphics)} then draws all attached components.
+     * Called by the framework; do not call directly.
+     *
+     * @param g the graphics context
+     */
     protected void _draw(Graphics g) {
         this.draw(g);
         for (Component component : components) {
@@ -168,11 +183,80 @@ public class GameObject {
     public void draw(Graphics g) {
     }
 
+    /**
+     * Sends a message to this game object and all of its attached components.
+     *
+     * @param name The name of the message.
+     */
+    public void sendMessage(String name) {
+        sendMessage(name, null);
+    }
+
+    /**
+     * Sends a message to this game object and all of its attached components.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void sendMessage(String name, Object data) {
+        onMessage(name, data);
+        List<Component> componentsCopy = new ArrayList<>(components);
+        for (Component component : componentsCopy) {
+            component.onMessage(name, data);
+        }
+    }
+
+    /**
+     * Called when a message is sent to this game object.
+     * Subclasses can override this method to handle specific messages.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    @Override
+    public void onMessage(String name, Object data) {
+        // Default: do nothing
+    }
+
+    /**
+     * Broadcasts a message to all game objects in the current context.
+     *
+     * @param name The name of the message.
+     */
+    public void broadcastMessage(String name) {
+        broadcastMessage(name, null);
+    }
+
+    /**
+     * Broadcasts a message to all game objects in the current context.
+     *
+     * @param name The name of the message.
+     * @param data Optional data associated with the message.
+     */
+    public void broadcastMessage(String name, Object data) {
+        if (context != null) {
+            context.broadcastMessage(name, data);
+        }
+    }
+
+    /**
+     * Sets the visibility of this game object.
+     *
+     * @param b {@code true} to make the object visible, {@code false} to hide it
+     * @return this game object, for chaining
+     */
     public GameObject setVisible(boolean b) {
         visible = b;
         return this;
     }
 
+    /**
+     * Adds a string tag to this game object. Tags can be used to query groups of objects
+     * from a {@link Context}.
+     *
+     * @param tag the tag string to add
+     * @return this game object, for chaining
+     */
     public GameObject addTag(String tag) {
         tags.add(StringIdBroker.INSTANCE.getId(tag));
         return this;
@@ -182,6 +266,12 @@ public class GameObject {
         return tags;
     }
 
+    /**
+     * Returns whether this game object has the given string tag.
+     *
+     * @param tag the tag string to check
+     * @return {@code true} if the tag is present
+     */
     public boolean hasTag(String tag) {
         return hasTag(StringIdBroker.INSTANCE.getId(tag));
     }
@@ -190,10 +280,23 @@ public class GameObject {
         return tags.contains(tagId);
     }
 
+    /**
+     * Returns whether this game object is currently active.
+     * Inactive objects are skipped during tick and draw.
+     *
+     * @return {@code true} if active
+     */
     public boolean isActive() {
         return active;
     }
 
+    /**
+     * Sets the active state of this game object.
+     * Inactive objects are skipped during tick and draw.
+     *
+     * @param b {@code true} to activate, {@code false} to deactivate
+     * @return this game object, for chaining
+     */
     public GameObject setActive(boolean b) {
         active = b;
         return this;
