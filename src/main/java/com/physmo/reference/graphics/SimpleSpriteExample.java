@@ -1,12 +1,11 @@
 package com.physmo.reference.graphics;
 
-import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.Texture;
 
-// NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
+// NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 public class SimpleSpriteExample extends GarnetApp {
 
     Texture texture;
@@ -25,15 +24,8 @@ public class SimpleSpriteExample extends GarnetApp {
 
     @Override
     public void init(Garnet garnet) {
-        // Load texture
         texture = Texture.loadTexture("garnetCrystal.png");
-
-        // Add texture to graphics system.
         garnet.getGraphics().addTexture(texture);
-        garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
-
-        garnet.getDebugDrawer().setVisible(true);
-        garnet.getDebugDrawer().setDrawFps(true);
     }
 
     @Override
@@ -42,8 +34,7 @@ public class SimpleSpriteExample extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
-        int[] mousePosition = garnet.getInput().getMouse().getPosition();
-        g.drawImage(texture, mousePosition[0] - texture.getWidth() / 2, mousePosition[1] - texture.getHeight() / 2);
+        int[] mousePosition = garnet.getInput().getMousePosition();
+        g.drawImage(texture, mousePosition[0], mousePosition[1]);
     }
 }
-

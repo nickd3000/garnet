@@ -28,7 +28,7 @@ Feedback is really useful at this stage, so please feel free to create a small p
 <dependency>
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.5.3</version>
+  <version>0.6.0</version>
 </dependency>
 ```
 
@@ -83,7 +83,7 @@ public class SimpleSpriteExample extends GarnetApp {
 
 ### Changelist
 
-### Version 0.5.xx - June 2026
+### Version 0.6.0 - June 2026
 
 - Version moved from 0.5.3 in January 2025 to current 0.5.10a-SNAPSHOT.
 - Added tick-rate control in Garnet via getTickRate() / setTickRate(double).

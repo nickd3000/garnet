@@ -51,6 +51,15 @@ public class Input {
     }
 
     /**
+     * Returns the current mouse position in canvas/world coordinates as {@code [x, y]}.
+     *
+     * @return the mouse position array
+     */
+    public int[] getMousePosition() {
+        return mouse.getPosition();
+    }
+
+    /**
      * Retrieves the Keyboard instance used for handling keyboard input.
      *
      * @return the Keyboard instance associated with this input manager
