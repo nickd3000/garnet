@@ -44,9 +44,8 @@ public class Sprite2D extends DrawableElement {
     }
 
     public void reset() {
+        resetCommonState();
         rotated = false;
-        setColorOverride(false);
-        clearShader();
     }
 
     public void setCoords(float[] vertexCoords, float[] texCoords) {

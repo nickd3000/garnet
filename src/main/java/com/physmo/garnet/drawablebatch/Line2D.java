@@ -29,6 +29,10 @@ public class Line2D extends DrawableElement {
         coords[3] = y2;
     }
 
+    public void reset() {
+        resetCommonState();
+    }
+
     public void set(float x1, float y1, float x2, float y2) {
         coords[0] = x1;
         coords[1] = y1;

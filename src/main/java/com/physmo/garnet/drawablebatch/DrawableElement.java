@@ -41,6 +41,16 @@ public abstract class DrawableElement {
     private boolean colorOverride = false;
     private ShaderProgram shader = null;
 
+    /**
+     * Restores mutable render state that must not leak between pooled element uses.
+     * Geometry and texture fields remain the responsibility of concrete subclasses.
+     */
+    protected void resetCommonState() {
+        blendMode = BlendMode.NORMAL;
+        colorOverride = false;
+        shader = null;
+    }
+
     /** Returns the blend mode used when rendering this element. */
     public BlendMode getBlendMode() {
         return blendMode;

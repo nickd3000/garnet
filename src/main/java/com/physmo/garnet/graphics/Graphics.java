@@ -471,10 +471,9 @@ public class Graphics {
     public void drawLine(float x1, float y1, float x2, float y2) {
         //Line2D line = new Line2D(x1, y1, x2, y2);
         Line2D line = line2DObjectPool.getFreeObject();
+        line.reset();
         line.set(x1, y1, x2, y2);
-        line.setColor(color);
-        line.setDrawOrder(currentDrawOrder);
-        line.setViewport(viewportManager.getActiveViewport());
+        line.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
         //line.setScale(zoom);
         drawableBatch.add(line);
     }
