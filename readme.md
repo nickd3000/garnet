@@ -36,6 +36,10 @@ Feedback is really useful at this stage, so please feel free to create a small p
 
 See the [garnet-examples](https://github.com/nickd3000/garnetexamples) project for examples.
 
+### License
+
+Garnet is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
+
 ### Minimal example
 
 This small example loads and draws a texture to the display.
@@ -164,4 +168,3 @@ public class SimpleSpriteExample extends GarnetApp {
 - Optimized sprite drawing - added Sprite2D object pool to reuse sprite objects.
 - Package refactoring
 - Rewrote paragraph drawer and fixed new line bugs.
-

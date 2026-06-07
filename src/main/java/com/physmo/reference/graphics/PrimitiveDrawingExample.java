@@ -15,7 +15,9 @@ public class PrimitiveDrawingExample extends GarnetApp {
 
     public static void main(String[] args) {
         Garnet garnet = new Garnet(640, 480);
+        garnet.setInternalBufferMode(true);
         GarnetApp app = new PrimitiveDrawingExample(garnet, "");
+
 
         garnet.setApp(app);
 
@@ -46,15 +48,18 @@ public class PrimitiveDrawingExample extends GarnetApp {
         }
 
         g.drawLine(190, 20 + 50, 190 + 100, 20 + 50);
+        g.drawLine(190, 100, 290, 130, 8);
 
         g.setColor(com.physmo.garnet.ColorUtils.rgb(255, 0, 0, 255));
         g.drawRect(20, 20, 100, 100);
+        g.drawRect(140, 20, 100, 100, 6);
 
         g.setColor(com.physmo.garnet.ColorUtils.SUNSET_YELLOW);
         g.filledRect(20, 140, 100, 100);
 
         g.setColor(ColorUtils.SUNSET_YELLOW);
         g.drawCircle(70, 310, 50, 50);
+        g.drawCircle(330, 310, 50, 35, 8);
 
         g.setColor(com.physmo.garnet.ColorUtils.SUNSET_BLUE);
         g.setColor(com.physmo.garnet.ColorUtils.asRGBA(1, 0.5f, 1f, 0.4f));

@@ -5,9 +5,11 @@ import com.physmo.garnet.Display;
 import com.physmo.garnet.drawablebatch.Circle2D;
 import com.physmo.garnet.drawablebatch.DrawableBatch;
 import com.physmo.garnet.drawablebatch.DrawableElement;
+import com.physmo.garnet.drawablebatch.EllipseStroke2D;
 import com.physmo.garnet.drawablebatch.Line2D;
 import com.physmo.garnet.drawablebatch.Shape2D;
 import com.physmo.garnet.drawablebatch.Sprite2D;
+import com.physmo.garnet.drawablebatch.StrokeGeometry;
 import com.physmo.garnet.structure.Array;
 import org.lwjgl.opengl.GL;
 
@@ -479,6 +481,28 @@ public class Graphics {
     }
 
     /**
+     * Integer-coordinate overload of {@link #drawLine(float, float, float, float, float)}.
+     */
+    public void drawLine(int x1, int y1, int x2, int y2, float thickness) {
+        drawLine((float) x1, (float) y1, (float) x2, (float) y2, thickness);
+    }
+
+    /**
+     * Draws a line with a stroke centered on the segment.
+     * Values less than or equal to 1 use the legacy thin-line renderer.
+     */
+    public void drawLine(float x1, float y1, float x2, float y2, float thickness) {
+        if (thickness <= 1.0f) {
+            drawLine(x1, y1, x2, y2);
+            return;
+        }
+
+        float[] coords = StrokeGeometry.createLineQuad(x1, y1, x2, y2, thickness);
+        if (coords.length == 0) return;
+        drawFilledShape(coords);
+    }
+
+    /**
      * Integer-coordinate overload of {@link #drawRect(float, float, float, float)}.
      */
     public void drawRect(int x, int y, int w, int h) {
@@ -500,35 +524,33 @@ public class Graphics {
         drawLine(x, y + h, x, y);
     }
 
-    /**
-     * Draws a filled rectangle at the specified position and size.
-     *
-     * @param _x the x-coordinate of the top-left corner
-     * @param _y the y-coordinate of the top-left corner
-     * @param _w the width of the rectangle
-     * @param _h the height of the rectangle
-     */
-    public void filledRect(float _x, float _y, float _w, float _h) {
-        float[] coords = new float[8];
-        float x = _x;
-        float y = _y;
-        float w = _w;
-        float h = _h;
-
-        coords[0] = x;
-        coords[1] = y;
-        coords[2] = x + w;
-        coords[3] = y;
-        coords[4] = x + w;
-        coords[5] = y + h;
-        coords[6] = x;
-        coords[7] = y + h;
-
+    private void drawFilledShape(float[] coords) {
         Shape2D shape2D = new Shape2D(coords);
-        shape2D.setColor(color);
-        shape2D.setDrawOrder(currentDrawOrder);
-        shape2D.setViewport(viewportManager.getActiveViewport());
+        shape2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
         drawableBatch.add(shape2D);
+    }
+
+    /**
+     * Integer-coordinate overload of {@link #drawRect(float, float, float, float, float)}.
+     */
+    public void drawRect(int x, int y, int w, int h, float thickness) {
+        drawRect((float) x, (float) y, (float) w, (float) h, thickness);
+    }
+
+    /**
+     * Draws a rectangle outline with a stroke centered on the rectangle boundary.
+     * Values less than or equal to 1 use the legacy thin-line renderer.
+     */
+    public void drawRect(float x, float y, float w, float h, float thickness) {
+        if (thickness <= 1.0f) {
+            drawRect(x, y, w, h);
+            return;
+        }
+
+        drawLine(x, y, x + w, y, thickness);
+        drawLine(x + w, y, x + w, y + h, thickness);
+        drawLine(x + w, y + h, x, y + h, thickness);
+        drawLine(x, y + h, x, y, thickness);
     }
 
     /**
@@ -562,6 +584,40 @@ public class Graphics {
     }
 
     /**
+     * Draws a filled rectangle at the specified position and size.
+     *
+     * @param _x the x-coordinate of the top-left corner
+     * @param _y the y-coordinate of the top-left corner
+     * @param _w the width of the rectangle
+     * @param _h the height of the rectangle
+     */
+    public void filledRect(float _x, float _y, float _w, float _h) {
+        float[] coords = new float[8];
+        float x = _x;
+        float y = _y;
+        float w = _w;
+        float h = _h;
+
+        coords[0] = x;
+        coords[1] = y;
+        coords[2] = x + w;
+        coords[3] = y;
+        coords[4] = x + w;
+        coords[5] = y + h;
+        coords[6] = x;
+        coords[7] = y + h;
+
+        drawFilledShape(coords);
+    }
+
+    /**
+     * Integer-coordinate overload of {@link #drawCircle(float, float, float, float, float)}.
+     */
+    public void drawCircle(int x, int y, int w, int h, float thickness) {
+        drawCircle((float) x, (float) y, (float) w, (float) h, thickness);
+    }
+
+    /**
      * Integer-coordinate overload of {@link #filledCircle(float, float, float, float)}.
      */
     public void filledCircle(int x, int y, int w, int h) {
@@ -583,6 +639,22 @@ public class Graphics {
         circle.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(circle);
+    }
+
+    /**
+     * Draws an ellipse outline with a stroke centered on the ellipse boundary.
+     * The x/y and w/h parameters preserve the existing center/radius semantics of {@link #drawCircle(float, float, float, float)}.
+     * Values less than or equal to 1 use the legacy thin-line renderer.
+     */
+    public void drawCircle(float x, float y, float w, float h, float thickness) {
+        if (thickness <= 1.0f) {
+            drawCircle(x, y, w, h);
+            return;
+        }
+
+        EllipseStroke2D ellipseStroke = new EllipseStroke2D(x, y, w, h, thickness);
+        ellipseStroke.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
+        drawableBatch.add(ellipseStroke);
     }
 
     // Clipping internals

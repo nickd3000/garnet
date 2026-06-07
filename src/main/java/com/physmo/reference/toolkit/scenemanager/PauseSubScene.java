@@ -38,7 +38,7 @@ public class PauseSubScene extends Scene {
         g.setColor(panelColor);
         g.filledRect(95, 120, 450, 220);
         g.setColor(ColorUtils.SUNSET_YELLOW);
-        g.drawRect(95, 120, 450, 220);
+        g.drawRect(95, 120, 450, 220, 4);
 
         SceneText.draw(font, g, ColorUtils.SUNSET_YELLOW, "Pause Subscene", 145, 155, 3);
         SceneText.draw(font, g, ColorUtils.WHITE, "Main scene stays drawn underneath.", 145, 225, 1);
