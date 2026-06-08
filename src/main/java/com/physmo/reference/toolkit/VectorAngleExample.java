@@ -1,5 +1,6 @@
 package com.physmo.reference.toolkit;
 
+import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
@@ -44,17 +45,19 @@ public class VectorAngleExample extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
+        float lineThickness = 3;
+
         // Draw the vector to the actual mouse position in yellow.
-        g.setColor(0xffff00ff);
+        g.setColor(ColorUtils.SUNSET_YELLOW);
         if (vectorToMouse != null) {
-            g.drawLine(200.0f, 200.0f, 200 + (float) vectorToMouse.x, 200 + (float) vectorToMouse.y);
+            g.drawLine(200.0f, 200.0f, 200 + (float) vectorToMouse.x, 200 + (float) vectorToMouse.y, lineThickness);
         }
 
         // Draw the same vector computed from the angle in pink
-        g.setColor(0xff00ffff);
+        g.setColor(ColorUtils.VIOLET);
         Vector3 vtm = new Vector3(0, 0, 0);
         vtm.setFromAngle(angleToMouse, 50);
-        g.drawLine(200.0f, 200.0f, 200 + (float) vtm.x, 200 + (float) vtm.y);
+        g.drawLine(200.0f, 200.0f, 200 + (float) vtm.x, 200 + (float) vtm.y, lineThickness);
 
     }
 }

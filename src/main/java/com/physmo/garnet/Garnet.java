@@ -368,7 +368,7 @@ public class Garnet {
 
     /**
      * Sets the shader program applied when drawing the internal buffer to the screen.
-     * Pass {@code null} to use the default fixed-function pipeline.
+     * Pass {@code null} to use the default batch shader.
      *
      * @param shader the {@link com.physmo.garnet.graphics.ShaderProgram} to apply, or {@code null} for none
      */

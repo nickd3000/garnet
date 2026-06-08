@@ -50,7 +50,7 @@ public class BMFontExample extends GarnetApp {
     public void draw(Graphics g) {
 
         g.setZoom(1);
-        g.setColor(com.physmo.garnet.ColorUtils.SUNSET_GREEN);
+        g.setColor(ColorUtils.SUNSET_GREEN);
         bmfFont.setScale(1);
         bmfFont.drawText(g, "hello", 0, 10);
 

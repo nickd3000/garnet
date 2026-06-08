@@ -28,9 +28,9 @@ public class DynamicMeshBuffer {
     public static final int TEX_COORD_COMPONENTS = 2;
     public static final int COLOR_COMPONENTS = 4;
     public static final int MATERIAL_FLAG_COMPONENTS = 1;
+    public static final int BYTES_PER_FLOAT = Float.BYTES;
     public static final int FLOATS_PER_VERTEX = POSITION_COMPONENTS + TEX_COORD_COMPONENTS + COLOR_COMPONENTS + MATERIAL_FLAG_COMPONENTS;
     public static final int VERTEX_STRIDE_BYTES = FLOATS_PER_VERTEX * BYTES_PER_FLOAT;
-    public static final int BYTES_PER_FLOAT = Float.BYTES;
     public static final int POSITION_OFFSET_BYTES = 0;
     public static final int TEX_COORD_OFFSET_BYTES = POSITION_COMPONENTS * BYTES_PER_FLOAT;
     public static final int COLOR_OFFSET_BYTES = (POSITION_COMPONENTS + TEX_COORD_COMPONENTS) * BYTES_PER_FLOAT;

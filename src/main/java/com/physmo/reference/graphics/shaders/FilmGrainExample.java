@@ -90,7 +90,7 @@ public class FilmGrainExample extends GarnetApp {
         float radius = 100f;
 
         // --- Pass 1: render scene into FBO ---
-        renderTexture.bind();
+        renderTexture.bind(g);
         glClear(GL_COLOR_BUFFER_BIT);
         g.setDrawOrder(0);
         for (int i = 0; i < NUM_SPRITES; i++) {
@@ -100,7 +100,7 @@ public class FilmGrainExample extends GarnetApp {
             g.drawImage(texture, (int) sx, (int) sy);
         }
         g.render();
-        renderTexture.unbind(garnet.getDisplay());
+        renderTexture.unbind(g, garnet.getDisplay());
 
         // --- Pass 2: draw FBO texture through film grain shader ---
         g.setDrawOrder(0);

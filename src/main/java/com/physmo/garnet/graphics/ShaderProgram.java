@@ -164,7 +164,7 @@ public class ShaderProgram {
     }
 
     /**
-     * Deactivates this shader program, restoring the fixed-function pipeline.
+     * Deactivates this shader program so the next render run can bind its required shader.
      */
     public void unbind() {
         glUseProgram(0);

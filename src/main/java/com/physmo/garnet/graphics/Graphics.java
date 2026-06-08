@@ -644,18 +644,19 @@ public class Graphics {
     }
 
     /**
-     * Draws a line with a stroke centered on the segment.
-     * Values less than or equal to 1 use the legacy thin-line renderer.
+     * Draws a rectangle outline with a stroke centered on the rectangle boundary.
+     * Values less than or equal to 1 use the normal one-pixel batch line path.
      */
-    public void drawLine(float x1, float y1, float x2, float y2, float thickness) {
+    public void drawRect(float x, float y, float w, float h, float thickness) {
         if (thickness <= 1.0f) {
-            drawLine(x1, y1, x2, y2);
+            drawRect(x, y, w, h);
             return;
         }
 
-        float[] coords = StrokeGeometry.createLineQuad(x1, y1, x2, y2, thickness);
-        if (coords.length == 0) return;
-        drawFilledShape(coords);
+        drawLine(x, y, x + w, y, thickness);
+        drawLine(x + w, y, x + w, y + h, thickness);
+        drawLine(x + w, y + h, x, y + h, thickness);
+        drawLine(x, y + h, x, y, thickness);
     }
 
     /**
@@ -694,19 +695,18 @@ public class Graphics {
     }
 
     /**
-     * Draws a rectangle outline with a stroke centered on the rectangle boundary.
-     * Values less than or equal to 1 use the legacy thin-line renderer.
+     * Draws a line with a stroke centered on the segment.
+     * Values less than or equal to 1 use the normal one-pixel batch line path.
      */
-    public void drawRect(float x, float y, float w, float h, float thickness) {
+    public void drawLine(float x1, float y1, float x2, float y2, float thickness) {
         if (thickness <= 1.0f) {
-            drawRect(x, y, w, h);
+            drawLine(x1, y1, x2, y2);
             return;
         }
 
-        drawLine(x, y, x + w, y, thickness);
-        drawLine(x + w, y, x + w, y + h, thickness);
-        drawLine(x + w, y + h, x, y + h, thickness);
-        drawLine(x, y + h, x, y, thickness);
+        float[] coords = StrokeGeometry.createLineQuad(x1, y1, x2, y2, thickness);
+        if (coords.length == 0) return;
+        drawFilledShape(coords);
     }
 
     /**
@@ -800,7 +800,7 @@ public class Graphics {
     /**
      * Draws an ellipse outline with a stroke centered on the ellipse boundary.
      * The x/y and w/h parameters preserve the existing center/radius semantics of {@link #drawCircle(float, float, float, float)}.
-     * Values less than or equal to 1 use the legacy thin-line renderer.
+     * Values less than or equal to 1 use the normal batch ellipse outline path.
      */
     public void drawCircle(float x, float y, float w, float h, float thickness) {
         if (thickness <= 1.0f) {

@@ -3,7 +3,7 @@ package com.physmo.garnet.renderer;
 import com.physmo.garnet.graphics.Viewport;
 
 /**
- * CPU equivalent of the legacy fixed-function viewport matrix transform.
+ * Converts world coordinates into the active viewport's screen-space batch coordinates.
  */
 public final class ViewportTransform {
     private ViewportTransform() {

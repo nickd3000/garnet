@@ -13,12 +13,12 @@ import com.physmo.garnet.graphics.Texture;
 //
 // Two columns are rendered side-by-side using the same texture:
 //
-//   Column 1 - no shader   : normal colour rendering (fixed-function)
+//   Column 1 - no shader   : normal colour rendering through the default batch shader
 //   Column 2 - greyscale   : custom fragment shader converts colour to greyscale
 //
 // The shader is set by calling sprite.setShader(shaderProgram) on the
 // DrawableElement returned by g.drawImage(texture, x, y).
-// Calling clearShader() (or passing null) reverts to fixed-function rendering.
+// Calling clearShader() (or passing null) reverts to the default batch shader.
 public class ShaderExample extends GarnetApp {
 
     static final int WINDOW_W = 300;

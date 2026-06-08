@@ -1,5 +1,6 @@
 package com.physmo.reference;
 
+import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
@@ -35,7 +36,9 @@ public class HelloWorld extends GarnetApp {
 
     @Override
     public void draw(Graphics g) {
-        g.drawCircle((float) (200 + offset), 200, 100, 100);
-        g.drawCircle((float) (200 - offset), 200, 110, 150);
+        g.setColor(ColorUtils.SUNSET_GREEN);
+        g.drawCircle((float) (200 + offset), 200, 100, 100, 2);
+        g.setColor(ColorUtils.SUNSET_ORANGE);
+        g.drawCircle((float) (200 - offset), 200, 110, 150, 4);
     }
 }
