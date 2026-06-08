@@ -1,15 +1,8 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.graphics.Graphics;
-
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor4fv;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import com.physmo.garnet.renderer.BatchMesh;
+import com.physmo.garnet.renderer.RenderCommand;
+import com.physmo.garnet.renderer.ShapeGeometry;
 
 public class Circle2D extends DrawableElement {
 
@@ -34,33 +27,20 @@ public class Circle2D extends DrawableElement {
     }
 
     @Override
-    public void render(Graphics graphics) {
-        glDisable(GL_TEXTURE_2D);
-
-        glColor4fv(colorFloats);
-        pushViewportTransform(graphics);
-
+    public RenderCommand appendToBatch(BatchMesh mesh) {
         generatePoints();
-
-        if (!filled) {
-            glBegin(GL_LINE_LOOP);
-            for (int i = 0; i < coords.length / 2; i++) {
-                glVertex2f(coords[i * 2], coords[(i * 2) + 1]);
-            }
-            glEnd();
-        } else {
-            glBegin(GL_TRIANGLE_FAN);
-            // Add mid-point
-            glVertex2f(x, y);
-            for (int i = 0; i < coords.length / 2; i++) {
-                glVertex2f(coords[i * 2], coords[(i * 2) + 1]);
-            }
-            glVertex2f(coords[0], coords[1]);
-            glEnd();
+        if (filled) {
+            return ShapeGeometry.appendFilledConvexPolygon(mesh, viewport, coords, color);
         }
 
-        popViewportTransform();
+        float[] ringStrip = StrokeGeometry.createEllipseRingStrip(x, y, width, height, 1.0f, numSegments);
+        if (ringStrip.length == 0) return new RenderCommand(mesh.vertexCount(), 0, mesh.indexCount(), 0);
+        return ShapeGeometry.appendTriangleStripAsTriangles(mesh, viewport, ringStrip, color);
+    }
 
+    @Override
+    public int getMaterialFlags() {
+        return 0;
     }
 
     public float[] generatePoints() {

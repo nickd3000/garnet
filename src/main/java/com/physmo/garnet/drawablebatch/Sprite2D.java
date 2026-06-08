@@ -1,34 +1,10 @@
 package com.physmo.garnet.drawablebatch;
 
-
-import com.physmo.garnet.graphics.Graphics;
-
-import static org.lwjgl.opengl.GL11.GL_MODULATE;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_REPLACE;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV_MODE;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor4fv;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glRotatef;
-import static org.lwjgl.opengl.GL11.glScalef;
-import static org.lwjgl.opengl.GL11.glTexCoord2f;
-import static org.lwjgl.opengl.GL11.glTexEnvi;
-import static org.lwjgl.opengl.GL11.glTranslatef;
-import static org.lwjgl.opengl.GL11.glVertex2f;
-import static org.lwjgl.opengl.GL13.GL_COMBINE;
-import static org.lwjgl.opengl.GL13.GL_COMBINE_ALPHA;
-import static org.lwjgl.opengl.GL13.GL_COMBINE_RGB;
-import static org.lwjgl.opengl.GL13.GL_PRIMARY_COLOR;
-import static org.lwjgl.opengl.GL13.GL_SOURCE0_ALPHA;
-import static org.lwjgl.opengl.GL13.GL_SOURCE0_RGB;
-import static org.lwjgl.opengl.GL13.GL_SOURCE1_ALPHA;
+import com.physmo.garnet.renderer.BatchMesh;
+import com.physmo.garnet.renderer.BatchVertex;
+import com.physmo.garnet.renderer.RenderCommand;
+import com.physmo.garnet.renderer.SpriteGeometry;
+import com.physmo.garnet.renderer.TextureRegion;
 
 // TODO: sprite 2d should not have to handle scaling sprites, eg making them all x4 size etc.
 public class Sprite2D extends DrawableElement {
@@ -76,6 +52,40 @@ public class Sprite2D extends DrawableElement {
         this._h = this.h / 2;
     }
 
+    public void setRegionCoords(float x, float y, float w, float h, TextureRegion region) {
+        rotated = false;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.tx = region.u0();
+        this.ty = region.v0();
+        this.tw = region.uWidth();
+        this.th = region.vHeight();
+        this.textureScaleX = 1.0f;
+        this.textureScaleY = 1.0f;
+        this.textureId = region.textureId();
+        this._w = this.w / 2;
+        this._h = this.h / 2;
+    }
+
+    public void setRegionCoords(float[] vertexCoords, float[] texCoords, TextureRegion region) {
+        rotated = false;
+        this.x = vertexCoords[0];
+        this.y = vertexCoords[1];
+        this.w = vertexCoords[2] - vertexCoords[0];
+        this.h = vertexCoords[7] - vertexCoords[1];
+        this.tx = (region.x() + texCoords[0]) / (float) region.textureWidth();
+        this.ty = (region.y() + texCoords[1]) / (float) region.textureHeight();
+        this.tw = (texCoords[2] - texCoords[0]) / (float) region.textureWidth();
+        this.th = (texCoords[7] - texCoords[1]) / (float) region.textureHeight();
+        this.textureScaleX = 1.0f;
+        this.textureScaleY = 1.0f;
+        this.textureId = region.textureId();
+        this._w = this.w / 2;
+        this._h = this.h / 2;
+    }
+
     public void setCoords(int x, int y, int w, int h, int tx, int ty, int tw, int th, float angle) {
         rotated = (angle != 0);
         this.x = x;
@@ -101,39 +111,33 @@ public class Sprite2D extends DrawableElement {
 
 
     @Override
-    public void render(Graphics graphics) {
-        glEnable(GL_TEXTURE_2D);
-
-        glColor4fv(colorFloats);
-        if (rotated) {
-            renderRotated(graphics, 1.0f);
-            return;
-        }
-        pushViewportTransform(graphics);
-
-        if (isColorOverride()) applyColorOverride();
-
+    public RenderCommand appendToBatch(BatchMesh mesh) {
         float txs = tx * textureScaleX;
         float tys = ty * textureScaleY;
         float tws = tw * textureScaleX;
         float ths = th * textureScaleY;
 
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2f(txs, tys);
-            glVertex2f(x, y);
-            glTexCoord2f(txs + tws, tys);
-            glVertex2f(x + w, y);
-            glTexCoord2f(txs + tws, tys + ths);
-            glVertex2f(x + w, y + h);
-            glTexCoord2f(txs, tys + ths);
-            glVertex2f(x, y + h);
+        if (rotated) {
+            return SpriteGeometry.appendRotatedQuad(
+                    mesh, viewport,
+                    x, y, w, h,
+                    txs, tys, tws, ths,
+                    angle,
+                    color,
+                    isColorOverride());
         }
-        glEnd();
 
-        if (isColorOverride()) removeColorOverride();
+        return SpriteGeometry.appendQuad(
+                mesh, viewport,
+                x, y, w, h,
+                txs, tys, tws, ths,
+                color,
+                isColorOverride());
+    }
 
-        popViewportTransform();
+    @Override
+    public int getMaterialFlags() {
+        return BatchVertex.FLAG_TEXTURED | (isColorOverride() ? BatchVertex.FLAG_COLOR_OVERRIDE : 0);
     }
 
     @Override
@@ -148,57 +152,6 @@ public class Sprite2D extends DrawableElement {
     @Override
     public int getType() {
         return SPRITE;
-    }
-
-    private void renderRotated(Graphics graphics, float textureScale) {
-        glPushMatrix();
-
-        double z = viewport.getZoom();
-
-        float xo, yo;
-        xo = (float) (viewport.getWindowX() - ((viewport.getScrollX() - x) * z));
-        yo = (float) (viewport.getWindowY() - ((viewport.getScrollY() - y) * z));
-
-        glTranslatef(xo, yo, 0);
-        glScalef((float) z, (float) z, 1);
-        glRotatef(angle, 0f, 0f, 1.0f);
-
-        float txs = tx * textureScaleX;
-        float tys = ty * textureScaleY;
-        float tws = tw * textureScaleX;
-        float ths = th * textureScaleY;
-
-        if (isColorOverride()) applyColorOverride();
-
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2f(txs, tys);
-            glVertex2f(-_w, -_h);
-            glTexCoord2f(txs + tws, tys);
-            glVertex2f(_w, -_h);
-            glTexCoord2f(txs + tws, tys + ths);
-            glVertex2f(_w, _h);
-            glTexCoord2f(txs, tys + ths);
-            glVertex2f(-_w, _h);
-
-        }
-
-        glEnd();
-        if (isColorOverride()) removeColorOverride();
-        glPopMatrix();
-    }
-
-    private static void applyColorOverride() {
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_REPLACE);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
-        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
-    }
-
-    private static void removeColorOverride() {
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
 
     public void setTextureScale(float x, float y) {

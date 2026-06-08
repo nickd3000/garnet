@@ -99,7 +99,7 @@ public class ColourGradeExample extends GarnetApp {
         float radius = 60f;
 
         // --- Pass 1: render scene into FBO (panel-sized) ---
-        renderTexture.bind();
+        renderTexture.bind(g);
         glClear(GL_COLOR_BUFFER_BIT);
         g.setDrawOrder(0);
         for (int i = 0; i < angle.length; i++) {
@@ -109,7 +109,7 @@ public class ColourGradeExample extends GarnetApp {
             g.drawImage(texture, (int) sx, (int) sy);
         }
         g.render();
-        renderTexture.unbind(garnet.getDisplay());
+        renderTexture.unbind(g, garnet.getDisplay());
 
         // --- Pass 2: draw each panel with a different colour grade ---
         for (int i = 0; i < 4; i++) {

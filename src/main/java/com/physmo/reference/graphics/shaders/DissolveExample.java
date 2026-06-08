@@ -6,6 +6,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.renderer.TextureRegion;
 
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
@@ -65,6 +66,9 @@ public class DissolveExample extends GarnetApp {
 
         // Bake in the static uniforms at init time
         dissolveShader.bind();
+        TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
+        dissolveShader.setUniform2f("regionOffset", textureRegion.u0(), textureRegion.v0());
+        dissolveShader.setUniform2f("regionScale", textureRegion.uWidth(), textureRegion.vHeight());
         dissolveShader.setUniform1f("edgeWidth", 0.08f);
         dissolveShader.setUniform4f("edgeColor", 1.0f, 0.4f, 0.0f, 1.0f);
         dissolveShader.unbind();

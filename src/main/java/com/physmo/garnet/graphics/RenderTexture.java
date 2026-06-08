@@ -65,6 +65,11 @@ public class RenderTexture {
         glOrtho(0.0f, width, height, 0.0f, 0.0f, 1.0f);
     }
 
+    public void bind(Graphics graphics) {
+        bind();
+        graphics.setRenderTargetSize(width, height);
+    }
+
     /**
      * Restore the default (window) framebuffer and re-apply the window viewport.
      * The {@code display} is used to restore the correct scaled viewport.
@@ -72,6 +77,11 @@ public class RenderTexture {
     public void unbind(com.physmo.garnet.Display display) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         display.placeGlViewport();
+    }
+
+    public void unbind(Graphics graphics, com.physmo.garnet.Display display) {
+        graphics.clearRenderTargetSize();
+        unbind(display);
     }
 
     /**

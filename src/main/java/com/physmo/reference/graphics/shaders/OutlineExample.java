@@ -6,6 +6,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.renderer.TextureRegion;
 
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
@@ -58,8 +59,9 @@ public class OutlineExample extends GarnetApp {
         texture = Texture.loadTexture("garnetCrystal.png");
         garnet.getGraphics().addTexture(texture);
 
-        float texelW = 1.0f / texture.getWidth();
-        float texelH = 1.0f / texture.getHeight();
+        TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
+        float texelW = 1.0f / textureRegion.textureWidth();
+        float texelH = 1.0f / textureRegion.textureHeight();
 
         outlineShaderRed = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/outline.frag");
         outlineShaderRed.bind();

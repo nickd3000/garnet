@@ -1,14 +1,8 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.graphics.Graphics;
-
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor4fv;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import com.physmo.garnet.renderer.BatchMesh;
+import com.physmo.garnet.renderer.RenderCommand;
+import com.physmo.garnet.renderer.ShapeGeometry;
 
 /**
  * The Line2D class represents a drawable 2D line that can be rendered on the screen.
@@ -41,19 +35,15 @@ public class Line2D extends DrawableElement {
     }
 
     @Override
-    public void render(Graphics graphics) {
-        glDisable(GL_TEXTURE_2D);
+    public RenderCommand appendToBatch(BatchMesh mesh) {
+        float[] lineQuad = StrokeGeometry.createLineQuad(coords[0], coords[1], coords[2], coords[3], 1.0f);
+        if (lineQuad.length == 0) return new RenderCommand(mesh.vertexCount(), 0, mesh.indexCount(), 0);
+        return ShapeGeometry.appendFilledConvexPolygon(mesh, viewport, lineQuad, color);
+    }
 
-        glColor4fv(colorFloats);
-
-        pushViewportTransform(graphics);
-
-        glBegin(GL_LINES);
-        glVertex2f(coords[0], coords[1]);
-        glVertex2f(coords[2], coords[3]);
-        glEnd();
-
-        popViewportTransform();
+    @Override
+    public int getMaterialFlags() {
+        return 0;
     }
 
     @Override

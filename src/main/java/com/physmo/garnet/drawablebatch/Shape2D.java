@@ -1,14 +1,8 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.graphics.Graphics;
-
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor4fv;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import com.physmo.garnet.renderer.BatchMesh;
+import com.physmo.garnet.renderer.RenderCommand;
+import com.physmo.garnet.renderer.ShapeGeometry;
 
 public class Shape2D extends DrawableElement {
 
@@ -36,22 +30,13 @@ public class Shape2D extends DrawableElement {
     }
 
     @Override
-    void render(Graphics graphics) {
-        glDisable(GL_TEXTURE_2D);
+    public RenderCommand appendToBatch(BatchMesh mesh) {
+        return ShapeGeometry.appendFilledConvexPolygon(mesh, viewport, coords, color);
+    }
 
-        glColor4fv(colorFloats);
-        pushViewportTransform(graphics);
-
-        glBegin(GL_TRIANGLE_FAN);
-        // Add mid-point
-        glVertex2f(midPoint[0], midPoint[1]);
-        //
-        for (int i = 0; i < coords.length; i += 2) {
-            glVertex2f(coords[i], coords[i + 1]);
-        }
-        glVertex2f(coords[0], coords[1]);
-        glEnd();
-        popViewportTransform();
+    @Override
+    public int getMaterialFlags() {
+        return 0;
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.renderer.TextureRegion;
 
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
@@ -55,8 +56,9 @@ public class GlowExample extends GarnetApp {
         texture = Texture.loadTexture("garnetCrystal.png");
         garnet.getGraphics().addTexture(texture);
 
-        float texelW = 1.0f / texture.getWidth();
-        float texelH = 1.0f / texture.getHeight();
+        TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
+        float texelW = 1.0f / textureRegion.textureWidth();
+        float texelH = 1.0f / textureRegion.textureHeight();
 
         glowBlue = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/glow.frag");
         glowBlue.bind();
@@ -69,7 +71,7 @@ public class GlowExample extends GarnetApp {
         glowOrange.bind();
         glowOrange.setUniform2f("texelSize", texelW, texelH);
         glowOrange.setUniform4f("glowColor", 1.0f, 0.5f, 0.1f, 1.0f);
-        glowOrange.setUniform1f("glowRadius", 5.0f);
+        glowOrange.setUniform1f("glowRadius", 1.5f);
         glowOrange.unbind();
 
         glowGreen = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/glow.frag");

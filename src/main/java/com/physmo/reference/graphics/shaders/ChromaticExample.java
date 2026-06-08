@@ -6,6 +6,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.renderer.TextureRegion;
 
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
@@ -22,7 +23,7 @@ public class ChromaticExample extends GarnetApp {
     static final int WINDOW_H = 200;
 
     Texture texture;
-    ShaderProgram chromaticShader;
+    ShaderProgram[] chromaticShaders;
 
     public ChromaticExample(Garnet garnet, String name) {
         super(garnet, name);
@@ -44,7 +45,15 @@ public class ChromaticExample extends GarnetApp {
         texture = Texture.loadTexture("garnetCrystal.png");
         garnet.getGraphics().addTexture(texture);
 
-        chromaticShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/chromatic.frag");
+        TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
+        float[] shifts = {0.005f, 0.015f, 0.03f};
+        chromaticShaders = new ShaderProgram[shifts.length];
+        for (int i = 0; i < shifts.length; i++) {
+            chromaticShaders[i] = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/chromatic.frag");
+            chromaticShaders[i].bind();
+            chromaticShaders[i].setUniform1f("shift", shifts[i] * textureRegion.uWidth());
+            chromaticShaders[i].unbind();
+        }
     }
 
     @Override
@@ -64,14 +73,9 @@ public class ChromaticExample extends GarnetApp {
         g.drawImage(texture, startX, startY);
 
         // Columns 2-4 — increasing chromatic shift
-        float[] shifts = {0.005f, 0.015f, 0.03f};
-        for (int i = 0; i < shifts.length; i++) {
-            chromaticShader.bind();
-            chromaticShader.setUniform1f("shift", shifts[i]);
-            chromaticShader.unbind();
-
+        for (int i = 0; i < chromaticShaders.length; i++) {
             g.setColor(ColorUtils.WHITE);
-            g.drawImage(texture, startX + spacing * (i + 1), startY).setShader(chromaticShader);
+            g.drawImage(texture, startX + spacing * (i + 1), startY).setShader(chromaticShaders[i]);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.physmo.garnet;
 import com.physmo.garnet.audio.Sound;
 import com.physmo.garnet.clock.GameClock;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.ViewportManager;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.KeyboardCallback;
 import com.physmo.garnet.toolkit.GraphDrawer;
@@ -21,19 +22,10 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glTexCoord2f;
-import static org.lwjgl.opengl.GL11.glVertex2f;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 
@@ -225,6 +217,7 @@ public class Garnet {
         gameClock.getTimer(GameClock.TIMER_RENDER).start();
 
         if (useInternalBuffer) {
+            graphics.setInternalBufferMode(true);
             internalBuffer.bind();
         }
 
@@ -242,6 +235,7 @@ public class Garnet {
         if (useInternalBuffer) {
             internalBuffer.unbind(display);
             drawInternalBufferToScreen();
+            graphics.setInternalBufferMode(true);
         }
 
         debugDrawer.setFPS(gameClock.getFps());
@@ -270,41 +264,35 @@ public class Garnet {
      * An optional shader can be applied via {@link #setInternalBufferShader}.
      */
     private void drawInternalBufferToScreen() {
-        // Draw the internal buffer to the screen.
-        // We bypass the Graphics/DrawableBatch system to avoid viewport/scrolling interference.
         glDisable(GL_SCISSOR_TEST);
         display.placeGlViewport(); // Ensure correct screen viewport is set
+        graphics.setInternalBufferMode(false);
+        graphics.clearRenderTargetSize();
 
         float[] bgCols2 = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols2[0], bgCols2[1], bgCols2[2], bgCols2[3]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (internalBufferShader != null) {
-            internalBufferShader.bind();
-        }
-        internalBuffer.getTexture().bind();
-        glColor4f(1, 1, 1, 1);
-        glEnable(GL_TEXTURE_2D);
-
-        glBegin(GL_QUADS);
-        {
-            // Texture coordinates flipped on Y
-            glTexCoord2f(0, 1);
-            glVertex2f(0, 0);
-            glTexCoord2f(1, 1);
-            glVertex2f(internalBuffer.getWidth(), 0);
-            glTexCoord2f(1, 0);
-            glVertex2f(internalBuffer.getWidth(), internalBuffer.getHeight());
-            glTexCoord2f(0, 0);
-            glVertex2f(0, internalBuffer.getHeight());
-        }
-        glEnd();
-        if (internalBufferShader != null) {
-            internalBufferShader.unbind();
-        }
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
         graphics.resetSettings();
+        int previousViewportId = graphics.getViewportManager().getActiveViewport().getId();
+        double previousZoom = graphics.getZoom();
+        graphics.setActiveViewport(ViewportManager.DEBUG_VIEWPORT);
+        graphics.setZoom(1);
+        graphics.setColor(ColorUtils.WHITE);
+        graphics.setDrawOrder(0);
+        float width = internalBuffer.getWidth();
+        float height = internalBuffer.getHeight();
+        // FBO colour attachments are presented upside down relative to the
+        // engine's top-left canvas coordinates. The old immediate blit flipped
+        // V here; keep that explicit while drawing through the batch path.
+        graphics.drawImage(
+                internalBuffer.getTexture(),
+                new float[]{0, 0, width, 0, width, height, 0, height},
+                new float[]{0, height, width, height, width, 0, 0, 0}
+        ).setShader(internalBufferShader);
+        graphics.render();
+        graphics.setActiveViewport(previousViewportId);
+        graphics.setZoom(previousZoom);
     }
 
     /**

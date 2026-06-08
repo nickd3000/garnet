@@ -1,6 +1,7 @@
 package com.physmo.garnet.toolkit;
 
 import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.graphics.TextureAtlasMode;
 
 import java.awt.Color;
 import java.nio.ByteBuffer;
@@ -54,7 +55,7 @@ public class InlineTexture {
 
         byteBuffer.position(0);
 
-        return Texture.createTexture(width, height, byteBuffer);
+        return Texture.createTexture(width, height, byteBuffer).setAtlasMode(TextureAtlasMode.RAW);
     }
 
     /**

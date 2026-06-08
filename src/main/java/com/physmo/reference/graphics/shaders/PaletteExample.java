@@ -6,6 +6,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
+import com.physmo.garnet.renderer.TextureRegion;
 
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
@@ -25,7 +26,7 @@ public class PaletteExample extends GarnetApp {
     static final int WINDOW_H = 200;
 
     Texture texture;
-    ShaderProgram paletteShader;
+    ShaderProgram[] paletteShaders;
 
     public PaletteExample(Garnet garnet, String name) {
         super(garnet, name);
@@ -47,7 +48,21 @@ public class PaletteExample extends GarnetApp {
         texture = Texture.loadTexture("garnetCrystal.png");
         garnet.getGraphics().addTexture(texture);
 
-        paletteShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/palette.frag");
+        TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
+        float[] levels = {8f, 4f, 2f};
+        float[] ditherScale = {1f, 1f, 1f};
+
+        paletteShaders = new ShaderProgram[3];
+        for (int i = 0; i < paletteShaders.length; i++) {
+            paletteShaders[i] = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/palette.frag");
+            paletteShaders[i].bind();
+            paletteShaders[i].setUniform2f("regionOffset", textureRegion.u0(), textureRegion.v0());
+            paletteShaders[i].setUniform2f("regionScale", textureRegion.uWidth(), textureRegion.vHeight());
+            paletteShaders[i].setUniform1f("levels", levels[i]);
+            paletteShaders[i].setUniform1f("ditherScale", ditherScale[i]);
+            paletteShaders[i].setUniform2f("resolution", texture.getWidth(), texture.getHeight());
+            paletteShaders[i].unbind();
+        }
     }
 
     @Override
@@ -66,18 +81,9 @@ public class PaletteExample extends GarnetApp {
         g.setColor(ColorUtils.WHITE);
         g.drawImage(texture, startX, startY);
 
-        float[] levels = {8f, 4f, 2f};
-        float[] ditherScale = {1f, 1f, 1f};
-
         for (int i = 0; i < 3; i++) {
-            paletteShader.bind();
-            paletteShader.setUniform1f("levels", levels[i]);
-            paletteShader.setUniform1f("ditherScale", ditherScale[i]);
-            paletteShader.setUniform2f("resolution", tw, th);
-            paletteShader.unbind();
-
             g.setColor(ColorUtils.WHITE);
-            g.drawImage(texture, startX + spacing * (i + 1), startY).setShader(paletteShader);
+            g.drawImage(texture, startX + spacing * (i + 1), startY).setShader(paletteShaders[i]);
         }
     }
 }

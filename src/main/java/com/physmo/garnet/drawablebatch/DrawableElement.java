@@ -1,25 +1,20 @@
 package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.ColorUtils;
-import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Viewport;
-
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glScalef;
-import static org.lwjgl.opengl.GL11.glTranslatef;
+import com.physmo.garnet.renderer.RenderStateKey;
 
 /**
  * Base class for all renderable elements managed by {@link DrawableBatch}.
  * <p>
  * Subclasses represent concrete drawable types (sprites, lines, circles, etc.)
- * and implement {@link #render(Graphics)} to issue the actual GL draw calls.
+ * and append CPU-side triangle geometry for the buffered batch renderer.
  * Common properties such as draw order, colour, blend mode, viewport, and an
  * optional {@link ShaderProgram} are stored here and applied by the batch
  * renderer before each element is drawn.
  */
-public abstract class DrawableElement {
+public abstract class DrawableElement implements BatchRenderable {
     /**
      * Element type constant for a sprite.
      */
@@ -156,12 +151,12 @@ public abstract class DrawableElement {
     }
 
     /**
-     * Issues the GL draw calls for this element.
-     * Called by {@link DrawableBatch} during the render pass.
-     *
-     * @param graphics the active {@link Graphics} context
+     * Returns the render-state key for this element's CPU-side batch geometry.
+     * Used by the buffered renderer migration to group adjacent compatible draw commands.
      */
-    abstract void render(Graphics graphics);
+    RenderStateKey createRenderStateKey() {
+        return RenderStateKey.of(getTextureId(), shader, blendMode, viewport, getMaterialFlags());
+    }
 
     /**
      * Returns the draw order for this element.
@@ -212,27 +207,4 @@ public abstract class DrawableElement {
     public final void setColor(float r, float g, float b, float a) {
         setColor(ColorUtils.floatToRgb(r, g, b, a));
     }
-
-    /**
-     * Pushes the current GL matrix and applies the viewport's scroll and zoom transform.
-     * Must be paired with a call to {@link #popViewportTransform()}.
-     */
-    public void pushViewportTransform(Graphics graphics) {
-        glPushMatrix();
-        double z = viewport.getZoom();
-
-        float xo, yo;
-
-        xo = (float) (viewport.getWindowX() - (viewport.getScrollX() * z));
-        yo = (float) (viewport.getWindowY() - (viewport.getScrollY() * z));
-
-        glTranslatef(xo, yo, 0);
-        glScalef((float) z, (float) z, 1);
-    }
-
-    /** Pops the GL matrix pushed by {@link #pushViewportTransform()}. */
-    public void popViewportTransform() {
-        glPopMatrix();
-    }
-
 }

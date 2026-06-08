@@ -64,8 +64,8 @@ public class WaveExample extends GarnetApp {
         // Upload animated uniforms
         waveShader.bind();
         waveShader.setUniform1f("time", (float) time);
-        waveShader.setUniform1f("amplitude", 0.025f);
-        waveShader.setUniform1f("frequency", 12.0f);
+        waveShader.setUniform1f("amplitude", 0.0025f);
+        waveShader.setUniform1f("frequency", 122.0f);
         waveShader.unbind();
 
         // Column 1 — no shader (normal)

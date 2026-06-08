@@ -1,24 +1,23 @@
 package com.physmo.garnet.drawablebatch;
 
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.ShaderProgram;
+import com.physmo.garnet.renderer.BatchMesh;
+import com.physmo.garnet.renderer.BatchRenderPlan;
+import com.physmo.garnet.renderer.BatchRenderStats;
+import com.physmo.garnet.renderer.BatchRenderer;
+import com.physmo.garnet.renderer.RenderCommand;
+import com.physmo.garnet.renderer.RenderRun;
+import com.physmo.garnet.renderer.RenderRunBuilder;
+import com.physmo.garnet.renderer.RenderStateKey;
 import com.physmo.garnet.structure.Array;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_DST_COLOR;
-import static org.lwjgl.opengl.GL11.GL_ONE;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_ZERO;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glColorMask;
 import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
-import static org.lwjgl.opengl.GL14.GL_FUNC_REVERSE_SUBTRACT;
-import static org.lwjgl.opengl.GL14.glBlendEquation;
 
 /**
  * Collects drawable elements and flushes them in draw-order.
@@ -31,9 +30,11 @@ public class DrawableBatch {
     final Array<DrawableElement> elements;
     // Sorting is deferred until render so multiple additions only pay one sort.
     private boolean dirty = true;
+    private final BatchRenderer batchRenderer;
 
     public DrawableBatch() {
         elements = new Array<>(10);
+        batchRenderer = new BatchRenderer();
     }
 
     /**
@@ -71,73 +72,46 @@ public class DrawableBatch {
      * @param graphics active graphics context
      */
     public void render(Graphics graphics) {
-        if (dirty) {
-            elements.sort(Comparator.comparingInt(DrawableElement::getDrawOrder));
-            dirty = false;
-        }
+        sortIfDirty();
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
 
-        BlendMode currentMode = null;
-        ShaderProgram currentShader = null;
-        for (DrawableElement element : elements) {
-            BlendMode mode = element.getBlendMode();
-            if (mode != currentMode) {
-                applyBlendMode(mode);
-                currentMode = mode;
-            }
-            ShaderProgram shader = element.getShader();
-            if (shader != currentShader) {
-                // Only switch shaders when needed; shader binds are global GL state changes.
-                if (currentShader != null) currentShader.unbind();
-                if (shader != null) shader.bind();
-                currentShader = shader;
-            }
-            applyClipRectIfRequired(graphics, element);
-            graphics.bindTexture(element.getTextureId());
-            element.render(graphics);
-        }
+        batchRenderer.render(graphics, buildRenderPlan());
+    }
 
-        if (currentShader != null) currentShader.unbind();
-        // Leave subsequent drawing with the default blend state.
-        applyBlendMode(BlendMode.NORMAL);
+    private void sortIfDirty() {
+        if (dirty) {
+            elements.sort(Comparator.comparingInt(DrawableElement::getDrawOrder));
+            dirty = false;
+        }
     }
 
     /**
-     * Applies the OpenGL blend/color-mask state for a batch element.
-     * <p>
-     * Blend and colour-mask settings are global GL state, so special modes must
-     * reset any state they alter before later elements are drawn.
-     *
-     * @param mode blend mode to apply
+     * Builds CPU-side batch geometry and render runs without issuing OpenGL calls.
+     * This is the migration seam used before the dynamic GL buffer path is wired in.
      */
-    private void applyBlendMode(BlendMode mode) {
-        switch (mode) {
-            case NORMAL:
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                break;
-            case ADDITIVE:
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-                break;
-            case SUBTRACTIVE:
-                glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-                break;
-            case MULTIPLY:
-                glBlendFunc(GL_DST_COLOR, GL_ZERO);
-                break;
-            case MATTE:
-                glColorMask(false, false, false, true);
-                glBlendFunc(GL_ONE, GL_ZERO);
-                break;
+    public BatchRenderPlan buildRenderPlan() {
+        sortIfDirty();
+
+        BatchMesh mesh = new BatchMesh();
+        List<RenderCommand> commands = new ArrayList<>(elements.size());
+        List<RenderStateKey> states = new ArrayList<>(elements.size());
+
+        for (DrawableElement element : elements) {
+            commands.add(element.appendToBatch(mesh));
+            states.add(element.createRenderStateKey());
         }
-        if (mode != BlendMode.MATTE) {
-            glColorMask(true, true, true, true);
-        }
-        if (mode != BlendMode.SUBTRACTIVE) {
-            glBlendEquation(GL_FUNC_ADD);
-        }
+
+        List<RenderRun> runs = RenderRunBuilder.buildRuns(commands, states);
+        return new BatchRenderPlan(mesh, commands, states, runs);
+    }
+
+    /**
+     * Returns a snapshot of the most recent buffered render counters.
+     */
+    public BatchRenderStats getRenderStats() {
+        return batchRenderer.getStats().snapshot();
     }
 
     /**
