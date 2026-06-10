@@ -43,19 +43,50 @@ public class InlineTexture {
      */
     public static Texture create(String data, int width, int height, String tokens, Color[] palette) {
 
+        data = normalizeData(data, width, height);
+
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(width * height * 4);
 
         if (data.length() < width * height) {
             throw new RuntimeException("InlineTexture data too small. Data size:" + data.length() + " expected:" + width * height);
         }
 
-        for (int i = 0; i < data.length(); i++) {
+        for (int i = 0; i < width * height; i++) {
             putColorInByteBuffer(data.charAt(i), tokens, palette, byteBuffer);
         }
 
         byteBuffer.position(0);
 
         return Texture.createTexture(width, height, byteBuffer).setAtlasMode(TextureAtlasMode.RAW);
+    }
+
+    static String normalizeData(String data, int width, int height) {
+        if (!data.contains("\n") && !data.contains("\r")) {
+            return data;
+        }
+
+        String[] lines = data.replace("\r\n", "\n").replace('\r', '\n').split("\n", -1);
+        int start = 0;
+        int end = lines.length;
+
+        while (start < end && lines[start].isEmpty()) start++;
+        while (end > start && lines[end - 1].isEmpty()) end--;
+
+        if (end - start != height) {
+            throw new RuntimeException("InlineTexture row count mismatch. Row count:" + (end - start) + " expected:" + height);
+        }
+
+        StringBuilder normalized = new StringBuilder(width * height);
+        for (int i = start; i < end; i++) {
+            String line = lines[i];
+            if (line.length() > width) {
+                throw new RuntimeException("InlineTexture row too wide. Row size:" + line.length() + " expected:" + width);
+            }
+            normalized.append(line);
+            normalized.append(" ".repeat(width - line.length()));
+        }
+
+        return normalized.toString();
     }
 
     /**

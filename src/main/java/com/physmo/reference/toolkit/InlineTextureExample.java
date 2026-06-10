@@ -21,24 +21,27 @@ public class InlineTextureExample extends GarnetApp {
 
     @Override
     public void init() {
-        String data1 = "  XXXX  " +
-                " X    X " +
-                "X o  o X" +
-                "X      X" +
-                "X o  o X" +
-                "X  oo  X" +
-                " X    X " +
-                "  XXXX  ";
+        String data1 = """
+                  XXXX
+                 X    X
+                X o  o X
+                X      X
+                X o  o X
+                X  oo  X
+                 X    X
+                  XXXX
+                """;
 
-        String data2 =
-                "  XXXX  " +
-                        " X    X " +
-                        "X o  o X" +
-                        "X      X" +
-                        "X  oo  X" +
-                        "X o  o X" +
-                        " X    X " +
-                        "  XXXX  ";
+        String data2 = """
+                  XXXX
+                 X    X
+                X o  o X
+                X      X
+                X  oo  X
+                X o  o X
+                 X    X
+                  XXXX
+                """;
 
         // Create the inline textures
         texture1 = InlineTexture.create(data1, 8, 8);
