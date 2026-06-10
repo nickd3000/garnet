@@ -11,22 +11,12 @@ public class RegularFontExample extends GarnetApp {
 
     RegularFont regularFont;
 
-    public RegularFontExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(500, 400);
-        GarnetApp app = new RegularFontExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(500, 400, RegularFontExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         regularFont = new RegularFont("regularfonts/12x12Font.png", 12, 12);
         garnet.getGraphics().setBackgroundColor(com.physmo.garnet.ColorUtils.SUNSET_BLUE);
     }

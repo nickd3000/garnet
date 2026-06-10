@@ -11,15 +11,13 @@ public class BasicContextExample {
         Context context = new Context();
 
         // Create two game objects.
-        GameObject gameObject1 = new GameObject("Game Object 1");
-        gameObject1.addComponent(new ContextExampleComponent());
+        GameObject gameObject1 = GameObject.named("Game Object 1")
+                .with(new ContextExampleComponent())
+                .inContext(context);
 
-        GameObject gameObject2 = new GameObject("Game Object 2");
-        gameObject2.addComponent(new ContextExampleComponent());
-
-        // Add the two objects to the context
-        context.add(gameObject1);
-        context.add(gameObject2);
+        GameObject.named("Game Object 2")
+                .with(new ContextExampleComponent())
+                .inContext(context);
 
         context.init();
 

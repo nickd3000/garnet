@@ -6,7 +6,7 @@ import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
-
+import com.physmo.garnet.renderer.TextureRegion;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
@@ -41,30 +41,24 @@ public class DissolveExample extends GarnetApp {
     ShaderProgram dissolveShader;
     double time = 0;
 
-    public DissolveExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new DissolveExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, DissolveExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Dissolve Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         dissolveShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/dissolve.frag");
 
         // Bake in the static uniforms at init time
         dissolveShader.bind();
+        TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
+        dissolveShader.setUniform2f("regionOffset", textureRegion.u0(), textureRegion.v0());
+        dissolveShader.setUniform2f("regionScale", textureRegion.uWidth(), textureRegion.vHeight());
         dissolveShader.setUniform1f("edgeWidth", 0.08f);
         dissolveShader.setUniform4f("edgeColor", 1.0f, 0.4f, 0.0f, 1.0f);
         dissolveShader.unbind();

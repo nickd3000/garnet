@@ -1,14 +1,8 @@
 package com.physmo.garnet.drawablebatch;
 
-import com.physmo.garnet.graphics.Graphics;
-
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor4fv;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import com.physmo.garnet.renderer.BatchMesh;
+import com.physmo.garnet.renderer.RenderCommand;
+import com.physmo.garnet.renderer.ShapeGeometry;
 
 public class EllipseStroke2D extends DrawableElement {
 
@@ -20,20 +14,14 @@ public class EllipseStroke2D extends DrawableElement {
     }
 
     @Override
-    void render(Graphics graphics) {
-        if (coords.length == 0) return;
+    public RenderCommand appendToBatch(BatchMesh mesh) {
+        if (coords.length == 0) return new RenderCommand(mesh.vertexCount(), 0, mesh.indexCount(), 0);
+        return ShapeGeometry.appendTriangleStripAsTriangles(mesh, viewport, coords, color);
+    }
 
-        glDisable(GL_TEXTURE_2D);
-        glColor4fv(colorFloats);
-        pushViewportTransform(graphics);
-
-        glBegin(GL_TRIANGLE_STRIP);
-        for (int i = 0; i < coords.length; i += 2) {
-            glVertex2f(coords[i], coords[i + 1]);
-        }
-        glEnd();
-
-        popViewportTransform();
+    @Override
+    public int getMaterialFlags() {
+        return 0;
     }
 
     @Override

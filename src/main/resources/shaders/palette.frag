@@ -8,6 +8,8 @@
 //   resolution  — screen/texture size in pixels (needed for dither coordinates)
 
 uniform sampler2D texture;
+uniform vec2 regionOffset;
+uniform vec2 regionScale;
 uniform float levels;
 uniform float ditherScale;
 uniform vec2 resolution;
@@ -36,11 +38,12 @@ float bayerLookup(float idx) {
 
 void main() {
     vec2 uv = gl_TexCoord[0].st;
+    vec2 localUv = (uv - regionOffset) / regionScale;
     vec4 col = texture2D(texture, uv) * gl_Color;
 
     // Dither threshold for this pixel
-    float px = floor(mod(uv.x * resolution.x, 4.0));
-    float py = floor(mod(uv.y * resolution.y, 4.0));
+    float px = floor(mod(localUv.x * resolution.x, 4.0));
+    float py = floor(mod(localUv.y * resolution.y, 4.0));
     float threshold = (bayerLookup(px + py * 4.0) - 0.5) * ditherScale / levels;
 
     // Quantise each channel

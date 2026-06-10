@@ -37,25 +37,16 @@ public class FilmGrainExample extends GarnetApp {
     double time = 0;
     double[] angle = new double[NUM_SPRITES];
 
-    public FilmGrainExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new FilmGrainExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, FilmGrainExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Film Grain Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         renderTexture = new RenderTexture(W, H);
         garnet.getGraphics().addTexture(renderTexture.getTexture());
@@ -90,7 +81,7 @@ public class FilmGrainExample extends GarnetApp {
         float radius = 100f;
 
         // --- Pass 1: render scene into FBO ---
-        renderTexture.bind();
+        renderTexture.bind(g);
         glClear(GL_COLOR_BUFFER_BIT);
         g.setDrawOrder(0);
         for (int i = 0; i < NUM_SPRITES; i++) {
@@ -100,7 +91,7 @@ public class FilmGrainExample extends GarnetApp {
             g.drawImage(texture, (int) sx, (int) sy);
         }
         g.render();
-        renderTexture.unbind(garnet.getDisplay());
+        renderTexture.unbind(g, garnet.getDisplay());
 
         // --- Pass 2: draw FBO texture through film grain shader ---
         g.setDrawOrder(0);

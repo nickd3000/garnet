@@ -4,7 +4,6 @@ import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.toolkit.Context;
 import com.physmo.garnet.toolkit.GameObject;
@@ -26,7 +25,6 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     static int width = 800;
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     Context context;
     double scale = 2;
     Random random = new Random(12345);
@@ -34,28 +32,16 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     List<RelativeObject> nearestObjects;
     int closeObjectTestCount = 0;
 
-    public CollisionExample_CloseObjects(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(width, height);
-        GarnetApp app = new CollisionExample_CloseObjects(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(width, height, CollisionExample_CloseObjects::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         context = new Context();
 
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet(imageFileName, 16, 16);
         context.add(tileSheet);
         context.add(graphics);
 
@@ -75,23 +61,23 @@ public class CollisionExample_CloseObjects extends GarnetApp {
 
     public void createObject(Context context, CollisionSystem collisionSystem, double x, double y) {
 
-        GameObject obj1 = new GameObject("obj1");
-        obj1.getTransform().set(x, y, 0);
         ColliderComponent collider = new ColliderComponent();
-        obj1.addComponent(collider);
+        GameObject.named("obj1")
+                .at(x, y)
+                .with(collider)
+                .tagged("testobject")
+                .with(new ComponentCollidingSprite())
+                .inContext(context);
         collisionSystem.addCollidable(collider);
-        obj1.addTag("testobject");
-        obj1.addComponent(new ComponentCollidingSprite());
-        context.add(obj1);
     }
 
     @Override
     public void tick(double delta) {
         context.tick(delta);
 
-        int[] mps = garnet.getInput().getMouse().getPositionScaled(scale);
+        int[] mousePosition = garnet.getInput().getMouse().getPosition();
         List<GameObject> objectsByTag = context.getObjectsByTag("testobject");
-        objectsByTag.get(0).getTransform().set(mps[0] - 8, mps[1] - 8, 0);
+        objectsByTag.get(0).getTransform().set(mousePosition[0] - 8, mousePosition[1] - 8, 0);
 
         closeObjectTestCount = collisionSystem.processCloseObjects(0, 20);
     }

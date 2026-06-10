@@ -13,22 +13,12 @@ public class ColorSupplierLinearExample extends GarnetApp {
 
     double timer = 0;
 
-    public ColorSupplierLinearExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new ColorSupplierLinearExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, ColorSupplierLinearExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("ColorSupplierLinearExample example");
 
         // create an array of color RGB values
@@ -77,6 +67,5 @@ public class ColorSupplierLinearExample extends GarnetApp {
         g.filledRect(50 + 150, 50 + 75, 50, 50);
 
     }
-
 
 }

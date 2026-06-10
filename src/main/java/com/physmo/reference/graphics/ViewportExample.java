@@ -4,7 +4,6 @@ import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.SubImage;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.graphics.Viewport;
 
@@ -14,7 +13,6 @@ public class ViewportExample extends GarnetApp {
     int viewportId2 = 2;
 
     TileSheet tileSheet;
-    Texture texture;
 
     double scale = 1;
     double angle = 0;
@@ -22,27 +20,15 @@ public class ViewportExample extends GarnetApp {
     int RED = 0xff5555ff;
     int GREEN = 0x55ff55ff;
 
-    public ViewportExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        garnet.setInternalBufferMode(true);
-        GarnetApp app = new ViewportExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, ViewportExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
-        texture = Texture.loadTexture("space.png");
-        tileSheet = new TileSheet(texture, 16, 16);
+    public void init() {
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet("space.png", 16, 16);
 
         garnet.getDebugDrawer().setColor(0xff00ffff);
         garnet.getDebugDrawer().setVisible(true);

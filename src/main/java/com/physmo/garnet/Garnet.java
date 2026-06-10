@@ -3,6 +3,7 @@ package com.physmo.garnet;
 import com.physmo.garnet.audio.Sound;
 import com.physmo.garnet.clock.GameClock;
 import com.physmo.garnet.graphics.Graphics;
+import com.physmo.garnet.graphics.ViewportManager;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.KeyboardCallback;
 import com.physmo.garnet.toolkit.GraphDrawer;
@@ -10,6 +11,9 @@ import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -21,19 +25,10 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glTexCoord2f;
-import static org.lwjgl.opengl.GL11.glVertex2f;
 
 // NOTE: on MacOS we need to add a vm argument: -XstartOnFirstThread
 
@@ -58,6 +53,39 @@ public class Garnet {
     private boolean useInternalBuffer = false;
     private com.physmo.garnet.graphics.RenderTexture internalBuffer;
     private com.physmo.garnet.graphics.ShaderProgram internalBufferShader;
+
+    /**
+     * Creates a Garnet instance, attaches a new app, initializes the engine, and starts the main loop.
+     *
+     * @param windowWidth  the width of the window to be created
+     * @param windowHeight the height of the window to be created
+     * @param appFactory   creates the app to run
+     */
+    public static void launch(int windowWidth, int windowHeight, Supplier<? extends GarnetApp> appFactory) {
+        launch(windowWidth, windowHeight, appFactory, garnet -> {
+        });
+    }
+
+    /**
+     * Creates a Garnet instance, applies pre-init configuration, attaches a new app,
+     * initializes the engine, and starts the main loop.
+     * <p>
+     * Use {@code configure} for engine settings that must be applied before {@link #init()},
+     * such as {@link #setInternalBufferMode(boolean)}.
+     *
+     * @param windowWidth  the width of the window to be created
+     * @param windowHeight the height of the window to be created
+     * @param appFactory   creates the app to run
+     * @param configure    pre-init engine configuration
+     */
+    public static void launch(int windowWidth, int windowHeight, Supplier<? extends GarnetApp> appFactory, Consumer<Garnet> configure) {
+        Objects.requireNonNull(appFactory, "appFactory must not be null");
+        Objects.requireNonNull(configure, "configure must not be null");
+
+        Garnet garnet = new Garnet(windowWidth, windowHeight);
+        configure.accept(garnet);
+        garnet.run(appFactory.get());
+    }
 
     /**
      * Constructs a new Garnet object initializing the key components required for the framework.
@@ -93,12 +121,15 @@ public class Garnet {
     }
 
     /**
-     * Sets the application to be managed by this Garnet instance.
+     * Attaches the app, initializes the engine, and starts the main loop.
+     * Use this when a Garnet instance needs pre-init configuration before running an app.
      *
      * @param garnetApp the {@link GarnetApp} to run
      */
-    public void setGarnetApp(GarnetApp garnetApp) {
-        this.garnetApp = garnetApp;
+    public void run(GarnetApp garnetApp) {
+        setApp(garnetApp);
+        init();
+        run();
     }
 
     /**
@@ -129,34 +160,14 @@ public class Garnet {
     }
 
     /**
-     * Initialises all subsystems including display, sound, input, and the application.
-     * Must be called before {@link #run()}.
+     * Sets the application to be managed by this Garnet instance.
+     * Equivalent to {@link #setGarnetApp(GarnetApp)}.
+     *
+     * @param garnetApp the {@link GarnetApp} to run
      */
-    public void init() {
-
-        display.init();
-
-        if (useInternalBuffer) {
-            graphics.setInternalBufferMode(true);
-            internalBuffer = new com.physmo.garnet.graphics.RenderTexture(display.getCanvasSize()[0], display.getCanvasSize()[1]);
-            graphics.addTexture(internalBuffer.getTexture());
-        }
-
-        sound.init();
-        input.init();
-        garnetApp.init(this);
-        debugDrawer.init();
-
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(display.getWindowHandle(), (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-
-            for (KeyboardCallback kbc : keyboardCallbacks) {
-                kbc.invoke(key, scancode, action, mods);
-            }
-        });
-
+    public void setApp(GarnetApp garnetApp) {
+        this.garnetApp = Objects.requireNonNull(garnetApp, "garnetApp must not be null");
+        this.garnetApp.attach(this);
     }
 
     /**
@@ -194,6 +205,40 @@ public class Garnet {
     }
 
     /**
+     * Initialises all subsystems including display, sound, input, and the application.
+     * Must be called before {@link #run()}.
+     */
+    public void init() {
+        if (garnetApp == null) {
+            throw new IllegalStateException("No GarnetApp has been set. Call setApp(app), run(app), or Garnet.launch(...).");
+        }
+
+        display.init();
+
+        if (useInternalBuffer) {
+            graphics.setInternalBufferMode(true);
+            internalBuffer = new com.physmo.garnet.graphics.RenderTexture(display.getCanvasSize()[0], display.getCanvasSize()[1]);
+            graphics.addTexture(internalBuffer.getTexture());
+        }
+
+        sound.init();
+        input.init();
+        garnetApp.init(this);
+        debugDrawer.init();
+
+        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        glfwSetKeyCallback(display.getWindowHandle(), (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+
+            for (KeyboardCallback kbc : keyboardCallbacks) {
+                kbc.invoke(key, scancode, action, mods);
+            }
+        });
+
+    }
+
+    /**
      * Advances game logic and renders a single frame.
      * Logic is updated at a fixed rate independent of the render frame rate.
      *
@@ -225,6 +270,7 @@ public class Garnet {
         gameClock.getTimer(GameClock.TIMER_RENDER).start();
 
         if (useInternalBuffer) {
+            graphics.setInternalBufferMode(true);
             internalBuffer.bind();
         }
 
@@ -242,6 +288,7 @@ public class Garnet {
         if (useInternalBuffer) {
             internalBuffer.unbind(display);
             drawInternalBufferToScreen();
+            graphics.setInternalBufferMode(true);
         }
 
         debugDrawer.setFPS(gameClock.getFps());
@@ -270,41 +317,35 @@ public class Garnet {
      * An optional shader can be applied via {@link #setInternalBufferShader}.
      */
     private void drawInternalBufferToScreen() {
-        // Draw the internal buffer to the screen.
-        // We bypass the Graphics/DrawableBatch system to avoid viewport/scrolling interference.
         glDisable(GL_SCISSOR_TEST);
         display.placeGlViewport(); // Ensure correct screen viewport is set
+        graphics.setInternalBufferMode(false);
+        graphics.clearRenderTargetSize();
 
         float[] bgCols2 = ColorUtils.rgbToFloat(graphics.getBackgroundColor());
         glClearColor(bgCols2[0], bgCols2[1], bgCols2[2], bgCols2[3]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (internalBufferShader != null) {
-            internalBufferShader.bind();
-        }
-        internalBuffer.getTexture().bind();
-        glColor4f(1, 1, 1, 1);
-        glEnable(GL_TEXTURE_2D);
-
-        glBegin(GL_QUADS);
-        {
-            // Texture coordinates flipped on Y
-            glTexCoord2f(0, 1);
-            glVertex2f(0, 0);
-            glTexCoord2f(1, 1);
-            glVertex2f(internalBuffer.getWidth(), 0);
-            glTexCoord2f(1, 0);
-            glVertex2f(internalBuffer.getWidth(), internalBuffer.getHeight());
-            glTexCoord2f(0, 0);
-            glVertex2f(0, internalBuffer.getHeight());
-        }
-        glEnd();
-        if (internalBufferShader != null) {
-            internalBufferShader.unbind();
-        }
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
         graphics.resetSettings();
+        int previousViewportId = graphics.getViewportManager().getActiveViewport().getId();
+        double previousZoom = graphics.getZoom();
+        graphics.setActiveViewport(ViewportManager.DEBUG_VIEWPORT);
+        graphics.setZoom(1);
+        graphics.setColor(ColorUtils.WHITE);
+        graphics.setDrawOrder(0);
+        float width = internalBuffer.getWidth();
+        float height = internalBuffer.getHeight();
+        // FBO colour attachments are presented upside down relative to the
+        // engine's top-left canvas coordinates. The old immediate blit flipped
+        // V here; keep that explicit while drawing through the batch path.
+        graphics.drawImage(
+                internalBuffer.getTexture(),
+                new float[]{0, 0, width, 0, width, height, 0, height},
+                new float[]{0, height, width, height, width, 0, 0, 0}
+        ).setShader(internalBufferShader);
+        graphics.render();
+        graphics.setActiveViewport(previousViewportId);
+        graphics.setZoom(previousZoom);
     }
 
     /**
@@ -359,12 +400,11 @@ public class Garnet {
 
     /**
      * Sets the application to be managed by this Garnet instance.
-     * Equivalent to {@link #setGarnetApp(GarnetApp)}.
      *
      * @param garnetApp the {@link GarnetApp} to run
      */
-    public void setApp(GarnetApp garnetApp) {
-        this.garnetApp = garnetApp;
+    public void setGarnetApp(GarnetApp garnetApp) {
+        setApp(garnetApp);
     }
 
     /**
@@ -380,7 +420,7 @@ public class Garnet {
 
     /**
      * Sets the shader program applied when drawing the internal buffer to the screen.
-     * Pass {@code null} to use the default fixed-function pipeline.
+     * Pass {@code null} to use the default batch shader.
      *
      * @param shader the {@link com.physmo.garnet.graphics.ShaderProgram} to apply, or {@code null} for none
      */

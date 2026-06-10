@@ -60,25 +60,16 @@ public class GaussianBlurExample extends GarnetApp {
     double[] angle = new double[NUM_SPRITES];
     float blurRadius = 1.0f;
 
-    public GaussianBlurExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new GaussianBlurExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, GaussianBlurExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Two-Pass Gaussian Blur Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         rtScene = new RenderTexture(W, H);
         garnet.getGraphics().addTexture(rtScene.getTexture());
@@ -134,7 +125,7 @@ public class GaussianBlurExample extends GarnetApp {
         float cy = H / 2f;
 
         // ── Pass 1: render scene into rtScene ────────────────────────────
-        rtScene.bind();
+        rtScene.bind(g);
         glClear(GL_COLOR_BUFFER_BIT);
         g.setDrawOrder(0);
         for (int i = 0; i < NUM_SPRITES; i++) {
@@ -144,7 +135,7 @@ public class GaussianBlurExample extends GarnetApp {
             g.drawImage(texture, (int) sx, (int) sy);
         }
         g.render();
-        rtScene.unbind(garnet.getDisplay());
+        rtScene.unbind(g, garnet.getDisplay());
 
         // ── Passes 2+: ping-pong blur between rtScene/rtBlurH ────────────
         // Each iteration applies one horizontal pass then one vertical pass.
@@ -155,26 +146,26 @@ public class GaussianBlurExample extends GarnetApp {
         for (int pass = 0; pass < BLUR_PASSES; pass++) {
 
             // Horizontal blur: src → rtBlurH
-            rtBlurH.bind();
+            rtBlurH.bind(g);
             glClear(GL_COLOR_BUFFER_BIT);
             g.setDrawOrder(0);
             g.setColor(ColorUtils.WHITE);
             g.drawImage(src.getTexture(), 0, 0).setShader(blurHShader);
             g.render();
-            rtBlurH.unbind(garnet.getDisplay());
+            rtBlurH.unbind(g, garnet.getDisplay());
 
             // Vertical blur: rtBlurH → screen (last pass) or back to rtScene
             // For simplicity we always write the vertical result to the screen
             // on the final pass, and to rtScene for intermediate passes so the
             // next iteration can read from it again.
             if (pass < BLUR_PASSES - 1) {
-                rtScene.bind();
+                rtScene.bind(g);
                 glClear(GL_COLOR_BUFFER_BIT);
                 g.setDrawOrder(0);
                 g.setColor(ColorUtils.WHITE);
                 g.drawImage(rtBlurH.getTexture(), 0, 0).setShader(blurVShader);
                 g.render();
-                rtScene.unbind(garnet.getDisplay());
+                rtScene.unbind(g, garnet.getDisplay());
                 src = rtScene;
             }
         }

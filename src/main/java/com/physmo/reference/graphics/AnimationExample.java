@@ -11,7 +11,7 @@ import com.physmo.garnet.graphics.Texture;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class AnimationExample extends GarnetApp {
 
-    private static final String fileName1 = "space.PNG";
+    private static final String fileName1 = "space.png";
 
     Animation animation1;
     Animation animation2;
@@ -21,27 +21,14 @@ public class AnimationExample extends GarnetApp {
     SubImage subImage3 = new SubImage();
     private Texture texture1;
 
-
-    public AnimationExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new AnimationExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, AnimationExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
 
-        texture1 = Texture.loadTexture(fileName1);
-
-        garnet.getGraphics().addTexture(texture1);
+        texture1 = garnet.getGraphics().loadTexture(fileName1);
 
         // Create an animation and add each frame individually.
         animation1 = new Animation(texture1, 16, 16, 3);
@@ -56,14 +43,12 @@ public class AnimationExample extends GarnetApp {
         int[][] frames = new int[][]{{3, 0}, {4, 0}, {5, 0}, {6, 0}};
         animation2.addFrames(frames);
 
-
         animation3 = new Animation(texture1, 16, 16, 0.5);
         animation3.addFrame(2, 0);
         animation3.addFrame(3, 0);
         animation3.addFrame(4, 0);
         animation3.addFrame(5, 0);
         animation3.addFrame(6, 0);
-
 
     }
 
@@ -91,6 +76,5 @@ public class AnimationExample extends GarnetApp {
         graphics.drawImage(subImage2, 0, 10 + 30);
         graphics.drawImage(subImage3, 0, 10 + 60);
     }
-
 
 }

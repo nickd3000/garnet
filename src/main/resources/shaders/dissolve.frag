@@ -7,6 +7,8 @@
 //   edgeColor — colour of the burn edge (RGBA)
 
 uniform sampler2D texture;
+uniform vec2 regionOffset;
+uniform vec2 regionScale;
 uniform float threshold;
 uniform float edgeWidth;
 uniform vec4 edgeColor;
@@ -30,12 +32,13 @@ float smoothNoise(vec2 p) {
 
 void main() {
     vec2 uv = gl_TexCoord[0].st;
+    vec2 localUv = (uv - regionOffset) / regionScale;
     vec4 col = texture2D(texture, uv) * gl_Color;
 
     // Multi-octave noise for a more organic dissolve pattern
-    float n = smoothNoise(uv * 8.0) * 0.5
-            + smoothNoise(uv * 16.0) * 0.3
-            + smoothNoise(uv * 32.0) * 0.2;
+    float n = smoothNoise(localUv * 8.0) * 0.5
+            + smoothNoise(localUv * 16.0) * 0.3
+            + smoothNoise(localUv * 32.0) * 0.2;
 
     // Discard pixels below the threshold
     if (n < threshold) discard;

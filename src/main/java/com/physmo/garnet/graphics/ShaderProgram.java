@@ -13,6 +13,7 @@ import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL20.glAttachShader;
+import static org.lwjgl.opengl.GL20.glBindAttribLocation;
 import static org.lwjgl.opengl.GL20.glCompileShader;
 import static org.lwjgl.opengl.GL20.glCreateProgram;
 import static org.lwjgl.opengl.GL20.glCreateShader;
@@ -43,6 +44,12 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 public class ShaderProgram {
 
     private final Map<String, Integer> uniformLocations = new HashMap<>();
+    private static final Map<String, Integer> STANDARD_BATCH_ATTRIBUTE_LOCATIONS = Map.of(
+            "a_position", 0,
+            "a_texCoord", 1,
+            "a_color", 2,
+            "a_materialFlags", 3
+    );
     private int programId;
     private boolean deleted = false;
 
@@ -79,6 +86,18 @@ public class ShaderProgram {
      * @return a compiled and linked ShaderProgram
      */
     public static ShaderProgram fromSource(String vertSrc, String fragSrc) {
+        return fromSource(vertSrc, fragSrc, STANDARD_BATCH_ATTRIBUTE_LOCATIONS);
+    }
+
+    /**
+     * Compiles and links a shader program from source strings with explicit attribute locations.
+     *
+     * @param vertSrc            GLSL vertex shader source
+     * @param fragSrc            GLSL fragment shader source
+     * @param attributeLocations map of attribute name to location, or {@code null}
+     * @return a compiled and linked ShaderProgram
+     */
+    public static ShaderProgram fromSource(String vertSrc, String fragSrc, Map<String, Integer> attributeLocations) {
         int vertId = 0;
         int fragId = 0;
         int programId = 0;
@@ -94,6 +113,11 @@ public class ShaderProgram {
 
             glAttachShader(programId, vertId);
             glAttachShader(programId, fragId);
+            if (attributeLocations != null) {
+                for (Map.Entry<String, Integer> entry : attributeLocations.entrySet()) {
+                    glBindAttribLocation(programId, entry.getValue(), entry.getKey());
+                }
+            }
             glLinkProgram(programId);
 
             if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
@@ -140,7 +164,7 @@ public class ShaderProgram {
     }
 
     /**
-     * Deactivates this shader program, restoring the fixed-function pipeline.
+     * Deactivates this shader program so the next render run can bind its required shader.
      */
     public void unbind() {
         glUseProgram(0);

@@ -3,7 +3,6 @@ package com.physmo.reference.toolkit;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.color.ColorSupplierLinear;
@@ -13,33 +12,20 @@ import com.physmo.garnet.toolkit.particle.ParticleTemplate;
 
 public class ParticleManagerExample extends GarnetApp {
 
-    private static final String fileName1 = "space.PNG";
-    Texture texture;
+    private static final String fileName1 = "space.png";
     TileSheet tileSheet;
     ParticleManager particleManager;
 
-    public ParticleManagerExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new ParticleManagerExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, ParticleManagerExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         Graphics g = garnet.getGraphics();
 
         // Load the texture resource and create a tilesheet to access it.
-        texture = Texture.loadTexture(fileName1);
-        tileSheet = new TileSheet(texture, 16, 16);
-        g.addTexture(texture);
+        tileSheet = g.loadTileSheet(fileName1, 16, 16);
 
         // Create the particle manager and set a default render function.
         particleManager = new ParticleManager(1000);
@@ -50,7 +36,6 @@ public class ParticleManagerExample extends GarnetApp {
             g.drawImage(tileSheet, (int) (p.position.x) - 8, (int) (p.position.y) - 8, 4, 0);
         });
 
-
         ParticleTemplate pt1 = new ParticleTemplate();
         pt1.setLifeTime(1, 2);
         pt1.setColorSupplier(new ColorSupplierLinear(new int[]{0xff00ffff, 0x00ffffff}));
@@ -58,7 +43,6 @@ public class ParticleManagerExample extends GarnetApp {
         ParticleTemplate pt2 = new ParticleTemplate();
         pt2.setLifeTime(1, 2);
         pt2.setColorSupplier(new ColorSupplierLinear(new int[]{0xff0000ff, 0x00ff00ff}));
-
 
         // Add a custom drawer to this particle type.
         pt2.setParticleDrawer(p -> {

@@ -65,6 +65,8 @@ public class Texture {
     private final int id;
     private int width;
     private int height;
+    private ByteBuffer rgbaPixelData;
+    private TextureAtlasMode atlasMode = TextureAtlasMode.DEFAULT;
     public static int defaultFilterMode = GL_NEAREST; // Default filter mode is pixelated, not smooth.
 
     public Texture() {
@@ -145,6 +147,7 @@ public class Texture {
      */
     public static Texture createEmpty(int width, int height) {
         Texture texture = new Texture();
+        texture.setAtlasMode(TextureAtlasMode.RAW);
         texture.setWidth(width);
         texture.setHeight(height);
         texture.bind();
@@ -225,6 +228,15 @@ public class Texture {
      */
     public void uploadData(int internalFormat, int width, int height, int format, ByteBuffer data) {
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        setWidth(width);
+        setHeight(height);
+        if (internalFormat == GL_RGBA8 && format == GL_RGBA && data != null) {
+            // Keep a CPU copy so Graphics can later pack DEFAULT textures into
+            // atlas pages. Dynamic/raw textures upload without retained pixels.
+            rgbaPixelData = copyRgbaPixels(data, width, height);
+        } else {
+            rgbaPixelData = null;
+        }
     }
 
     /**
@@ -273,5 +285,57 @@ public class Texture {
      */
     public int getId() {
         return id;
+    }
+
+    static ByteBuffer copyRgbaPixels(ByteBuffer data, int width, int height) {
+        int byteCount = width * height * 4;
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Texture dimensions must be positive");
+        }
+        if (data.capacity() < byteCount) {
+            throw new IllegalArgumentException("RGBA pixel buffer is smaller than width * height * 4");
+        }
+
+        ByteBuffer source = data.duplicate();
+        source.position(0);
+        source.limit(byteCount);
+
+        ByteBuffer copy = ByteBuffer.allocateDirect(byteCount);
+        copy.put(source);
+        copy.position(0);
+        return copy;
+    }
+
+    public boolean hasRgbaPixelData() {
+        return rgbaPixelData != null;
+    }
+
+    /**
+     * Returns a copy of this texture's retained RGBA8 pixels, or {@code null} for raw/dynamic textures.
+     *
+     * @return copied RGBA8 pixel data positioned at zero
+     */
+    public ByteBuffer getRgbaPixelDataCopy() {
+        if (rgbaPixelData == null) return null;
+        ByteBuffer copy = ByteBuffer.allocateDirect(rgbaPixelData.capacity());
+        ByteBuffer source = rgbaPixelData.duplicate();
+        source.position(0);
+        copy.put(source);
+        copy.position(0);
+        return copy;
+    }
+
+    public TextureAtlasMode getAtlasMode() {
+        return atlasMode;
+    }
+
+    public Texture setAtlasMode(TextureAtlasMode atlasMode) {
+        if (atlasMode == null) throw new IllegalArgumentException("atlasMode must not be null");
+        this.atlasMode = atlasMode;
+        return this;
+    }
+
+    public boolean isAtlasRaw() {
+        return atlasMode == TextureAtlasMode.RAW;
     }
 }

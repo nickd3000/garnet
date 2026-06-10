@@ -13,12 +13,12 @@ import com.physmo.garnet.graphics.Texture;
 //
 // Two columns are rendered side-by-side using the same texture:
 //
-//   Column 1 - no shader   : normal colour rendering (fixed-function)
+//   Column 1 - no shader   : normal colour rendering through the default batch shader
 //   Column 2 - greyscale   : custom fragment shader converts colour to greyscale
 //
 // The shader is set by calling sprite.setShader(shaderProgram) on the
 // DrawableElement returned by g.drawImage(texture, x, y).
-// Calling clearShader() (or passing null) reverts to fixed-function rendering.
+// Calling clearShader() (or passing null) reverts to the default batch shader.
 public class ShaderExample extends GarnetApp {
 
     static final int WINDOW_W = 300;
@@ -27,25 +27,16 @@ public class ShaderExample extends GarnetApp {
     Texture texture;
     ShaderProgram greyScaleShader;
 
-    public ShaderExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new ShaderExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, ShaderExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         greyScaleShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/greyscale.frag");
     }

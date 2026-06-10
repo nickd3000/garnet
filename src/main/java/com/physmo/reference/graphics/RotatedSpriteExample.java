@@ -5,7 +5,6 @@ import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.Utils;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.structure.Vector3;
 
@@ -14,23 +13,12 @@ public class RotatedSpriteExample extends GarnetApp {
 
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     double x = 0;
     double scale = 4;
     double angle = 0;
 
-    public RotatedSpriteExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new RotatedSpriteExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, RotatedSpriteExample::new);
     }
 
     @Override
@@ -45,11 +33,9 @@ public class RotatedSpriteExample extends GarnetApp {
     }
 
     @Override
-    public void init(Garnet garnet) {
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
+    public void init() {
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet(imageFileName, 16, 16);
         garnet.getDebugDrawer().setVisible(true);
         garnet.getDebugDrawer().setScale(1.5);
         garnet.getDebugDrawer().setColor(com.physmo.garnet.ColorUtils.SUNSET_YELLOW);

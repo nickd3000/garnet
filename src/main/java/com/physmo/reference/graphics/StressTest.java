@@ -4,7 +4,6 @@ import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.toolkit.Context;
 import com.physmo.garnet.toolkit.GameObject;
@@ -13,35 +12,25 @@ import com.physmo.reference.graphics.support.FloatingInvaderComponent;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class StressTest extends GarnetApp {
 
+    private static final int WIDTH = 640;
+    private static final int HEIGHT = 480;
+
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     int numSprites = 25000 / 2;
     Context context;
 
-    public StressTest(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new StressTest(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WIDTH, HEIGHT, StressTest::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         // Create a context to hold game objects
         context = new Context();
 
         // Load the texture
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
-        garnet.getGraphics().addTexture(texture);
+        tileSheet = garnet.getGraphics().loadTileSheet(imageFileName, 16, 16);
 
         // Add the tileSheet and graphics object to the context so the sprite entities can access them.
         context.add(tileSheet);
@@ -49,9 +38,9 @@ public class StressTest extends GarnetApp {
 
         // Create a number of entities and add them to the context.
         for (int i = 0; i < numSprites; i++) {
-            GameObject gameObject = new GameObject("");
-            gameObject.addComponent(new FloatingInvaderComponent(garnet.getDisplay().getWindowWidth(), garnet.getDisplay().getWindowHeight()));
-            context.add(gameObject);
+            GameObject.named("")
+                    .with(new FloatingInvaderComponent(WIDTH, HEIGHT))
+                    .inContext(context);
         }
 
         // Configure the debug text.
@@ -78,7 +67,7 @@ public class StressTest extends GarnetApp {
         context.draw(g);
 
         g.setColor(0x00000070);
-        g.filledRect(0, 0, 640, 80);
+        g.filledRect(0, 0, WIDTH, 80);
     }
 
 }

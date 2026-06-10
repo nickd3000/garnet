@@ -13,25 +13,13 @@ public class WindowScaleExample extends GarnetApp {
     Texture texture;
     int windowScale = 3;
 
-    public WindowScaleExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(320, 240);
-        GarnetApp app = new WindowScaleExample(garnet, "WindowScaleExample");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(320, 240, WindowScaleExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
-        // Load texture
-        texture = Texture.loadTexture("garnetCrystal.png");
-
-        // Add texture to graphics system.
-        garnet.getGraphics().addTexture(texture);
+    public void init() {
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
         garnet.getDisplay().setWindowScale(windowScale, true);
@@ -54,4 +42,3 @@ public class WindowScaleExample extends GarnetApp {
         g.drawImage(texture, mousePosition[0] - texture.getWidth() / 2, mousePosition[1] - texture.getHeight() / 2);
     }
 }
-

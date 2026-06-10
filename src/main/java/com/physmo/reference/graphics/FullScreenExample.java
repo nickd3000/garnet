@@ -11,25 +11,13 @@ public class FullScreenExample extends GarnetApp {
 
     Texture texture;
 
-    public FullScreenExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(800, 600);
-        GarnetApp app = new FullScreenExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(800, 600, FullScreenExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
-        // Load texture
-        texture = Texture.loadTexture("garnetCrystal.png");
-
-        // Add texture to graphics system.
-        garnet.getGraphics().addTexture(texture);
+    public void init() {
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override
@@ -47,4 +35,3 @@ public class FullScreenExample extends GarnetApp {
         g.drawImage(texture, mousePosition[0], mousePosition[1]);
     }
 }
-

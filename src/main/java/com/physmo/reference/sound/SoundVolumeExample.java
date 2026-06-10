@@ -20,23 +20,12 @@ public class SoundVolumeExample extends GarnetApp {
     float volume;
     float masterVolume;
 
-
-    public SoundVolumeExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new SoundVolumeExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, SoundVolumeExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         String imagePath = "bitmapfonts/ptmono16_0.png";
         String definitionPath = "bitmapfonts/ptmono16.fnt";
 

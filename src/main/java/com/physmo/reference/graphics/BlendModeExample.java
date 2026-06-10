@@ -31,25 +31,16 @@ public class BlendModeExample extends GarnetApp {
     Texture texture;
     int[] mousePos = {0, 0};
 
-    public BlendModeExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new BlendModeExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, BlendModeExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Blend Mode Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override

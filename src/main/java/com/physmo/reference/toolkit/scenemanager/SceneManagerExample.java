@@ -13,20 +13,12 @@ public class SceneManagerExample extends GarnetApp {
     private RegularFont font;
     private boolean pauseOpen;
 
-    public SceneManagerExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new SceneManagerExample(garnet, "Scene Manager Example");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, SceneManagerExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Scene Manager Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.WINTER_BLACK);
 

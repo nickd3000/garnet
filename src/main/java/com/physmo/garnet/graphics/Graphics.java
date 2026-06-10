@@ -2,6 +2,7 @@ package com.physmo.garnet.graphics;
 
 import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Display;
+import com.physmo.garnet.drawablebatch.BlendMode;
 import com.physmo.garnet.drawablebatch.Circle2D;
 import com.physmo.garnet.drawablebatch.DrawableBatch;
 import com.physmo.garnet.drawablebatch.DrawableElement;
@@ -10,16 +11,34 @@ import com.physmo.garnet.drawablebatch.Line2D;
 import com.physmo.garnet.drawablebatch.Shape2D;
 import com.physmo.garnet.drawablebatch.Sprite2D;
 import com.physmo.garnet.drawablebatch.StrokeGeometry;
+import com.physmo.garnet.renderer.AtlasManager;
+import com.physmo.garnet.renderer.AtlasPolicy;
+import com.physmo.garnet.renderer.BatchRenderStats;
+import com.physmo.garnet.renderer.TextureAtlasPage;
+import com.physmo.garnet.renderer.TextureRegion;
 import com.physmo.garnet.structure.Array;
 import org.lwjgl.opengl.GL;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.GL_DST_COLOR;
+import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_ZERO;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glColorMask;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glScissor;
+import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
+import static org.lwjgl.opengl.GL14.GL_FUNC_REVERSE_SUBTRACT;
+import static org.lwjgl.opengl.GL14.glBlendEquation;
 
 /**
  * The Graphics class is responsible for managing and rendering 2D graphics within the application,
@@ -32,6 +51,9 @@ public class Graphics {
     private final DrawableBatch drawableBatch;
 
     private final Map<Integer, Texture> textures;
+    private final Map<Integer, TextureRegion> textureRegions;
+    private final AtlasPolicy atlasPolicy;
+    private final AtlasManager atlasManager;
     private final ObjectPool<Sprite2D> sprite2DObjectPool;
     private final ObjectPool<Line2D> line2DObjectPool;
 
@@ -44,6 +66,8 @@ public class Graphics {
     private int activeViewportId;
     private int clipRectHash;
     private boolean internalBufferMode;
+    private int renderTargetWidth;
+    private int renderTargetHeight;
 
     /**
      * Creates a new Graphics instance tied to the given display.
@@ -56,6 +80,9 @@ public class Graphics {
         drawableBatch = new DrawableBatch();
 
         textures = new HashMap<>();
+        textureRegions = new HashMap<>();
+        atlasPolicy = new AtlasPolicy(2048, 2048, 1, Texture.defaultFilterMode);
+        atlasManager = new AtlasManager(atlasPolicy, this::createAtlasPageTextureId);
         sprite2DObjectPool = new ObjectPool<>(Sprite2D.class, Sprite2D::new);
         line2DObjectPool = new ObjectPool<>(Line2D.class, Line2D::new);
 
@@ -76,6 +103,19 @@ public class Graphics {
         drawableBatch.render(this);
         releaseBatch();
         drawableBatch.clear();
+    }
+
+    private int createAtlasPageTextureId() {
+        // Atlas pages are real GL textures and are intentionally marked RAW by
+        // Texture.createEmpty(), otherwise the atlas texture would try to pack
+        // itself into another atlas page.
+        Texture atlasTexture = Texture.createEmpty(atlasPolicy.pageWidth(), atlasPolicy.pageHeight());
+        atlasTexture.bind();
+        atlasTexture.setParameter(org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER, atlasPolicy.filterMode());
+        atlasTexture.setParameter(org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER, atlasPolicy.filterMode());
+        glBindTexture(GL_TEXTURE_2D, 0);
+        textures.put(atlasTexture.getId(), atlasTexture);
+        return atlasTexture.getId();
     }
 
     /**
@@ -258,18 +298,104 @@ public class Graphics {
     // Textures
 
     /**
+     * Returns a snapshot of the most recent batch renderer counters.
+     *
+     * @return render statistics from the last {@link #render()} call
+     */
+    public BatchRenderStats getRenderStats() {
+        return drawableBatch.getRenderStats();
+    }
+
+    /**
+     * Registers a texture as a standalone raw texture, bypassing future atlas placement.
+     * Use for render textures, generated/dynamic textures, oversized images, or explicit opt-out.
+     *
+     * @param texture the texture to register as raw
+     */
+    public void addRawTexture(Texture texture) {
+        texture.setAtlasMode(TextureAtlasMode.RAW);
+        addTexture(texture);
+    }
+
+    /**
+     * Loads a texture from a classpath resource path, registers it with this graphics instance,
+     * and returns a tile sheet backed by that texture.
+     *
+     * @param path       the classpath-relative path to the image file
+     * @param tileWidth  the tile width in pixels
+     * @param tileHeight the tile height in pixels
+     * @return a tile sheet backed by the loaded and registered texture
+     */
+    public TileSheet loadTileSheet(String path, int tileWidth, int tileHeight) {
+        return new TileSheet(loadTexture(path), tileWidth, tileHeight);
+    }
+
+    /**
+     * Loads a texture from a classpath resource path, registers it with this graphics instance,
+     * and returns the registered texture.
+     *
+     * @param path the classpath-relative path to the image file
+     * @return the loaded and registered texture
+     */
+    public Texture loadTexture(String path) {
+        Texture texture = Texture.loadTexture(path);
+        addTexture(texture);
+        return texture;
+    }
+
+    /**
      * Adds a texture to the collection of textures if it is not already present.
      * If the texture is already registered, the method does nothing.
      *
      * @param texture the Texture object to be added
      */
     public void addTexture(Texture texture) {
-        if (textures.containsKey(texture.getId())) {
+        if (textureRegions.containsKey(texture.getId())) {
             //System.out.println("Registered texture id: " + texture.getId());
             return;
         }
+        // Store the original texture id as the lookup key. The region may point
+        // at a different GL texture id when the image is packed into an atlas.
         textures.put(texture.getId(), texture);
+        textureRegions.put(texture.getId(), createTextureRegion(texture));
         currentTextureId = texture.getId();
+    }
+
+    private TextureRegion createTextureRegion(Texture texture) {
+        if (shouldUseRawTexture(texture)) {
+            return atlasManager.rawRegion(texture.getId(), texture.getWidth(), texture.getHeight());
+        }
+
+        // Default textures are copied into an atlas page. Draw calls keep using
+        // the original Texture object, but Sprite2D receives this atlas region
+        // so render runs can batch by atlas page id.
+        TextureRegion region = atlasManager.allocate(texture.getWidth(), texture.getHeight());
+        TextureAtlasPage page = atlasManager.getPage(region.textureId());
+        page.writeRegionPixels(region, texture.getRgbaPixelDataCopy());
+        uploadAtlasPage(page);
+        return region;
+    }
+
+    private boolean shouldUseRawTexture(Texture texture) {
+        if (texture.isAtlasRaw()) return true;
+        // Render targets and other dynamic/external textures do not have stable
+        // retained pixel data, so they must remain standalone GL textures.
+        if (!texture.hasRgbaPixelData()) return true;
+        int paddedWidth = texture.getWidth() + (atlasPolicy.padding() * 2);
+        int paddedHeight = texture.getHeight() + (atlasPolicy.padding() * 2);
+        return paddedWidth > atlasPolicy.pageWidth() || paddedHeight > atlasPolicy.pageHeight();
+    }
+
+    private void uploadAtlasPage(TextureAtlasPage page) {
+        Texture atlasTexture = textures.get(page.getTextureId());
+        if (atlasTexture == null) {
+            throw new IllegalStateException("Atlas page texture " + page.getTextureId() + " is not registered");
+        }
+        ByteBuffer pixels = page.getRgbaPixelsCopy();
+        atlasTexture.bind();
+        atlasTexture.uploadData(atlasPolicy.pageWidth(), atlasPolicy.pageHeight(), pixels);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        currentlyBoundTextureId = 0;
     }
 
     /**
@@ -301,6 +427,13 @@ public class Graphics {
     }
 
     /**
+     * Marks the cached texture binding as unknown after renderer-owned direct GL binds.
+     */
+    public void invalidateTextureBindingCache() {
+        currentlyBoundTextureId = 0;
+    }
+
+    /**
      * Binds the texture with the given id for rendering, if it is not already bound.
      *
      * @param textureId the id of the texture to bind
@@ -316,7 +449,76 @@ public class Graphics {
         currentlyBoundTextureId = textureId;
     }
 
-    // Images
+    /**
+     * Returns the logical canvas size used by CPU-transformed batch vertices.
+     *
+     * @return a two-element array {@code [width, height]}
+     */
+    public int[] getCanvasSize() {
+        if (renderTargetWidth > 0 && renderTargetHeight > 0) {
+            return new int[]{renderTargetWidth, renderTargetHeight};
+        }
+        return display.getCanvasSize();
+    }
+
+    /**
+     * Overrides the logical render size while drawing into a manually bound FBO.
+     * Batch vertices are already in pixel space, so shaders need the active
+     * target size rather than the window canvas size.
+     */
+    public void setRenderTargetSize(int width, int height) {
+        if (width <= 0 || height <= 0) throw new IllegalArgumentException("Render target dimensions must be positive");
+        renderTargetWidth = width;
+        renderTargetHeight = height;
+    }
+
+    /**
+     * Restores batch transforms to the normal window canvas size.
+     */
+    public void clearRenderTargetSize() {
+        renderTargetWidth = 0;
+        renderTargetHeight = 0;
+    }
+
+    /**
+     * Restores the default normal alpha blend mode.
+     */
+    public void resetBlendMode() {
+        applyBlendMode(BlendMode.NORMAL);
+    }
+
+    /**
+     * Applies the OpenGL blend/color-mask state for a render run.
+     *
+     * @param mode blend mode to apply
+     */
+    public void applyBlendMode(BlendMode mode) {
+        switch (mode) {
+            case NORMAL:
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                break;
+            case ADDITIVE:
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                break;
+            case SUBTRACTIVE:
+                glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                break;
+            case MULTIPLY:
+                glBlendFunc(GL_DST_COLOR, GL_ZERO);
+                break;
+            case MATTE:
+                glColorMask(false, false, false, true);
+                glBlendFunc(GL_ONE, GL_ZERO);
+                break;
+        }
+        if (mode != BlendMode.MATTE) {
+            glColorMask(true, true, true, true);
+        }
+        if (mode != BlendMode.SUBTRACTIVE) {
+            glBlendEquation(GL_FUNC_ADD);
+        }
+    }
 
     /**
      * Draws a full texture at the specified screen coordinates.
@@ -327,19 +529,27 @@ public class Graphics {
      * @return the {@link Sprite2D} object representing the drawn image
      */
     public Sprite2D drawImage(Texture texture, int x, int y) {
-        int tileWidth = texture.getWidth();
-        int tileHeight = texture.getHeight();
-        int tx = 0;
-        int ty = 0;
+        return drawImage(getTextureRegion(texture), x, y);
+    }
 
+    // Images
+
+    public Sprite2D drawImage(TextureRegion region, double x, double y) {
+        return drawImage(region, x, y, region.width(), region.height());
+    }
+
+    public TextureRegion getTextureRegion(Texture texture) {
+        TextureRegion region = textureRegions.get(texture.getId());
+        if (region != null) return region;
+        // Unregistered textures can still be drawn. Treat them as raw so callers
+        // get the old one-texture-one-region behaviour.
+        return TextureRegion.raw(texture.getId(), texture.getWidth(), texture.getHeight());
+    }
+
+    public Sprite2D drawImage(TextureRegion region, double x, double y, double width, double height) {
         Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
         sprite2D.reset();
-
-        sprite2D.setCoords(x, y, tileWidth, tileHeight, tx, ty, tileWidth, tileHeight);
-        sprite2D.setTextureId(texture.getId());
-
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-
+        sprite2D.setRegionCoords((float) x, (float) y, (float) width, (float) height, region);
         sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
@@ -355,21 +565,7 @@ public class Graphics {
      * @return the Sprite2D object representing the drawn image
      */
     public Sprite2D drawImage(SubImage subImage, double x, double y) {
-        // texture coords
-        int tx = subImage.x;
-        int ty = subImage.y;
-        Texture texture = subImage.texture;
-
-        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-        sprite2D.reset();
-        sprite2D.setCoords((int) x, (int) y, subImage.w, subImage.h, tx, ty, subImage.w, subImage.h);
-        sprite2D.setTextureId(texture.getId());
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-
-        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
-
-        drawableBatch.add(sprite2D);
-        return sprite2D;
+        return drawImage(getTextureRegion(subImage.texture).subRegion(subImage.x, subImage.y, subImage.w, subImage.h), x, y);
     }
 
     /**
@@ -382,21 +578,8 @@ public class Graphics {
      * @return the {@link Sprite2D} object representing the drawn image
      */
     public Sprite2D drawImageScaled(SubImage subImage, double x, double y, double scale) {
-        // texture coords
-        int tx = subImage.x;
-        int ty = subImage.y;
-        Texture texture = subImage.texture;
-
-        Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
-        sprite2D.reset();
-        sprite2D.setCoords((int) x, (int) y, (int) (subImage.w * scale), (int) (subImage.h * scale), tx, ty, subImage.w, subImage.h);
-        sprite2D.setTextureId(texture.getId());
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
-
-        sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
-
-        drawableBatch.add(sprite2D);
-        return sprite2D;
+        TextureRegion region = getTextureRegion(subImage.texture).subRegion(subImage.x, subImage.y, subImage.w, subImage.h);
+        return drawImage(region, x, y, subImage.w * scale, subImage.h * scale);
     }
 
     /**
@@ -439,18 +622,17 @@ public class Graphics {
      * @param vertexCoords the vertex coordinates array
      * @param texCoords    the texture coordinates array
      */
-    public void drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
+    public Sprite2D drawImage(Texture texture, float[] vertexCoords, float[] texCoords) {
         // TODO: make font register texture
         if (!textures.containsKey(texture.getId())) this.addTexture(texture);
 
         Sprite2D sprite2D = sprite2DObjectPool.getFreeObject();
         sprite2D.reset();
-        sprite2D.setCoords(vertexCoords, texCoords);
-        sprite2D.setTextureId(texture.getId());
-        sprite2D.setTextureScale(1.0f / texture.getWidth(), 1.0f / texture.getHeight());
+        sprite2D.setRegionCoords(vertexCoords, texCoords, getTextureRegion(texture));
         sprite2D.setCommonValues(viewportManager.getActiveViewport(), currentDrawOrder, color);
 
         drawableBatch.add(sprite2D);
+        return sprite2D;
     }
 
     // Primitives
@@ -488,18 +670,19 @@ public class Graphics {
     }
 
     /**
-     * Draws a line with a stroke centered on the segment.
-     * Values less than or equal to 1 use the legacy thin-line renderer.
+     * Draws a rectangle outline with a stroke centered on the rectangle boundary.
+     * Values less than or equal to 1 use the normal one-pixel batch line path.
      */
-    public void drawLine(float x1, float y1, float x2, float y2, float thickness) {
+    public void drawRect(float x, float y, float w, float h, float thickness) {
         if (thickness <= 1.0f) {
-            drawLine(x1, y1, x2, y2);
+            drawRect(x, y, w, h);
             return;
         }
 
-        float[] coords = StrokeGeometry.createLineQuad(x1, y1, x2, y2, thickness);
-        if (coords.length == 0) return;
-        drawFilledShape(coords);
+        drawLine(x, y, x + w, y, thickness);
+        drawLine(x + w, y, x + w, y + h, thickness);
+        drawLine(x + w, y + h, x, y + h, thickness);
+        drawLine(x, y + h, x, y, thickness);
     }
 
     /**
@@ -538,19 +721,18 @@ public class Graphics {
     }
 
     /**
-     * Draws a rectangle outline with a stroke centered on the rectangle boundary.
-     * Values less than or equal to 1 use the legacy thin-line renderer.
+     * Draws a line with a stroke centered on the segment.
+     * Values less than or equal to 1 use the normal one-pixel batch line path.
      */
-    public void drawRect(float x, float y, float w, float h, float thickness) {
+    public void drawLine(float x1, float y1, float x2, float y2, float thickness) {
         if (thickness <= 1.0f) {
-            drawRect(x, y, w, h);
+            drawLine(x1, y1, x2, y2);
             return;
         }
 
-        drawLine(x, y, x + w, y, thickness);
-        drawLine(x + w, y, x + w, y + h, thickness);
-        drawLine(x + w, y + h, x, y + h, thickness);
-        drawLine(x, y + h, x, y, thickness);
+        float[] coords = StrokeGeometry.createLineQuad(x1, y1, x2, y2, thickness);
+        if (coords.length == 0) return;
+        drawFilledShape(coords);
     }
 
     /**
@@ -644,7 +826,7 @@ public class Graphics {
     /**
      * Draws an ellipse outline with a stroke centered on the ellipse boundary.
      * The x/y and w/h parameters preserve the existing center/radius semantics of {@link #drawCircle(float, float, float, float)}.
-     * Values less than or equal to 1 use the legacy thin-line renderer.
+     * Values less than or equal to 1 use the normal batch ellipse outline path.
      */
     public void drawCircle(float x, float y, float w, float h, float thickness) {
         if (thickness <= 1.0f) {

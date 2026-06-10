@@ -18,26 +18,17 @@ public class InternalBufferExample extends GarnetApp {
     Texture texture;
     double time = 0;
 
-    public InternalBufferExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(CANVAS_W, CANVAS_H);
-        garnet.setInternalBufferMode(false); // Enable the new mode
-        GarnetApp app = new InternalBufferExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(CANVAS_W, CANVAS_H, InternalBufferExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Internal Buffer Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.rgb(20, 40, 60, 255));
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override

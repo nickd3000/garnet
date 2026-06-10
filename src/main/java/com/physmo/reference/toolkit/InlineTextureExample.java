@@ -15,39 +15,33 @@ public class InlineTextureExample extends GarnetApp {
     Texture texture1;
     Texture texture2;
 
-    public InlineTextureExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(300, 300);
-        GarnetApp app = new InlineTextureExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(300, 300, InlineTextureExample::new);
     }
-
 
     @Override
-    public void init(Garnet garnet) {
-        String data1 = "  XXXX  " +
-                " X    X " +
-                "X o  o X" +
-                "X      X" +
-                "X o  o X" +
-                "X  oo  X" +
-                " X    X " +
-                "  XXXX  ";
+    public void init() {
+        String data1 = """
+                  XXXX
+                 X    X
+                X o  o X
+                X      X
+                X o  o X
+                X  oo  X
+                 X    X
+                  XXXX
+                """;
 
-        String data2 =
-                "  XXXX  " +
-                        " X    X " +
-                        "X o  o X" +
-                        "X      X" +
-                        "X  oo  X" +
-                        "X o  o X" +
-                        " X    X " +
-                        "  XXXX  ";
+        String data2 = """
+                  XXXX
+                 X    X
+                X o  o X
+                X      X
+                X  oo  X
+                X o  o X
+                 X    X
+                  XXXX
+                """;
 
         // Create the inline textures
         texture1 = InlineTexture.create(data1, 8, 8);

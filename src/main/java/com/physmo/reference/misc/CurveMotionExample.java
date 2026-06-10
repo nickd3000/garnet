@@ -1,23 +1,18 @@
 package com.physmo.reference.misc;
 
 import com.physmo.garnet.ColorUtils;
-import com.physmo.garnet.FileUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.toolkit.curve.CurveType;
 import com.physmo.garnet.toolkit.curve.StandardCurve;
-
-import java.io.InputStream;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class CurveMotionExample extends GarnetApp {
 
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     double x = 0;
     int dir = 1;
     double pos = 0;
@@ -28,26 +23,13 @@ public class CurveMotionExample extends GarnetApp {
     StandardCurve standardCurve_LINE_FLAT;
     StandardCurve standardCurve_EASE_OUT_SINE;
 
-    public CurveMotionExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new CurveMotionExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, CurveMotionExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
-        InputStream inputStream = FileUtils.getFileFromResourceAsStream(imageFileName);
-        texture = Texture.loadTexture(inputStream);
-        tileSheet = new TileSheet(texture, 16, 16);
-        garnet.getGraphics().addTexture(texture);
+    public void init() {
+        tileSheet = garnet.getGraphics().loadTileSheet(imageFileName, 16, 16);
 
         standardCurve_EASE_IN_SINE = new StandardCurve(CurveType.EASE_IN_SINE);
         standardCurve_LINE_DOWN = new StandardCurve(CurveType.LINE_DOWN);

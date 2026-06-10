@@ -3,7 +3,6 @@ package com.physmo.reference.collision;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.structure.Array;
 import com.physmo.garnet.toolkit.Context;
@@ -22,35 +21,22 @@ public class CollisionExample extends GarnetApp {
     static int height = 600;
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     Context context;
     double scale = 1;
     Random random = new Random(12345);
     CollisionSystem collisionSystem;
     Array<RelativeObject> nearestObjects = new Array<>(100);
 
-    public CollisionExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(width, height);
-        GarnetApp app = new CollisionExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(width, height, CollisionExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         context = new Context();
 
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet(imageFileName, 16, 16);
         context.add(tileSheet);
         context.add(graphics);
 
@@ -70,26 +56,26 @@ public class CollisionExample extends GarnetApp {
 
     public void createObject(Context context, CollisionSystem collisionSystem, double x, double y) {
 
-        GameObject obj1 = new GameObject("obj1");
-        obj1.getTransform().set(x, y, 0);
         ColliderComponent collider = new ColliderComponent();
-        obj1.addComponent(collider);
+        GameObject.named("obj1")
+                .at(x, y)
+                .with(collider)
+                .tagged("testobject")
+                .with(new ComponentCollidingSprite())
+                .inContext(context);
         collisionSystem.addCollidable(collider);
-        obj1.addTag("testobject");
-        obj1.addComponent(new ComponentCollidingSprite());
-        context.add(obj1);
     }
 
     @Override
     public void tick(double delta) {
         context.tick(delta);
 
-        int[] mps = garnet.getInput().getMouse().getPositionScaled(scale);
+        int[] mousePosition = garnet.getInput().getMouse().getPosition();
         List<GameObject> objectsByTag = context.getObjectsByTag("testobject");
-        objectsByTag.get(0).getTransform().set(mps[0] - 8, mps[1] - 8, 0);
+        objectsByTag.get(0).getTransform().set(mousePosition[0] - 8, mousePosition[1] - 8, 0);
 
         nearestObjects.clear();
-        collisionSystem.getNearestObjects(0, mps[0] - 8, mps[1] - 8, 150, nearestObjects);
+        collisionSystem.getNearestObjects(0, mousePosition[0] - 8, mousePosition[1] - 8, 150, nearestObjects);
 
         collisionSystem.processCloseObjects(0, 20);
     }
@@ -98,12 +84,8 @@ public class CollisionExample extends GarnetApp {
     public void draw(Graphics g) {
         context.draw(g);
 
-        int[] mp, mps;
-
-        mps = garnet.getInput().getMouse().getPositionScaled(scale);
-        mp = garnet.getInput().getMouse().getPosition();
+        int[] mp = garnet.getInput().getMouse().getPosition();
         garnet.getDebugDrawer().setUserString("Mouse pos:       ", mp[0] + "," + mp[1]);
-        garnet.getDebugDrawer().setUserString("Mouse pos scaled:", mps[0] + "," + mps[1]);
         garnet.getDebugDrawer().setUserString("collision checks:", String.valueOf(collisionSystem.getTestsPerFrame()));
 
         g.setColor(0xff444471);
@@ -113,7 +95,6 @@ public class CollisionExample extends GarnetApp {
                 g.drawLine((float) mp[0], (float) mp[1], (float) gameObject.getTransform().x, (float) gameObject.getTransform().y);
             }
         }
-
 
         g.setZoom(scale);
 

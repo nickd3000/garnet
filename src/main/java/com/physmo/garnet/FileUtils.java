@@ -1,9 +1,11 @@
 package com.physmo.garnet;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -11,8 +13,12 @@ import java.nio.file.Paths;
  * Utility methods for loading files and resources from the classpath.
  */
 public class FileUtils {
+    private static final Path EXAMPLE_RESOURCES_DIRECTORY = Paths.get("src", "main", "resources_examples");
+
     /**
-     * Opens a classpath resource as an {@link InputStream}.
+     * Opens a classpath resource as an {@link InputStream}. When running from a
+     * development checkout, this also falls back to {@code src/main/resources_examples}
+     * so reference examples can load their non-packaged assets.
      *
      * @param fileName the classpath-relative resource path (e.g. {@code "shaders/blur_h.frag"})
      * @return an {@link InputStream} for the resource
@@ -25,12 +31,20 @@ public class FileUtils {
         InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
         // the stream holding the file content
-        if (inputStream == null) {
-            throw new IllegalArgumentException("file not found! " + fileName);
-        } else {
+        if (inputStream != null) {
             return inputStream;
         }
 
+        Path exampleResourcePath = EXAMPLE_RESOURCES_DIRECTORY.resolve(fileName);
+        if (Files.isRegularFile(exampleResourcePath)) {
+            try {
+                return Files.newInputStream(exampleResourcePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to open file: " + exampleResourcePath, e);
+            }
+        }
+
+        throw new IllegalArgumentException("file not found! " + fileName);
     }
 
     /**

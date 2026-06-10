@@ -10,21 +10,13 @@ public class SimpleViewportExample extends GarnetApp {
     int viewportId1 = 1;
     int viewportId2 = 2;
 
-    public SimpleViewportExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(600, 300);
-        garnet.setInternalBufferMode(true); // Test with internal buffer mode
-        GarnetApp app = new SimpleViewportExample(garnet, "Simple Viewport Example");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(600, 300, SimpleViewportExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         Graphics graphics = garnet.getGraphics();
 
         // Left Viewport

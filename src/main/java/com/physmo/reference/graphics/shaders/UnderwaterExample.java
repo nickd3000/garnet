@@ -37,25 +37,16 @@ public class UnderwaterExample extends GarnetApp {
     double time = 0;
     double[] angle = new double[NUM_SPRITES];
 
-    public UnderwaterExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new UnderwaterExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, UnderwaterExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Underwater Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.rgb(10, 30, 60, 255));
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         renderTexture = new RenderTexture(W, H);
         garnet.getGraphics().addTexture(renderTexture.getTexture());
@@ -65,8 +56,8 @@ public class UnderwaterExample extends GarnetApp {
         // Bake in the static uniforms
         underwaterShader.bind();
         underwaterShader.setUniform1f("waveAmp", 0.008f);
-        underwaterShader.setUniform1f("waveSpeed", 1.0f);
-        underwaterShader.setUniform1f("tintStr", 0.7f);
+        underwaterShader.setUniform1f("waveSpeed", 2.0f);
+        underwaterShader.setUniform1f("tintStr", 0.3f);
         underwaterShader.unbind();
 
         for (int i = 0; i < NUM_SPRITES; i++) {
@@ -96,7 +87,7 @@ public class UnderwaterExample extends GarnetApp {
         float radius = 100f;
 
         // --- Pass 1: render scene into FBO ---
-        renderTexture.bind();
+        renderTexture.bind(g);
         glClear(GL_COLOR_BUFFER_BIT);
         g.setDrawOrder(0);
         for (int i = 0; i < NUM_SPRITES; i++) {
@@ -106,7 +97,7 @@ public class UnderwaterExample extends GarnetApp {
             g.drawImage(texture, (int) sx, (int) sy);
         }
         g.render();
-        renderTexture.unbind(garnet.getDisplay());
+        renderTexture.unbind(g, garnet.getDisplay());
 
         // --- Pass 2: draw FBO texture through underwater shader ---
         g.setDrawOrder(0);

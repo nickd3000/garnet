@@ -44,25 +44,16 @@ public class ColourGradeExample extends GarnetApp {
     ShaderProgram[] gradeShaders;   // one per style preset
     double[] angle = new double[5];
 
-    public ColourGradeExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new ColourGradeExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, ColourGradeExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Colour Grade Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         // FBO is panel-sized — the same scene is reused for all four panels
         renderTexture = new RenderTexture(PANEL_W, H);
@@ -99,7 +90,7 @@ public class ColourGradeExample extends GarnetApp {
         float radius = 60f;
 
         // --- Pass 1: render scene into FBO (panel-sized) ---
-        renderTexture.bind();
+        renderTexture.bind(g);
         glClear(GL_COLOR_BUFFER_BIT);
         g.setDrawOrder(0);
         for (int i = 0; i < angle.length; i++) {
@@ -109,7 +100,7 @@ public class ColourGradeExample extends GarnetApp {
             g.drawImage(texture, (int) sx, (int) sy);
         }
         g.render();
-        renderTexture.unbind(garnet.getDisplay());
+        renderTexture.unbind(g, garnet.getDisplay());
 
         // --- Pass 2: draw each panel with a different colour grade ---
         for (int i = 0; i < 4; i++) {

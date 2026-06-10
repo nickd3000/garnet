@@ -2,6 +2,8 @@ package com.physmo.garnet.input;
 
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.Utils;
+import com.physmo.garnet.graphics.Viewport;
+import com.physmo.garnet.renderer.ViewportTransform;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
@@ -74,10 +76,10 @@ public class Mouse {
 
         double y = (by - viewportTop) * viewportScale[1];
 
-        // 3. Adjust for active viewport scroll and zoom
-        com.physmo.garnet.graphics.Viewport activeViewport = garnet.getGraphics().getViewportManager().getActiveViewport();
-        x = (x / activeViewport.getZoom()) + activeViewport.getScrollX();
-        y = (y / activeViewport.getZoom()) + activeViewport.getScrollY();
+        // 3. Convert canvas-space screen coordinates into active viewport world coordinates.
+        Viewport activeViewport = garnet.getGraphics().getViewportManager().getActiveViewport();
+        x = ViewportTransform.worldX(activeViewport, x);
+        y = ViewportTransform.worldY(activeViewport, y);
 
         position[0] = (int) x;
         position[1] = (int) y;

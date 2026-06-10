@@ -4,14 +4,13 @@ import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class SpriteDrawingExample extends GarnetApp {
 
-    private static final String fileName1 = "space.PNG";
-    private static final String fileName2 = "prototypeArt.PNG";
+    private static final String fileName1 = "space.png";
+    private static final String fileName2 = "prototypeArt.png";
 
     float time = 0;
     int FOREGROUND_LAYER = 2;
@@ -20,34 +19,16 @@ public class SpriteDrawingExample extends GarnetApp {
     TileSheet tileSheet1;
     TileSheet tileSheet2;
 
-    private Texture texture1;
-    private Texture texture2;
-
-
-    public SpriteDrawingExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new SpriteDrawingExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, SpriteDrawingExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
 
-        texture1 = Texture.loadTexture(fileName1);
-        tileSheet1 = new TileSheet(texture1, 16, 16);
-        garnet.getGraphics().addTexture(texture1);
+        tileSheet1 = garnet.getGraphics().loadTileSheet(fileName1, 16, 16);
 
-        texture2 = Texture.loadTexture(fileName2);
-        tileSheet2 = new TileSheet(texture2, 16, 16);
-        garnet.getGraphics().addTexture(texture2);
+        tileSheet2 = garnet.getGraphics().loadTileSheet(fileName2, 16, 16);
 
         System.out.println("adding keyboard callback from game container");
 
@@ -123,6 +104,5 @@ public class SpriteDrawingExample extends GarnetApp {
     private void drawNew() {
 
     }
-
 
 }
