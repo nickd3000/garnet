@@ -13,6 +13,9 @@ import com.physmo.reference.graphics.support.FloatingInvaderComponent;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class StressTest extends GarnetApp {
 
+    private static final int WIDTH = 640;
+    private static final int HEIGHT = 480;
+
     String imageFileName = "space.png";
     TileSheet tileSheet;
     Texture texture;
@@ -20,7 +23,7 @@ public class StressTest extends GarnetApp {
     Context context;
 
     public static void main(String[] args) {
-        Garnet.launch(640, 480, StressTest::new);
+        Garnet.launch(WIDTH, HEIGHT, StressTest::new);
     }
 
     @Override
@@ -39,9 +42,9 @@ public class StressTest extends GarnetApp {
 
         // Create a number of entities and add them to the context.
         for (int i = 0; i < numSprites; i++) {
-            GameObject gameObject = new GameObject("");
-            gameObject.addComponent(new FloatingInvaderComponent(garnet.getDisplay().getWindowWidth(), garnet.getDisplay().getWindowHeight()));
-            context.add(gameObject);
+            GameObject.named("")
+                    .with(new FloatingInvaderComponent(WIDTH, HEIGHT))
+                    .inContext(context);
         }
 
         // Configure the debug text.
@@ -68,7 +71,7 @@ public class StressTest extends GarnetApp {
         context.draw(g);
 
         g.setColor(0x00000070);
-        g.filledRect(0, 0, 640, 80);
+        g.filledRect(0, 0, WIDTH, 80);
     }
 
 }

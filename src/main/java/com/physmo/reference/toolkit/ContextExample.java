@@ -13,7 +13,7 @@ public class ContextExample {
         context.add(new DummyClass());
 
         // Add a game object - this can be initialised, ticked and drawn by the context.
-        context.add(new DummyGameObject("my game object"));
+        new DummyGameObject("my game object").inContext(context);
 
         DummyClass objectByType = context.getObjectByType(DummyClass.class);
 

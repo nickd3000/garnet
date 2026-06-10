@@ -60,14 +60,14 @@ public class CollisionExample extends GarnetApp {
 
     public void createObject(Context context, CollisionSystem collisionSystem, double x, double y) {
 
-        GameObject obj1 = new GameObject("obj1");
-        obj1.getTransform().set(x, y, 0);
         ColliderComponent collider = new ColliderComponent();
-        obj1.addComponent(collider);
+        GameObject.named("obj1")
+                .at(x, y)
+                .with(collider)
+                .tagged("testobject")
+                .with(new ComponentCollidingSprite())
+                .inContext(context);
         collisionSystem.addCollidable(collider);
-        obj1.addTag("testobject");
-        obj1.addComponent(new ComponentCollidingSprite());
-        context.add(obj1);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.physmo.garnet.structure.Vector3;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -27,8 +28,19 @@ public class GameObject implements MessageListener {
     boolean active = true;
     boolean visible = true;
     boolean destroy = false;
+
     public GameObject(String name) {
         this.name = name;
+    }
+
+    /**
+     * Creates a named game object for fluent construction.
+     *
+     * @param name the object name
+     * @return a new game object
+     */
+    public static GameObject named(String name) {
+        return new GameObject(name);
     }
 
 
@@ -111,6 +123,30 @@ public class GameObject implements MessageListener {
         position.y = y;
     }
 
+    /**
+     * Sets the transform position, leaving z at 0.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return this game object, for chaining
+     */
+    public GameObject at(double x, double y) {
+        return at(x, y, 0);
+    }
+
+    /**
+     * Sets the transform position.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @param z the z-coordinate
+     * @return this game object, for chaining
+     */
+    public GameObject at(double x, double y, double z) {
+        transform.set(x, y, z);
+        return this;
+    }
+
 
     /**
      * Injects the owning {@link Context} into this game object so it can access
@@ -131,6 +167,27 @@ public class GameObject implements MessageListener {
     public GameObject addComponent(Component component) {
         component.setParent(this);
         components.add(component);
+        return this;
+    }
+
+    /**
+     * Adds a component to this object as part of a fluent construction chain.
+     *
+     * @param component the component to add
+     * @return this game object, for chaining
+     */
+    public GameObject with(Component component) {
+        return addComponent(component);
+    }
+
+    /**
+     * Adds this object to a context as the terminal step of a fluent construction chain.
+     *
+     * @param context the context to add this object to
+     * @return this game object, for assignment or further use
+     */
+    public GameObject inContext(Context context) {
+        Objects.requireNonNull(context, "context must not be null").add(this);
         return this;
     }
 
@@ -248,6 +305,16 @@ public class GameObject implements MessageListener {
     public GameObject setVisible(boolean b) {
         visible = b;
         return this;
+    }
+
+    /**
+     * Adds a string tag to this object as part of a fluent construction chain.
+     *
+     * @param tag the tag string to add
+     * @return this game object, for chaining
+     */
+    public GameObject tagged(String tag) {
+        return addTag(tag);
     }
 
     /**
