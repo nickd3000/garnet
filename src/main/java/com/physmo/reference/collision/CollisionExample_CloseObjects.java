@@ -79,9 +79,9 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     public void tick(double delta) {
         context.tick(delta);
 
-        int[] mps = garnet.getInput().getMouse().getPositionScaled(scale);
+        int[] mousePosition = garnet.getInput().getMouse().getPosition();
         List<GameObject> objectsByTag = context.getObjectsByTag("testobject");
-        objectsByTag.get(0).getTransform().set(mps[0] - 8, mps[1] - 8, 0);
+        objectsByTag.get(0).getTransform().set(mousePosition[0] - 8, mousePosition[1] - 8, 0);
 
         closeObjectTestCount = collisionSystem.processCloseObjects(0, 20);
     }

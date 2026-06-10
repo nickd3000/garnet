@@ -74,12 +74,12 @@ public class CollisionExample extends GarnetApp {
     public void tick(double delta) {
         context.tick(delta);
 
-        int[] mps = garnet.getInput().getMouse().getPositionScaled(scale);
+        int[] mousePosition = garnet.getInput().getMouse().getPosition();
         List<GameObject> objectsByTag = context.getObjectsByTag("testobject");
-        objectsByTag.get(0).getTransform().set(mps[0] - 8, mps[1] - 8, 0);
+        objectsByTag.get(0).getTransform().set(mousePosition[0] - 8, mousePosition[1] - 8, 0);
 
         nearestObjects.clear();
-        collisionSystem.getNearestObjects(0, mps[0] - 8, mps[1] - 8, 150, nearestObjects);
+        collisionSystem.getNearestObjects(0, mousePosition[0] - 8, mousePosition[1] - 8, 150, nearestObjects);
 
         collisionSystem.processCloseObjects(0, 20);
     }
@@ -88,12 +88,8 @@ public class CollisionExample extends GarnetApp {
     public void draw(Graphics g) {
         context.draw(g);
 
-        int[] mp, mps;
-
-        mps = garnet.getInput().getMouse().getPositionScaled(scale);
-        mp = garnet.getInput().getMouse().getPosition();
+        int[] mp = garnet.getInput().getMouse().getPosition();
         garnet.getDebugDrawer().setUserString("Mouse pos:       ", mp[0] + "," + mp[1]);
-        garnet.getDebugDrawer().setUserString("Mouse pos scaled:", mps[0] + "," + mps[1]);
         garnet.getDebugDrawer().setUserString("collision checks:", String.valueOf(collisionSystem.getTestsPerFrame()));
 
         g.setColor(0xff444471);
