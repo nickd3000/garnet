@@ -50,8 +50,7 @@ public class DissolveExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Dissolve Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         dissolveShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/dissolve.frag");
 

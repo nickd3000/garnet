@@ -3,7 +3,6 @@ package com.physmo.reference.toolkit;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.structure.Vector3;
 import com.physmo.garnet.toolkit.color.ColorSupplierLinear;
@@ -13,8 +12,7 @@ import com.physmo.garnet.toolkit.particle.ParticleTemplate;
 
 public class ParticleManagerExample extends GarnetApp {
 
-    private static final String fileName1 = "space.PNG";
-    Texture texture;
+    private static final String fileName1 = "space.png";
     TileSheet tileSheet;
     ParticleManager particleManager;
 
@@ -27,9 +25,7 @@ public class ParticleManagerExample extends GarnetApp {
         Graphics g = garnet.getGraphics();
 
         // Load the texture resource and create a tilesheet to access it.
-        texture = Texture.loadTexture(fileName1);
-        tileSheet = new TileSheet(texture, 16, 16);
-        g.addTexture(texture);
+        tileSheet = g.loadTileSheet(fileName1, 16, 16);
 
         // Create the particle manager and set a default render function.
         particleManager = new ParticleManager(1000);

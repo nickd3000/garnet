@@ -4,7 +4,6 @@ import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.SubImage;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.graphics.Viewport;
 import com.physmo.garnet.input.Mouse;
@@ -17,7 +16,6 @@ public class TileGridExample extends GarnetApp {
     static int tileGridViewportId = 1;
     String imageFileName = "prototypeArt.png";
     TileSheet tileSheet;
-    Texture texture;
     double scrollX = 0;
     double scrollY = 0;
 
@@ -36,12 +34,8 @@ public class TileGridExample extends GarnetApp {
     @Override
     public void init() {
 
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
-
         Graphics graphics = garnet.getGraphics();
-
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet(imageFileName, 16, 16);
 
         wallTileID = tileSheet.getTileIndexFromCoords(0, 7);
         grassTileID = tileSheet.getTileIndexFromCoords(1, 7);

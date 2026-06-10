@@ -36,8 +36,7 @@ public class PaletteExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Palette / Dither Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
         float[] levels = {8f, 4f, 2f};

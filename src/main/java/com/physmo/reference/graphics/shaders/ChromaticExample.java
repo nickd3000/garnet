@@ -33,8 +33,7 @@ public class ChromaticExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Chromatic Aberration Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         TextureRegion textureRegion = garnet.getGraphics().getTextureRegion(texture);
         float[] shifts = {0.005f, 0.015f, 0.03f};

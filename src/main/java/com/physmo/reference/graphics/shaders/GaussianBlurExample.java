@@ -69,8 +69,7 @@ public class GaussianBlurExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Two-Pass Gaussian Blur Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         rtScene = new RenderTexture(W, H);
         garnet.getGraphics().addTexture(rtScene.getTexture());

@@ -1,15 +1,11 @@
 package com.physmo.reference.input;
 
-import com.physmo.garnet.FileUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.input.InputAction;
 import com.physmo.garnet.input.InputKeys;
-
-import java.io.InputStream;
 
 import static com.physmo.garnet.input.InputKeys.KEY_Z;
 
@@ -18,7 +14,6 @@ public class KeyboardExample extends GarnetApp {
 
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
 
     boolean up, down, left, right, zKey;
 
@@ -28,11 +23,7 @@ public class KeyboardExample extends GarnetApp {
 
     @Override
     public void init() {
-        InputStream inputStream = FileUtils.getFileFromResourceAsStream(imageFileName);
-        texture = Texture.loadTexture(inputStream);
-        tileSheet = new TileSheet(texture, 16, 16);
-
-        garnet.getGraphics().addTexture(texture);
+        tileSheet = garnet.getGraphics().loadTileSheet(imageFileName, 16, 16);
 
         // The input system is given some default config at startup,
         // here we add some extra WASD keys to the movement actions.

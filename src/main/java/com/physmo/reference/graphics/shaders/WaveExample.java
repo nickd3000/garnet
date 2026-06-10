@@ -33,8 +33,7 @@ public class WaveExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Wave Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         waveShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/wave.frag");
     }

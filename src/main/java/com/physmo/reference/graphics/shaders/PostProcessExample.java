@@ -39,8 +39,7 @@ public class PostProcessExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Post-Process Halo Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         haloShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/halo.frag");
         garnet.setInternalBufferShader(haloShader);

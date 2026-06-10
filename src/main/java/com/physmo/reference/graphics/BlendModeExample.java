@@ -40,8 +40,7 @@ public class BlendModeExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Blend Mode Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override

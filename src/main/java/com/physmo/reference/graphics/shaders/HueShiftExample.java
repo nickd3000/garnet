@@ -55,8 +55,7 @@ public class HueShiftExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Hue Shift Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         hueShaders = new ShaderProgram[hueAngles.length];
         for (int i = 0; i < hueAngles.length; i++) {

@@ -46,8 +46,7 @@ public class FilmGrainExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Film Grain Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         renderTexture = new RenderTexture(W, H);
         garnet.getGraphics().addTexture(renderTexture.getTexture());

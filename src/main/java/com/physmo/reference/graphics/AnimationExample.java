@@ -11,7 +11,7 @@ import com.physmo.garnet.graphics.Texture;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class AnimationExample extends GarnetApp {
 
-    private static final String fileName1 = "space.PNG";
+    private static final String fileName1 = "space.png";
 
     Animation animation1;
     Animation animation2;
@@ -28,9 +28,7 @@ public class AnimationExample extends GarnetApp {
     @Override
     public void init() {
 
-        texture1 = Texture.loadTexture(fileName1);
-
-        garnet.getGraphics().addTexture(texture1);
+        texture1 = garnet.getGraphics().loadTexture(fileName1);
 
         // Create an animation and add each frame individually.
         animation1 = new Animation(texture1, 16, 16, 3);

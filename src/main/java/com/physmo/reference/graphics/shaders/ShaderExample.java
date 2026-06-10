@@ -36,8 +36,7 @@ public class ShaderExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         greyScaleShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/greyscale.frag");
     }

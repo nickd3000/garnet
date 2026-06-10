@@ -1,23 +1,18 @@
 package com.physmo.reference.input;
 
 import com.physmo.garnet.ColorUtils;
-import com.physmo.garnet.FileUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.input.Input;
 import com.physmo.garnet.input.Mouse;
-
-import java.io.InputStream;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class MouseExample extends GarnetApp {
 
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     Input input;
     boolean mousePressed = false;
     double scale = 3;
@@ -28,10 +23,7 @@ public class MouseExample extends GarnetApp {
 
     @Override
     public void init() {
-        InputStream inputStream = FileUtils.getFileFromResourceAsStream(imageFileName);
-        texture = Texture.loadTexture(inputStream);
-        tileSheet = new TileSheet(texture, 16, 16);
-        garnet.getGraphics().addTexture(texture);
+        tileSheet = garnet.getGraphics().loadTileSheet(imageFileName, 16, 16);
         garnet.getGraphics().setBackgroundColor(ColorUtils.WINTER_BLACK);
         input = garnet.getInput();
         garnet.getDebugDrawer().setVisible(true);

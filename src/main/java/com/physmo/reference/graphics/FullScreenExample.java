@@ -17,11 +17,7 @@ public class FullScreenExample extends GarnetApp {
 
     @Override
     public void init() {
-        // Load texture
-        texture = Texture.loadTexture("garnetCrystal.png");
-
-        // Add texture to graphics system.
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override
@@ -39,4 +35,3 @@ public class FullScreenExample extends GarnetApp {
         g.drawImage(texture, mousePosition[0], mousePosition[1]);
     }
 }
-

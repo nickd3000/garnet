@@ -46,8 +46,7 @@ public class UnderwaterExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Underwater Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.rgb(10, 30, 60, 255));
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         renderTexture = new RenderTexture(W, H);
         garnet.getGraphics().addTexture(renderTexture.getTexture());

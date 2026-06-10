@@ -53,8 +53,7 @@ public class ColourGradeExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Colour Grade Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         // FBO is panel-sized — the same scene is reused for all four panels
         renderTexture = new RenderTexture(PANEL_W, H);

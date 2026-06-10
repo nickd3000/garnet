@@ -4,7 +4,6 @@ import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.SubImage;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.graphics.Viewport;
 
@@ -14,7 +13,6 @@ public class ViewportExample extends GarnetApp {
     int viewportId2 = 2;
 
     TileSheet tileSheet;
-    Texture texture;
 
     double scale = 1;
     double angle = 0;
@@ -29,10 +27,8 @@ public class ViewportExample extends GarnetApp {
 
     @Override
     public void init() {
-        texture = Texture.loadTexture("space.png");
-        tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet("space.png", 16, 16);
 
         garnet.getDebugDrawer().setColor(0xff00ffff);
         garnet.getDebugDrawer().setVisible(true);

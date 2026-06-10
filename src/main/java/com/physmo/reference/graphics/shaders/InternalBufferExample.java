@@ -28,8 +28,7 @@ public class InternalBufferExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("Internal Buffer Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.rgb(20, 40, 60, 255));
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override

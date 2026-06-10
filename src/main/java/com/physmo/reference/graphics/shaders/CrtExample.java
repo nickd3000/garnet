@@ -42,8 +42,7 @@ public class CrtExample extends GarnetApp {
         garnet.getDisplay().setWindowTitle("CRT Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
 
         crtShader = ShaderProgram.fromFiles("shaders/passthrough.vert", "shaders/crt.frag");
 
