@@ -7,7 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // WaveExample demonstrates the wave.frag shader, which distorts UV coordinates
@@ -25,20 +24,12 @@ public class WaveExample extends GarnetApp {
     ShaderProgram waveShader;
     double time = 0;
 
-    public WaveExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new WaveExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, WaveExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Wave Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

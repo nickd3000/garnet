@@ -28,22 +28,12 @@ public class CurveMotionExample extends GarnetApp {
     StandardCurve standardCurve_LINE_FLAT;
     StandardCurve standardCurve_EASE_OUT_SINE;
 
-    public CurveMotionExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new CurveMotionExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, CurveMotionExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         InputStream inputStream = FileUtils.getFileFromResourceAsStream(imageFileName);
         texture = Texture.loadTexture(inputStream);
         tileSheet = new TileSheet(texture, 16, 16);

@@ -29,22 +29,12 @@ public class CollisionExample extends GarnetApp {
     CollisionSystem collisionSystem;
     Array<RelativeObject> nearestObjects = new Array<>(100);
 
-    public CollisionExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(width, height);
-        GarnetApp app = new CollisionExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(width, height, CollisionExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         context = new Context();
 
         texture = Texture.loadTexture(imageFileName);
@@ -113,7 +103,6 @@ public class CollisionExample extends GarnetApp {
                 g.drawLine((float) mp[0], (float) mp[1], (float) gameObject.getTransform().x, (float) gameObject.getTransform().y);
             }
         }
-
 
         g.setZoom(scale);
 

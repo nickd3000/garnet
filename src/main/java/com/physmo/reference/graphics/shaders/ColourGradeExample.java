@@ -44,20 +44,12 @@ public class ColourGradeExample extends GarnetApp {
     ShaderProgram[] gradeShaders;   // one per style preset
     double[] angle = new double[5];
 
-    public ColourGradeExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new ColourGradeExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, ColourGradeExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Colour Grade Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

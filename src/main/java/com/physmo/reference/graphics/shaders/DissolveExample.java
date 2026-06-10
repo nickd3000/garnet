@@ -8,7 +8,6 @@ import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.renderer.TextureRegion;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // DissolveExample demonstrates the dissolve.frag shader, which makes a sprite
@@ -42,20 +41,12 @@ public class DissolveExample extends GarnetApp {
     ShaderProgram dissolveShader;
     double time = 0;
 
-    public DissolveExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new DissolveExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, DissolveExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Dissolve Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

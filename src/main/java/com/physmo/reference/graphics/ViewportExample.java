@@ -22,23 +22,13 @@ public class ViewportExample extends GarnetApp {
     int RED = 0xff5555ff;
     int GREEN = 0x55ff55ff;
 
-    public ViewportExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        garnet.setInternalBufferMode(true);
-        GarnetApp app = new ViewportExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, ViewportExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         texture = Texture.loadTexture("space.png");
         tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();

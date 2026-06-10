@@ -15,23 +15,12 @@ public class SimpleSoundExample extends GarnetApp {
     int soundA;
     int soundB;
 
-    public SimpleSoundExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new SimpleSoundExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, SimpleSoundExample::new);
     }
-
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         regularFont = new RegularFont("regularfonts/12x12Font.png", 12, 12);
 
         soundA = garnet.getSound().loadSound(FileUtils.getPathForResource(this, "sounds/laserShoot-3.wav"));

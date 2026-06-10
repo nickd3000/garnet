@@ -7,7 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // PostProcessExample demonstrates a post-processing effect using the automatic internal buffer.
@@ -30,21 +29,13 @@ public class PostProcessExample extends GarnetApp {
 
     double time = 0;
 
-    public PostProcessExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        garnet.setInternalBufferMode(true);
-        GarnetApp app = new PostProcessExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, PostProcessExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Post-Process Halo Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 

@@ -8,7 +8,6 @@ import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.renderer.TextureRegion;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // OutlineExample demonstrates the outline.frag shader, which draws a solid
@@ -39,20 +38,12 @@ public class OutlineExample extends GarnetApp {
     ShaderProgram outlineShaderYellow;
     ShaderProgram outlineShaderCyan;
 
-    public OutlineExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new OutlineExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, OutlineExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Outline Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

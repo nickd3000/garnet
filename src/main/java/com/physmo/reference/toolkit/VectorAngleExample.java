@@ -12,22 +12,12 @@ public class VectorAngleExample extends GarnetApp {
     double angleToMouse = 0;
     Vector3 vectorToMouse;
 
-    public VectorAngleExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new VectorAngleExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, VectorAngleExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDebugDrawer().setVisible(true);
         garnet.getDisplay().setWindowScale(1, true);
     }

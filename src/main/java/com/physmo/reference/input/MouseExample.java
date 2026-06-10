@@ -22,23 +22,12 @@ public class MouseExample extends GarnetApp {
     boolean mousePressed = false;
     double scale = 3;
 
-    public MouseExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new MouseExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, MouseExample::new);
     }
-
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         InputStream inputStream = FileUtils.getFileFromResourceAsStream(imageFileName);
         texture = Texture.loadTexture(inputStream);
         tileSheet = new TileSheet(texture, 16, 16);

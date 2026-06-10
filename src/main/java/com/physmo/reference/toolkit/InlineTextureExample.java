@@ -15,21 +15,12 @@ public class InlineTextureExample extends GarnetApp {
     Texture texture1;
     Texture texture2;
 
-    public InlineTextureExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(300, 300);
-        GarnetApp app = new InlineTextureExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(300, 300, InlineTextureExample::new);
     }
-
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         String data1 = "  XXXX  " +
                 " X    X " +
                 "X o  o X" +

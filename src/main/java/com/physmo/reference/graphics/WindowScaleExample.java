@@ -13,20 +13,12 @@ public class WindowScaleExample extends GarnetApp {
     Texture texture;
     int windowScale = 3;
 
-    public WindowScaleExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(320, 240);
-        GarnetApp app = new WindowScaleExample(garnet, "WindowScaleExample");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(320, 240, WindowScaleExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         // Load texture
         texture = Texture.loadTexture("garnetCrystal.png");
 

@@ -18,22 +18,12 @@ public class ParagraphExample extends GarnetApp {
     ParagraphDrawer bitmapFontParagraphDrawer;
     ParagraphDrawer regularFontParagraphDrawer;
 
-    public ParagraphExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(800, 600);
-        GarnetApp app = new ParagraphExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(800, 600, ParagraphExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         regularFont = new RegularFont("regularfonts/12x12Font.png", 12, 12);
         regularFont.setHorizontalPad(-5);
         garnet.getGraphics().setBackgroundColor(com.physmo.garnet.ColorUtils.SUNSET_BLUE);
@@ -68,7 +58,6 @@ public class ParagraphExample extends GarnetApp {
         regularFontParagraphDrawer.setPadY(3);
         regularFont.setScale(2);
         regularFontParagraphDrawer.drawParagraph(g, paragraphText, 400 - 10, 150, 10, 10);
-
 
         g.setColor(ColorUtils.SUNSET_YELLOW);
         regularFont.setScale(3);

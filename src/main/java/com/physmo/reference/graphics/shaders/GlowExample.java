@@ -8,7 +8,6 @@ import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.renderer.TextureRegion;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // GlowExample demonstrates the glow.frag shader, which adds a soft coloured
@@ -36,20 +35,12 @@ public class GlowExample extends GarnetApp {
     ShaderProgram glowOrange;
     ShaderProgram glowGreen;
 
-    public GlowExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new GlowExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, GlowExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Glow Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

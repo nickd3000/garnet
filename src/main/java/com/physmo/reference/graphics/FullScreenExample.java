@@ -11,20 +11,12 @@ public class FullScreenExample extends GarnetApp {
 
     Texture texture;
 
-    public FullScreenExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(800, 600);
-        GarnetApp app = new FullScreenExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(800, 600, FullScreenExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         // Load texture
         texture = Texture.loadTexture("garnetCrystal.png");
 

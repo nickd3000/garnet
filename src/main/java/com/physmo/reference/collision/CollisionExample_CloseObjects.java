@@ -34,22 +34,12 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     List<RelativeObject> nearestObjects;
     int closeObjectTestCount = 0;
 
-    public CollisionExample_CloseObjects(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(width, height);
-        GarnetApp app = new CollisionExample_CloseObjects(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(width, height, CollisionExample_CloseObjects::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         context = new Context();
 
         texture = Texture.loadTexture(imageFileName);

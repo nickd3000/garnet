@@ -29,22 +29,12 @@ public class TileGridExample extends GarnetApp {
     Viewport viewport;
     SubImage subImage = new SubImage();
 
-    public TileGridExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new TileGridExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, TileGridExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
 
         texture = Texture.loadTexture(imageFileName);
         tileSheet = new TileSheet(texture, 16, 16);

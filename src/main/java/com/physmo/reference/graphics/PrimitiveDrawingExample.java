@@ -9,24 +9,13 @@ import com.physmo.garnet.input.Mouse;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class PrimitiveDrawingExample extends GarnetApp {
 
-    public PrimitiveDrawingExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        garnet.setInternalBufferMode(true);
-        GarnetApp app = new PrimitiveDrawingExample(garnet, "");
-
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, PrimitiveDrawingExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Primitive drawing example");
     }
 
@@ -67,6 +56,5 @@ public class PrimitiveDrawingExample extends GarnetApp {
         g.filledCircle(190 + 50, 310, 50, 50);
 
     }
-
 
 }

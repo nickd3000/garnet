@@ -13,22 +13,12 @@ public class BMFontExample extends GarnetApp {
 
     BitmapFont bmfFont;
 
-    public BMFontExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 300);
-        GarnetApp app = new BMFontExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 300, BMFontExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
 
         String imagePath = "bitmapfonts/ptmono16_0.png";
         String definitionPath = "bitmapfonts/ptmono16.fnt";
@@ -38,7 +28,6 @@ public class BMFontExample extends GarnetApp {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
     }
 

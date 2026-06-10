@@ -19,18 +19,8 @@ public class RotatedSpriteExample extends GarnetApp {
     double scale = 4;
     double angle = 0;
 
-    public RotatedSpriteExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new RotatedSpriteExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, RotatedSpriteExample::new);
     }
 
     @Override
@@ -45,7 +35,7 @@ public class RotatedSpriteExample extends GarnetApp {
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         texture = Texture.loadTexture(imageFileName);
         tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();

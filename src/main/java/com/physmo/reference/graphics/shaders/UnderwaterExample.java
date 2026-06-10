@@ -37,20 +37,12 @@ public class UnderwaterExample extends GarnetApp {
     double time = 0;
     double[] angle = new double[NUM_SPRITES];
 
-    public UnderwaterExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new UnderwaterExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, UnderwaterExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Underwater Post-Process Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.rgb(10, 30, 60, 255));
 

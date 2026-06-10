@@ -11,6 +11,9 @@ import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -52,6 +55,39 @@ public class Garnet {
     private com.physmo.garnet.graphics.ShaderProgram internalBufferShader;
 
     /**
+     * Creates a Garnet instance, attaches a new app, initializes the engine, and starts the main loop.
+     *
+     * @param windowWidth  the width of the window to be created
+     * @param windowHeight the height of the window to be created
+     * @param appFactory   creates the app to run
+     */
+    public static void launch(int windowWidth, int windowHeight, Supplier<? extends GarnetApp> appFactory) {
+        launch(windowWidth, windowHeight, appFactory, garnet -> {
+        });
+    }
+
+    /**
+     * Creates a Garnet instance, applies pre-init configuration, attaches a new app,
+     * initializes the engine, and starts the main loop.
+     * <p>
+     * Use {@code configure} for engine settings that must be applied before {@link #init()},
+     * such as {@link #setInternalBufferMode(boolean)}.
+     *
+     * @param windowWidth  the width of the window to be created
+     * @param windowHeight the height of the window to be created
+     * @param appFactory   creates the app to run
+     * @param configure    pre-init engine configuration
+     */
+    public static void launch(int windowWidth, int windowHeight, Supplier<? extends GarnetApp> appFactory, Consumer<Garnet> configure) {
+        Objects.requireNonNull(appFactory, "appFactory must not be null");
+        Objects.requireNonNull(configure, "configure must not be null");
+
+        Garnet garnet = new Garnet(windowWidth, windowHeight);
+        configure.accept(garnet);
+        garnet.run(appFactory.get());
+    }
+
+    /**
      * Constructs a new Garnet object initializing the key components required for the framework.
      *
      * @param windowWidth  the width of the window to be created
@@ -85,12 +121,15 @@ public class Garnet {
     }
 
     /**
-     * Sets the application to be managed by this Garnet instance.
+     * Attaches the app, initializes the engine, and starts the main loop.
+     * Use this when a Garnet instance needs pre-init configuration before running an app.
      *
      * @param garnetApp the {@link GarnetApp} to run
      */
-    public void setGarnetApp(GarnetApp garnetApp) {
-        this.garnetApp = garnetApp;
+    public void run(GarnetApp garnetApp) {
+        setApp(garnetApp);
+        init();
+        run();
     }
 
     /**
@@ -121,34 +160,14 @@ public class Garnet {
     }
 
     /**
-     * Initialises all subsystems including display, sound, input, and the application.
-     * Must be called before {@link #run()}.
+     * Sets the application to be managed by this Garnet instance.
+     * Equivalent to {@link #setGarnetApp(GarnetApp)}.
+     *
+     * @param garnetApp the {@link GarnetApp} to run
      */
-    public void init() {
-
-        display.init();
-
-        if (useInternalBuffer) {
-            graphics.setInternalBufferMode(true);
-            internalBuffer = new com.physmo.garnet.graphics.RenderTexture(display.getCanvasSize()[0], display.getCanvasSize()[1]);
-            graphics.addTexture(internalBuffer.getTexture());
-        }
-
-        sound.init();
-        input.init();
-        garnetApp.init(this);
-        debugDrawer.init();
-
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(display.getWindowHandle(), (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-
-            for (KeyboardCallback kbc : keyboardCallbacks) {
-                kbc.invoke(key, scancode, action, mods);
-            }
-        });
-
+    public void setApp(GarnetApp garnetApp) {
+        this.garnetApp = Objects.requireNonNull(garnetApp, "garnetApp must not be null");
+        this.garnetApp.attach(this);
     }
 
     /**
@@ -183,6 +202,40 @@ public class Garnet {
             gameClock.getTimer(GameClock.TIMER_LOGIC_AND_RENDER).stop();
 
         }
+    }
+
+    /**
+     * Initialises all subsystems including display, sound, input, and the application.
+     * Must be called before {@link #run()}.
+     */
+    public void init() {
+        if (garnetApp == null) {
+            throw new IllegalStateException("No GarnetApp has been set. Call setApp(app), run(app), or Garnet.launch(...).");
+        }
+
+        display.init();
+
+        if (useInternalBuffer) {
+            graphics.setInternalBufferMode(true);
+            internalBuffer = new com.physmo.garnet.graphics.RenderTexture(display.getCanvasSize()[0], display.getCanvasSize()[1]);
+            graphics.addTexture(internalBuffer.getTexture());
+        }
+
+        sound.init();
+        input.init();
+        garnetApp.init(this);
+        debugDrawer.init();
+
+        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        glfwSetKeyCallback(display.getWindowHandle(), (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+
+            for (KeyboardCallback kbc : keyboardCallbacks) {
+                kbc.invoke(key, scancode, action, mods);
+            }
+        });
+
     }
 
     /**
@@ -347,12 +400,11 @@ public class Garnet {
 
     /**
      * Sets the application to be managed by this Garnet instance.
-     * Equivalent to {@link #setGarnetApp(GarnetApp)}.
      *
      * @param garnetApp the {@link GarnetApp} to run
      */
-    public void setApp(GarnetApp garnetApp) {
-        this.garnetApp = garnetApp;
+    public void setGarnetApp(GarnetApp garnetApp) {
+        setApp(garnetApp);
     }
 
     /**

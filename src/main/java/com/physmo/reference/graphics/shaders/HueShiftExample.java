@@ -7,7 +7,6 @@ import com.physmo.garnet.graphics.Graphics;
 import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // HueShiftExample demonstrates the hueshift.frag shader, which rotates the
@@ -47,20 +46,12 @@ public class HueShiftExample extends GarnetApp {
     float[] hueAngles = {0f, 60f, 120f, 180f, 240f};
     double time = 0;
 
-    public HueShiftExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new HueShiftExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, HueShiftExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Hue Shift Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

@@ -7,20 +7,12 @@ import com.physmo.garnet.graphics.Graphics;
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class GeneralStructure extends GarnetApp {
 
-    public GeneralStructure(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new GeneralStructure(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, GeneralStructure::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDebugDrawer().setVisible(true);
         garnet.getDebugDrawer().setUserString("message:", "Hello!");
     }

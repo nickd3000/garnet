@@ -11,20 +11,12 @@ public class MovementExample extends GarnetApp {
 
     double x1 = 0, x2 = 0, x3 = 0;
 
-    public MovementExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(600, 400);
-        GarnetApp app = new MovementExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(600, 400, MovementExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDebugDrawer().setVisible(true);
         garnet.getDebugDrawer().setDrawFps(true);
     }

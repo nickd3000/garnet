@@ -60,20 +60,12 @@ public class GaussianBlurExample extends GarnetApp {
     double[] angle = new double[NUM_SPRITES];
     float blurRadius = 1.0f;
 
-    public GaussianBlurExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(W, H);
-        GarnetApp app = new GaussianBlurExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(W, H, GaussianBlurExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Two-Pass Gaussian Blur Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 

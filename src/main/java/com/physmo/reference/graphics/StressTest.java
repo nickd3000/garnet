@@ -19,22 +19,12 @@ public class StressTest extends GarnetApp {
     int numSprites = 25000 / 2;
     Context context;
 
-    public StressTest(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new StressTest(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, StressTest::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         // Create a context to hold game objects
         context = new Context();
 

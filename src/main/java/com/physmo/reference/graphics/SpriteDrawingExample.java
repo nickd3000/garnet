@@ -23,23 +23,12 @@ public class SpriteDrawingExample extends GarnetApp {
     private Texture texture1;
     private Texture texture2;
 
-
-    public SpriteDrawingExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(640, 480);
-        GarnetApp app = new SpriteDrawingExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(640, 480, SpriteDrawingExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
 
         texture1 = Texture.loadTexture(fileName1);
         tileSheet1 = new TileSheet(texture1, 16, 16);
@@ -123,6 +112,5 @@ public class SpriteDrawingExample extends GarnetApp {
     private void drawNew() {
 
     }
-
 
 }

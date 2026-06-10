@@ -18,22 +18,12 @@ public class TileSheetExample extends GarnetApp {
     int GREEN = 0x55ff55ff;
     int BLUE = 0x5555ffff;
 
-    public TileSheetExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(400, 400);
-        GarnetApp app = new TileSheetExample(garnet, "");
-
-        garnet.setApp(app);
-
-        garnet.init();
-        garnet.run();
+        Garnet.launch(400, 400, TileSheetExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         texture = Texture.loadTexture("space.png");
         tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();
@@ -57,7 +47,6 @@ public class TileSheetExample extends GarnetApp {
 
         // Retrieve the current mouse position.
         int[] mp = garnet.getInput().getMouse().getPositionScaled(scale);
-
 
         // Draw sprite by specifying the row and column where the sub image is.
         g.setColor(RED);

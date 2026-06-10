@@ -10,20 +10,12 @@ public class SimpleSpriteExample extends GarnetApp {
 
     Texture texture;
 
-    public SimpleSpriteExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(600, 400);
-        GarnetApp app = new SimpleSpriteExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(600, 400, SimpleSpriteExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         texture = Texture.loadTexture("garnetCrystal.png");
         garnet.getGraphics().addTexture(texture);
     }

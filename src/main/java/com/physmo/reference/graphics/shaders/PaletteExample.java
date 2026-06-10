@@ -8,7 +8,6 @@ import com.physmo.garnet.graphics.ShaderProgram;
 import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.renderer.TextureRegion;
 
-
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 //
 // PaletteExample demonstrates the palette.frag shader, which reduces the image
@@ -28,20 +27,12 @@ public class PaletteExample extends GarnetApp {
     Texture texture;
     ShaderProgram[] paletteShaders;
 
-    public PaletteExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        GarnetApp app = new PaletteExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, PaletteExample::new);
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("Palette / Dither Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.DARK_GREY);
 

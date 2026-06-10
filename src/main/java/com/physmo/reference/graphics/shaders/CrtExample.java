@@ -32,21 +32,13 @@ public class CrtExample extends GarnetApp {
 
     double time = 0;
 
-    public CrtExample(Garnet garnet, String name) {
-        super(garnet, name);
-    }
-
     public static void main(String[] args) {
-        Garnet garnet = new Garnet(WINDOW_W, WINDOW_H);
-        garnet.setInternalBufferMode(true);
-        GarnetApp app = new CrtExample(garnet, "");
-        garnet.setApp(app);
-        garnet.init();
-        garnet.run();
+        Garnet.launch(WINDOW_W, WINDOW_H, CrtExample::new,
+                garnet -> garnet.setInternalBufferMode(true));
     }
 
     @Override
-    public void init(Garnet garnet) {
+    public void init() {
         garnet.getDisplay().setWindowTitle("CRT Shader Example");
         garnet.getGraphics().setBackgroundColor(ColorUtils.BLACK);
 
