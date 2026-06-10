@@ -4,7 +4,6 @@ import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.toolkit.Context;
 import com.physmo.garnet.toolkit.GameObject;
@@ -18,7 +17,6 @@ public class StressTest extends GarnetApp {
 
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     int numSprites = 25000 / 2;
     Context context;
 
@@ -32,9 +30,7 @@ public class StressTest extends GarnetApp {
         context = new Context();
 
         // Load the texture
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
-        garnet.getGraphics().addTexture(texture);
+        tileSheet = garnet.getGraphics().loadTileSheet(imageFileName, 16, 16);
 
         // Add the tileSheet and graphics object to the context so the sprite entities can access them.
         context.add(tileSheet);

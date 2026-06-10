@@ -3,7 +3,6 @@ package com.physmo.reference.collision;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.structure.Array;
 import com.physmo.garnet.toolkit.Context;
@@ -22,7 +21,6 @@ public class CollisionExample extends GarnetApp {
     static int height = 600;
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     Context context;
     double scale = 1;
     Random random = new Random(12345);
@@ -37,10 +35,8 @@ public class CollisionExample extends GarnetApp {
     public void init() {
         context = new Context();
 
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet(imageFileName, 16, 16);
         context.add(tileSheet);
         context.add(graphics);
 

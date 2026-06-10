@@ -3,14 +3,12 @@ package com.physmo.reference.graphics;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 
 // NOTE: On MacOS the following VM argument is required: -XstartOnFirstThread
 public class TileSheetExample extends GarnetApp {
 
     TileSheet tileSheet;
-    Texture texture;
     double xPos = 0;
     double scale = 4;
 
@@ -24,10 +22,7 @@ public class TileSheetExample extends GarnetApp {
 
     @Override
     public void init() {
-        texture = Texture.loadTexture("space.png");
-        tileSheet = new TileSheet(texture, 16, 16);
-        Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = garnet.getGraphics().loadTileSheet("space.png", 16, 16);
 
         garnet.getDebugDrawer().setColor(0xaa4477ff);
         garnet.getDebugDrawer().setVisible(true);
@@ -60,4 +55,3 @@ public class TileSheetExample extends GarnetApp {
         g.drawImage(tileSheet, mp[0], mp[1], 2, 2);
     }
 }
-

@@ -16,8 +16,7 @@ public class SimpleSpriteExample extends GarnetApp {
 
     @Override
     public void init() {
-        texture = Texture.loadTexture("garnetCrystal.png");
-        garnet.getGraphics().addTexture(texture);
+        texture = garnet.getGraphics().loadTexture("garnetCrystal.png");
     }
 
     @Override

@@ -21,6 +21,14 @@ class FileUtilsTest {
     }
 
     @Test
+    void getFileFromResourceAsStreamFallsBackToExampleResources() throws IOException {
+        try (InputStream stream = FileUtils.getFileFromResourceAsStream("garnetCrystal.png")) {
+            assertNotNull(stream);
+            assertTrue(stream.read() >= 0);
+        }
+    }
+
+    @Test
     void getFileFromResourceAsStreamThrowsForMissingResourceAndIncludesName() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,

@@ -318,6 +318,32 @@ public class Graphics {
     }
 
     /**
+     * Loads a texture from a classpath resource path, registers it with this graphics instance,
+     * and returns a tile sheet backed by that texture.
+     *
+     * @param path       the classpath-relative path to the image file
+     * @param tileWidth  the tile width in pixels
+     * @param tileHeight the tile height in pixels
+     * @return a tile sheet backed by the loaded and registered texture
+     */
+    public TileSheet loadTileSheet(String path, int tileWidth, int tileHeight) {
+        return new TileSheet(loadTexture(path), tileWidth, tileHeight);
+    }
+
+    /**
+     * Loads a texture from a classpath resource path, registers it with this graphics instance,
+     * and returns the registered texture.
+     *
+     * @param path the classpath-relative path to the image file
+     * @return the loaded and registered texture
+     */
+    public Texture loadTexture(String path) {
+        Texture texture = Texture.loadTexture(path);
+        addTexture(texture);
+        return texture;
+    }
+
+    /**
      * Adds a texture to the collection of textures if it is not already present.
      * If the texture is already registered, the method does nothing.
      *

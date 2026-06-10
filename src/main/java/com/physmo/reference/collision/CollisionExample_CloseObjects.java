@@ -4,7 +4,6 @@ import com.physmo.garnet.ColorUtils;
 import com.physmo.garnet.Garnet;
 import com.physmo.garnet.GarnetApp;
 import com.physmo.garnet.graphics.Graphics;
-import com.physmo.garnet.graphics.Texture;
 import com.physmo.garnet.graphics.TileSheet;
 import com.physmo.garnet.toolkit.Context;
 import com.physmo.garnet.toolkit.GameObject;
@@ -26,7 +25,6 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     static int width = 800;
     String imageFileName = "space.png";
     TileSheet tileSheet;
-    Texture texture;
     Context context;
     double scale = 2;
     Random random = new Random(12345);
@@ -42,10 +40,8 @@ public class CollisionExample_CloseObjects extends GarnetApp {
     public void init() {
         context = new Context();
 
-        texture = Texture.loadTexture(imageFileName);
-        tileSheet = new TileSheet(texture, 16, 16);
         Graphics graphics = garnet.getGraphics();
-        graphics.addTexture(texture);
+        tileSheet = graphics.loadTileSheet(imageFileName, 16, 16);
         context.add(tileSheet);
         context.add(graphics);
 
