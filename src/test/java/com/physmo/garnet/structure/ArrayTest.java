@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,6 +25,22 @@ class ArrayTest {
 
         assertEquals(6, array.size());
         assertEquals(10, array.getCapacity());
+    }
+
+    @Test
+    void zeroCapacityArrayGrowsOnFirstAdd() {
+        Array<String> array = new Array<>(0);
+
+        array.add("A");
+
+        assertEquals(1, array.size());
+        assertEquals(1, array.getCapacity());
+        assertEquals("A", array.get(0));
+    }
+
+    @Test
+    void constructorRejectsNegativeCapacity() {
+        assertThrows(IllegalArgumentException.class, () -> new Array<>(-1));
     }
 
     @Test
@@ -126,6 +143,25 @@ class ArrayTest {
     }
 
     @Test
+    void removeIfClearsInactiveTailReferences() {
+        Array<Object> array = new Array<>(5);
+        array.add("A");
+        array.add("X");
+        array.add("B");
+        array.add("X");
+        array.add("C");
+
+        array.removeIf(s -> s.equals("X"));
+
+        assertEquals(3, array.size());
+        assertEquals("A", array.array[0]);
+        assertEquals("B", array.array[1]);
+        assertEquals("C", array.array[2]);
+        assertNull(array.array[3]);
+        assertNull(array.array[4]);
+    }
+
+    @Test
     void removeIfRejectsNullPredicate() {
         Array<String> array = new Array<>(1);
 
@@ -158,6 +194,23 @@ class ArrayTest {
     }
 
     @Test
+    void addAllRejectsNullList() {
+        Array<String> array = new Array<>(1);
+
+        assertThrows(NullPointerException.class, () -> array.addAll((List<String>) null));
+    }
+
+    @Test
+    void addAllRejectsNullListElement() {
+        Array<String> array = new Array<>(2);
+        List<String> list = new ArrayList<>();
+        list.add("A");
+        list.add(null);
+
+        assertThrows(NullPointerException.class, () -> array.addAll(list));
+    }
+
+    @Test
     void addAllAppendsItemsFromAnotherArray() {
         Array<String> array = new Array<>(2);
         Array<String> other = new Array<>(2);
@@ -176,6 +229,28 @@ class ArrayTest {
     }
 
     @Test
+    void addAllFromSelfCopiesOriginalItemsOnly() {
+        Array<String> array = new Array<>(2);
+        array.add("A");
+        array.add("B");
+
+        array.addAll(array);
+
+        assertEquals(4, array.size());
+        assertEquals("A", array.get(0));
+        assertEquals("B", array.get(1));
+        assertEquals("A", array.get(2));
+        assertEquals("B", array.get(3));
+    }
+
+    @Test
+    void addAllRejectsNullArray() {
+        Array<String> array = new Array<>(1);
+
+        assertThrows(NullPointerException.class, () -> array.addAll((Array<String>) null));
+    }
+
+    @Test
     void containsAndIndexOfReportPresentAndAbsentItems() {
         Array<String> array = new Array<>(3);
         array.add("A");
@@ -186,6 +261,15 @@ class ArrayTest {
         assertFalse(array.contains("X"));
         assertEquals(1, array.indexOf("B"));
         assertEquals(-1, array.indexOf("X"));
+    }
+
+    @Test
+    void addContainsAndIndexOfRejectNullElement() {
+        Array<String> array = new Array<>(1);
+
+        assertThrows(NullPointerException.class, () -> array.add(null));
+        assertThrows(NullPointerException.class, () -> array.contains(null));
+        assertThrows(NullPointerException.class, () -> array.indexOf(null));
     }
 
     @Test
@@ -205,6 +289,16 @@ class ArrayTest {
         assertEquals(3, array.get(2));
         assertEquals(-100, array.array[3]);
         assertEquals(-200, array.array[4]);
+    }
+
+    @Test
+    void getRejectsNegativeAndInactiveIndexes() {
+        Array<Object> array = new Array<>(2);
+        array.add("A");
+        array.array[1] = "inactive";
+
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> array.get(-1));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> array.get(1));
     }
 
     @Test
@@ -238,13 +332,13 @@ class ArrayTest {
     }
 
     @Test
-    void iteratorReturnsNullAfterExhaustion() {
+    void iteratorThrowsAfterExhaustion() {
         Array<String> array = new Array<>(1);
         array.add("A");
         Iterator<String> iterator = array.iterator();
 
         assertEquals("A", iterator.next());
         assertFalse(iterator.hasNext());
-        assertNull(iterator.next());
+        assertThrows(NoSuchElementException.class, iterator::next);
     }
 }
