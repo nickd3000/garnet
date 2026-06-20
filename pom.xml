@@ -90,6 +90,7 @@
                 <configuration>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                     <additionalOptions>-Xdoclint:none</additionalOptions> <!-- this prevents failed build -->
+                    <excludePackageNames>com.physmo.reference:com.physmo.reference.*</excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>
@@ -100,6 +101,7 @@
                         <configuration>
                             <release>17</release>
                             <encoding>UTF-8</encoding>
+                            <excludePackageNames>com.physmo.reference:com.physmo.reference.*</excludePackageNames>
                         </configuration>
                     </execution>
                 </executions>
