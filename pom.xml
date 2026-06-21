@@ -6,7 +6,7 @@
 
     <groupId>io.github.nickd3000</groupId>
     <artifactId>garnet</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.7.0c-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/nickd3000/garnet</url>
@@ -19,8 +19,7 @@
         <jmh.version>1.37</jmh.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.release>17</maven.compiler.release>
         <argLine></argLine>
     </properties>
 
@@ -77,21 +76,45 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <release>${maven.compiler.release}</release>
                     <encoding>UTF-8</encoding>
                 </configuration>
-                <version>3.13.0</version>
+                <version>3.15.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.6.2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.6.3,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.12.0</version>
                 <configuration>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                     <additionalOptions>-Xdoclint:none</additionalOptions> <!-- this prevents failed build -->
-                    <excludePackageNames>com.physmo.reference:com.physmo.reference.*</excludePackageNames>
+                    <detectJavaApiLink>false</detectJavaApiLink>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <excludePackageNames>
+                        com.physmo.reference:com.physmo.reference.*:com.physmo.garnet.structure.jmh_generated
+                    </excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>
@@ -102,7 +125,11 @@
                         <configuration>
                             <release>17</release>
                             <encoding>UTF-8</encoding>
-                            <excludePackageNames>com.physmo.reference:com.physmo.reference.*</excludePackageNames>
+                            <detectJavaApiLink>false</detectJavaApiLink>
+                            <detectOfflineLinks>false</detectOfflineLinks>
+                            <excludePackageNames>
+                                com.physmo.reference:com.physmo.reference.*:com.physmo.garnet.structure.jmh_generated
+                            </excludePackageNames>
                         </configuration>
                     </execution>
                 </executions>
@@ -118,12 +145,12 @@
                         </goals>
                     </execution>
                 </executions>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.8</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -148,7 +175,7 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.6.0</version>
+                <version>0.11.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
@@ -162,7 +189,7 @@
                 <version>3.5.1</version>
                 <configuration>
                     <argLine>
-                        @{argLine} -XstartOnFirstThread
+                        @{argLine} -XstartOnFirstThread --enable-native-access=ALL-UNNAMED
                     </argLine>
                 </configuration>
 
